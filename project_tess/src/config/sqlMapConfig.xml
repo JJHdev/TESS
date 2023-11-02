@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+		   "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<settings cacheModelsEnabled="true" enhancementEnabled="true"
+		lazyLoadingEnabled="true" maxRequests="64" maxSessions="32"
+		maxTransactions="5" useStatementNamespaces="true" />
+
+	<!-- ==========Framework Configuration Section============= -->
+	<!-- Spring 2.5.5 이상, iBATIS 2.3.2 이상에서는 iBATIS 연동을 위한 SqlMapClientFactoryBean 정의 시
+               mappingLocations 속성으로 Sql 매핑 파일의 일괄 지정이 가능하다.
+	    ("sqlMapClient" bean 설정 시
+                       mappingLocations="classpath:/META-INF/sqlmap/mappings/testcase-*.xml" 로 지정하였음)
+	    단, sql-map-config-2.dtd 에서 sqlMap 요소를 하나 이상 지정하도록 되어 있으므로
+              아래의 dummy 매핑 파일을 설정하였다.
+	-->
+	<sqlMap resource="config/dummy-sqlmap.xml" />
+
+</sqlMapConfig>

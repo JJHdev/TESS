@@ -1,0 +1,95 @@
+@media screen and (min-width: 768px) {
+    .user-wrap .user-infos,
+    .user-wrap .user-menus {
+        float: right;
+    }
+    .wrapper {
+        padding: 18px;
+    }
+    .evtdss-breadcrumb { display: block; }
+    #footer-logos {
+        display: block;
+    }
+    .lnb { text-align: center; }
+    .lnb-roller { display: none; }
+    .lnb .evtdss-localmenu li.active, .lnb .evtdss-localmenu li {
+        display: inline-block;
+        border: none;
+    }
+    .lnb .evtdss-localmenu li a {
+        display: block;
+        line-height:40px;
+        color: #fff;
+        font-size: 16px;
+    }
+    .lnb .evtdss-localmenu li.active a {
+        background-color: #444444;
+        pointer-events: none;
+    }
+    .lnb .evtdss-localmenu li.active a:before {
+        content: '';
+    }
+    .evtdss-menu li a { line-height: 70px; }
+}
+@media screen and (min-width: 992px) {
+    .user-wrap {
+        display: block;
+    }
+    body { padding-top: 90px; }
+    footer { min-height: 160px;}
+    .gnb { height: 90px; }
+    .gnb > .container > .navbar-header { height: 90px; }
+    .evtdss-top { height: 90px; margin-top: -1px;}
+    .navbar-brand.evtdss-logo { width: 230px; height: 42px; margin-top: 24px; margin-left: 0; margin-right: 18px; }
+    .evtdss-menu li { margin: 0 0 0 22px; }
+    .evtdss-menu li a{ line-height: 90px; font-size: 18px; }
+    .mobile-menu {
+        display: none;
+    }
+    .wrapper.main { padding: 35px 25px 30px 25px; }
+    .wrapper.sub { padding: 18px 25px 60px 25px; }
+    .page-title { margin: 18px 0 30px 0; }
+    .contents-wrap > .wrapper > .container,
+    .contents-wrap > .wrapper > .container > .row {
+        font-size: 16px;
+        line-height: 24px;
+    }
+    #footer-logos {
+        text-align: left;
+    }
+    #footer-policy {
+        text-align: right;
+    }
+    #footer-policy ul {
+        display: inline;
+    }
+    .family-sites {
+        float: right;
+        margin-top: 0;
+        margin-left: 20px;
+        height: 38px;
+    }
+    .family-sites select{
+        height: 100%;
+        border: 1px solid #ddd;
+    }
+    #footer-copyright {
+        text-align: left;
+        font-size: 13px;
+        color: #999c9d;
+        padding: 18px 0;
+    }
+    #footer-cert {
+        text-align: right;
+        margin: 20px 0;
+    }
+    .lnb .evtdss-localmenu li a { padding: 0 25px; }
+    .gnb { width: 100%; padding: 0 5px;}
+    .navbar-brand.evtdss-logo { margin-right: 12px; }
+    .gnb .container { width: 100%; padding: 0 10px; margin-left: 8px; margin-right: 0;}
+    .evtdss-menu li { margin: 0 0 0 8px; }
+}
+@media screen and (min-width: 1200px) {
+    .lnb .evtdss-localmenu li a { padding: 0 45px; }
+    .gnb .container { width: 1180px; margin: 0 auto;}
+}

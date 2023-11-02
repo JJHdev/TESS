@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Menu">
+
+	<typeAlias alias="ComboDomain" type="business.biz.comm.domain.ComboDomain" />
+
+	<select id="listMainMenu" resultClass="java.util.HashMap" parameterClass="java.util.Map" remapResults="true">
+		SELECT DISTINCT
+			   A.MENU_ID       			AS "menuId",
+		       A.PARENT_MENU_ID         AS "parentId",
+		       A.MENU_LVL               AS "menuLvl",
+		       A.MENU_ODR               AS "menuOdr",
+		       TRIM(A.MENU_NM)          AS "menuNm",
+		       TRIM(A.TAGT_URL)         AS "tagtUrl",
+		       A.SCRN_TYPE				 AS "scrnType",
+		       A.POPUP_YN               AS "popupYn",
+		       LEVEL                    AS "level",
+		       REGEXP_SUBSTR(SUBSTR(SYS_CONNECT_BY_PATH(TRIM(A.MENU_ID), ','), 2),'[^,]+', 1, 1) AS "firstMenuId"
+		FROM   SYS_MENU A,
+		       SYS_ROLE_MENU B
+		WHERE  A.USE_YN = 'Y'
+		AND    A.MENU_ID = B.MENU_ID
+		AND    B.ROLE_ID = NVL(#gsRoleId#, 'ROLE_RESTRICTED')
+		CONNECT BY PRIOR A.MENU_ID = A.PARENT_MENU_ID
+		START WITH A.PARENT_MENU_ID = 'NONE'
+		ORDER siblings BY A.MENU_LVL, A.MENU_ODR
+	</select>
+
+	<!-- Menu 조회 -->
+	<select id="listMenu" resultClass="java.util.HashMap" parameterClass="java.util.Map" remapResults="true">
+		SELECT    MENU_ID                          	AS "menuId"
+				, MENU_NM                        	AS "menuNm"
+				, MENU_NM                        	AS "menuNmOrg"
+				, MENU_NM                        	AS "menuNmView"
+				, PARENT_MENU_ID                   	AS "parentMenuId"
+				, MENU_LVL                       	AS "menuLvl"
+				, REF_PROG_ID                      	AS "refProgId"
+				, TAGT_URL                         	AS "tagtUrl"
+				, MENU_ODR                         	AS "menuOdr"
+				, USE_YN                         	AS "useYn"
+				, POPUP_YN                         	AS "popupYn"
+				, NVL(UPDT_ID, REGI_ID)            	AS "regiId"
+				, TO_CHAR(NVL(UPDT_DATE, REGI_DATE), 'yyyy-mm-dd')      AS "regiDate"
+				, LEVEL-1                          	AS "lvl"
+				<isNotEmpty property="parentMenuId">
+					, (SELECT max(level)
+						FROM   SYS_MENU
+						CONNECT BY PRIOR MENU_ID = PARENT_MENU_ID
+						START WITH PARENT_MENU_ID = #parentMenuId#) 	AS "maxLevel"
+				</isNotEmpty>
+		FROM    SYS_MENU
+		<dynamic prepend="WHERE">
+			<isNotEmpty prepend="AND" property="menuNm">
+				MENU_NM like '%'||#menuNm#||'%'
+			</isNotEmpty>
+		</dynamic>
+		<isEmpty property="parentMenuId">
+			CONNECT BY PRIOR menu_id = PARENT_MENU_ID
+			START WITH PARENT_MENU_ID = 'NONE'
+		</isEmpty>
+		<isNotEmpty property="parentMenuId">
+			CONNECT BY PRIOR menu_id = PARENT_MENU_ID
+			START WITH menu_id = #parentMenuId#
+		</isNotEmpty>
+		ORDER BY MENU_LVL, MENU_ODR
+	</select>
+
+	<select id="listTopMenu" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT    MENU_ID                        AS "code"
+				, MENU_NM                        AS "codeNm"
+		FROM   SYS_MENU
+		WHERE  PARENT_MENU_ID = 'NONE'
+		ORDER  BY MENU_LVL
+	</select>
+
+	<select id="viewMenu" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT    MENU_ID                          	AS "menuId"
+				, PARENT_MENU_ID                   	AS "parentMenuId"
+				, MENU_LVL                       	AS "menuLvl"
+				, REF_PROG_ID                      	AS "refProgId"
+				, TAGT_URL                         	AS "tagtUrl"
+				, MENU_ODR                         	AS "menuOdr"
+				, MENU_NM                        	AS "menuNm"
+				, USE_YN                         	AS "useYn"
+				, POPUP_YN                         	AS "popupYn"
+				, NVL(UPDT_ID, REGI_ID)            	AS "regiId"
+				, TO_CHAR(NVL(UPDT_DATE, REGI_DATE), 'yyyy-mm-dd')        AS "regiDate"
+		FROM   SYS_MENU
+		WHERE  MENU_ID = #menuId#
+	</select>
+
+	<select id="getMenuCnt" resultClass="java.lang.Boolean" parameterClass="java.util.Map">
+		SELECT DECODE(COUNT(*), 0, 0, 1)
+		FROM   SYS_MENU
+		WHERE  MENU_ID = #menuId#
+	</select>
+
+	<!--MENU 등록 -->
+	<insert id="regiMenu" parameterClass="java.util.Map">
+		INSERT INTO SYS_MENU (
+			MENU_ID,
+			MENU_NM,
+			MENU_LVL,
+			REF_PROG_ID,
+			TAGT_URL,
+			MENU_ODR,
+			PARENT_MENU_ID,
+			USE_YN,
+			POPUP_YN,
+			REGI_ID,
+			REGI_DATE
+		) VALUES (
+			#menuId#,
+			#menuNm#,
+			#menuLvl#,
+			#refProgId#,
+			#tagtUrl#,
+			<isEmpty    property="menuOdr">
+                 <isEmpty    property="parentMenuId">
+                    0,
+                 </isEmpty>
+                 <isNotEmpty property="parentMenuId">
+                     (SELECT  NVL(MAX(MENU_ODR), 0) +1
+                        FROM  SYS_MENU
+                       WHERE PARENT_MENU_ID = #parentMenuId#
+                     ),
+                 </isNotEmpty>
+			</isEmpty>
+			<isNotEmpty property="menuOdr">
+				$menuOdr$,
+			</isNotEmpty>
+            <isEmpty    property="parentMenuId">
+                'NONE',
+            </isEmpty>
+            <isNotEmpty property="parentMenuId">
+    			#parentMenuId#,
+            </isNotEmpty>
+			#useYn#,
+			#popupYn#,
+			#gsUserId#,
+			SYSDATE
+		)
+	</insert>
+
+	<!--MENU 수정 -->
+	<update id="updtMenu" parameterClass="java.util.Map">
+		UPDATE 	SYS_MENU
+		SET    	MENU_LVL    = $menuLvl$,
+				REF_PROG_ID = #refProgId#,
+				TAGT_URL    = #tagtUrl# ,
+				MENU_ODR    = $menuOdr$,
+				MENU_NM   	= #menuNm#,
+				PARENT_MENU_ID   = #parentMenuId#,
+				USE_YN    	= #useYn#,
+				POPUP_YN    = #popupYn#,
+				UPDT_ID     = #gsUserId#,
+				UPDT_DATE   = sysdate
+		WHERE  	MENU_ID     = #menuId#
+	</update>
+
+	<!--MENU 삭제 -->
+	<delete id="deltMenu" parameterClass="java.util.Map">
+		DELETE FROM SYS_MENU
+		WHERE (0=0)
+        <isEmpty prepend="AND" property="arrMenuId">
+            MENU_ID = #menuId#
+        </isEmpty>
+        <isNotEmpty prepend="AND" property="arrMenuId">
+            <iterate property="arrMenuId" open="(" close=")" conjunction="OR">
+                  MENU_ID  = #arrMenuId[]#
+            </iterate>
+        </isNotEmpty>
+	</delete>
+
+	<!-- 하위메뉴 조회 -->
+	<select id="listSubMenu" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT   MENU_ID      AS "menuId"
+			   , MENU_NM      AS "menuNm"
+		FROM  SYS_MENU
+		WHERE PARENT_MENU_ID is null
+		ORDER BY MENU_LVL, MENU_ODR
+	</select>
+
+	<select id="listComboMenu" parameterClass="java.util.Map" resultClass="ComboDomain">
+		SELECT   MENU_ID                               AS "comboValue"
+			   , MENU_NM                               AS "comboText"
+		FROM  SYS_MENU
+        WHERE LEVEL > 1
+        CONNECT BY PRIOR MENU_ID = PARENT_MENU_ID
+        START WITH PARENT_MENU_ID = 'NONE'
+        ORDER siblings BY MENU_ID
+    </select>
+</sqlMap>

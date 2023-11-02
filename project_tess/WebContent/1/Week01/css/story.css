@@ -1,0 +1,25 @@
+@charset "utf-8";
+/*
+2013-05-16 jian
+공통사항은 common을 참조. 
+*/
+
+/*story*/
+.story_bg {background:url(../images/bg_story.png) no-repeat;}
+.sto_title{position:absolute;left:24px;top:100px;}
+
+#content
+		
+.dot{padding-left:16px;background:url(../images/dot.gif) no-repeat 7px 12px; line-height:1.4em}
+
+
+.story01 {position:absolute;left:86px;top:145px; padding:0 10px 0 0;width:800px;height:360px;overflow:auto;line-height:18px;}
+.cored{color:#F30}
+.coblu{color:#036}
+.b{font-weight:bold}
+.orangetitle01{
+   margin:3px 0 0 0;
+   padding:2px 0 0 22px; font-size:12px;
+   height:20px;
+   background: url(../images/w_ico.gif) no-repeat  0 3px;
+}  

@@ -1,0 +1,3282 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# @Description : 관리/운영 개발사업관리 sql
+# @author LCS
+# @version 1.0 2014/09/29
+# Used Table(주요) : TB_Evalu_BUSI     (관광사업정보)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-->
+<sqlMap namespace="EvaluMgmt">
+
+    <!-- ++++++++++++++++++++++++++++++++++++++
+          공통 컬럼.
+         ++++++++++++++++++++++++++++++++++++++ -->
+
+    <!--  -->
+    <sql id="EvaluMgmt-columns">
+	     A.EVALU_BUSI_NO     as "evaluBusiNo"
+	    ,A.EVALU_BUSI_NM     as "evaluBusiNm"
+	    ,A.USCM_NO          as "usmcNo"
+	    ,A.BUSI_POST_NO     as "busiPostNo"
+	    ,A.BUSI_ADDR1       as "busiAddr1"
+	    ,A.BUSI_ADDR2       as "busiAddr2"
+	    ,A.BUSI_ADDR3       as "busiAddr3"
+	    ,A.BUSI_ADDR4       as "busiAddr4"
+	    ,A.BUSI_ADDR5       as "busiAddr5"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "busiAddr12"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2 ||' '|| A.BUSI_ADDR3 ||' '|| A.BUSI_ADDR4 as "busiAddress1"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "cityauthNm"
+	    ,A.BUSI_STT_DATE    as "busiSttDate"
+	    ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)                    as "convBusiSttDate"
+	    ,A.BUSI_END_DATE    as "busiEndDate"
+	    ,FN_CONV_VDATEYM(A.BUSI_END_DATE)                    as "convBusiEndDate"
+	    ,A.BUSI_DEV_ENTY	   as "busiDevEnty"
+	    ,A.BUSI_PLAN_DATE   as "busiPlanDate"
+	    ,FN_CONV_VDATEYM(A.BUSI_PLAN_DATE)                    as "convBusiPlanDate"
+	    ,A.BUSI_TYPE        as "busiType"
+	    ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_TYPE)             as "busiTypeNm"
+	    ,A.BUSI_CATE        as "busiCate"
+	    ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_CATE)             as "busiCateNm"                                                                 
+	    ,A.TOT_SITE_AREA    as "totSiteArea"
+	    ,A.TOT_SITE_AREA || NVL2(A.TOT_SITE_AREA, TOT_SITE_UNIT, '')   as "totSiteAreaUnit"
+	    ,A.TOT_SITE_UNIT    as "totSiteUnit"
+	    ,A.TOT_BUSI_EXPS    as "totBusiExps"
+	    ,A.REGI_ID          as "regiId"
+	    ,A.REGI_DATE        as "regiDate"
+	    ,A.UPDT_ID          as "updtId"
+	    ,A.UPDT_DATE        as "updtDate"
+    </sql>
+
+    <!-- ++++++++++++++++++++++++++++++++++++++
+          검색 관련
+         ++++++++++++++++++++++++++++++++++++++ -->
+    <sql id="EvaluMgmt-condition">
+        <!-- 지역 -->
+        <isNotEmpty property="srchBusiAddr1">
+	        AND A.BUSI_ADDR1     = (SELECT CITYAUTH_NM
+	                                FROM   TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr1#)
+        </isNotEmpty>
+        <isNotEmpty property="srchBusiAddr2">
+	        AND A.BUSI_ADDR2     = (SELECT CITYAUTH_NM
+	                                FROM   TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr2#)
+     	</isNotEmpty>
+        <!-- 사업구분 -->
+        <isNotEmpty property="srchBusiType">
+            AND A.BUSI_TYPE = #srchBusiType#
+        </isNotEmpty>
+        <!-- 사업유형 -->
+        <isNotEmpty property="srchBusiCate">
+            AND A.BUSI_CATE = #srchBusiCate#
+        </isNotEmpty>
+        <!-- 평가단계 -->
+        <isNotEmpty property="srchBusiStage">
+            AND B.EVALU_STAGE = #srchBusiStage#
+        </isNotEmpty>
+        <!-- 평가일 -->
+        <isNotEmpty property="srchBusiSttDate">
+            AND TO_CHAR(TO_DATE(A.BUSI_STT_DATE, 'YYYYMMDD'), 'YYYY') = #srchBusiSttDate#
+        </isNotEmpty>
+        <!-- 사업명 -->
+        <isNotEmpty property="srchEvaluBusiNm">
+            AND A.Evalu_BUSI_NM LIKE '%'||#srchEvaluBusiNm#||'%'
+        </isNotEmpty>
+        <!-- 평가결과 -->
+        <isNotEmpty property="srchFinalEvaluFnd">
+            AND B.FINAL_EVALU_FND = #srchFinalEvaluFnd#
+        </isNotEmpty>
+        <!-- 시설면적 -->
+        <isNotEmpty property="srchBusiArea">
+            AND A.TOT_SITE_AREA <![CDATA[>=]]> #srchBusiArea# 
+        </isNotEmpty>
+        <!-- 사업금액 -->
+        <isNotEmpty property="srchBusiExps">
+            AND A.TOT_BUSI_EXPS <![CDATA[>=]]> #srchBusiExps#
+        </isNotEmpty>
+        <!-- 17년도 사업만 -->
+        <isNotEmpty property="busi2017">
+<!--             AND A.EVALU_BUSI_NO LIKE '%'||#busi2017#||'%' 테스트 DB는 cent_2017, 실제디비는 evalu_cent-->
+            AND B.EVALU_BEFO_TRGT is null
+        </isNotEmpty>
+    </sql>
+
+    <select id="listEvaluMgmt" parameterClass="map"  resultClass="hashmap">
+        SELECT
+				<include refid="EvaluMgmt-columns"/>
+				 ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)||'~'||FN_CONV_VDATEYM(A.BUSI_END_DATE)
+                                                                 as "convBusiPeriod"
+          FROM TB_EVALU_DESTI_BUSI_INFO A
+         WHERE (0=0)
+           <include refid="EvaluMgmt-condition"/>
+         ORDER BY EVALU_BUSI_NM
+    </select>
+    <select id="listEvaluMgmtCount" parameterClass="map"  resultClass="int">
+        SELECT COUNT(*)
+          FROM TB_EVALU_DESTI_BUSI_INFO A
+         WHERE (0=0)
+           <include refid="EvaluMgmt-condition"/>
+    </select>
+
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++
+          TB_Evalu_BUSI     (관광사업정보) 작업
+         +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+    <select id="viewEvaluMgmtMast" parameterClass="map"  resultClass="hashmap">
+        SELECT <include refid="EvaluMgmt-columns"/>
+          FROM TB_EVALU_DESTI_BUSI_INFO A
+         WHERE (0=0) AND
+            A.EVALU_BUSI_NO   = #evaluBusiNo#
+    </select>
+
+    <insert id="regiEvaluMgmtMast" parameterClass="map" >
+        <selectKey resultClass="java.lang.String" keyProperty="evaluBusiNo">
+            SELECT
+                  'B' || TO_CHAR(SYSDATE,'YY') || #reqCityauthCd# || LPAD(SEQ_EVALU_BUSI.NEXTVAL, 5, '0') as "evaluBusiNo"
+              FROM DUAL
+        </selectKey>
+        INSERT INTO TB_EVALU_DESTI_BUSI_INFO (
+             EVALU_BUSI_NO
+            ,EVALU_BUSI_NM
+            ,USCM_NO
+            ,REQ_USER_NM
+            ,REQ_DEPT_NM
+            ,REQ_TEL_NO
+            ,REQ_EMAIL
+            ,REQ_CITYAUTH_CD
+            ,REQ_DATE
+            ,BUSI_POST_NO
+            ,BUSI_ADDR1
+            ,BUSI_ADDR2
+            ,BUSI_ADDR3
+            ,BUSI_ADDR4
+            ,BUSI_ADDR5
+            ,BUSI_STT_DATE
+            ,BUSI_END_DATE
+            ,BUSI_DEV_ENTY
+            ,BUSI_PLAN_DATE
+            ,TOT_SITE_AREA
+            ,BUSI_TYPE
+            ,BUSI_CATE
+            ,TOT_BUSI_EXPS
+            ,REGI_ID
+            ,REGI_DATE
+            ,TOT_SITE_UNIT
+        ) VALUES (
+             #evaluBusiNo#
+            ,#evaluBusiNm#
+            ,#uscmNo#
+            ,#reqUserNm#
+            ,#reqDeptNm#
+            ,#reqTelNo#
+            ,#reqEmail#
+            ,#reqCityauthCd#
+            ,#reqDate#
+            ,#busiPostNo#
+            ,#busiAddr1#
+            ,#busiAddr2#
+            ,#busiAddr3#
+            ,#busiAddr4#
+            ,#busiAddr5#
+            ,#busiSttDate#
+            ,#busiEndDate#
+            ,#busiDevEnty#
+            ,#busiPlanDate#
+            ,#totSiteArea#
+            ,#busiType#
+            ,#busiCate#
+            ,#totBusiExps#
+            ,#regiId#
+            ,SYSDATE
+            ,#totSiteUnit#
+        )
+    </insert>
+
+    <update id="updtEvaluMgmtMast" parameterClass="map" >
+        UPDATE TB_EVALU_DESTI_BUSI_INFO SET
+             UPDT_ID         = #updtId#
+            ,UPDT_DATE       = SYSDATE
+            ,EVALU_BUSI_NM    = #evaluBusiNm#
+            ,BUSI_POST_NO    = #busiPostNo#
+            ,BUSI_ADDR1      = #busiAddr1#
+            ,BUSI_ADDR2      = #busiAddr2#
+            ,BUSI_ADDR3      = #busiAddr3#
+            ,BUSI_ADDR4      = #busiAddr4#
+            ,BUSI_ADDR5      = #busiAddr5#
+            ,BUSI_STT_DATE   = #busiSttDate#
+            ,BUSI_END_DATE   = #busiEndDate#
+            ,BUSI_DEV_ENTY   = #busiDevEnty#
+            ,BUSI_PLAN_DATE  = #busiPlanDate#
+            ,TOT_SITE_AREA   = #totSiteArea#
+            ,TOT_BUSI_EXPS   = #totBusiExps#
+            ,BUSI_TYPE       = #busiType#
+            ,BUSI_CATE       = #busiCate#
+            ,TOT_SITE_UNIT		= #totSiteUnit#
+         WHERE (0=0)
+           AND Evalu_BUSI_NO    = #evaluBusiNo#
+    </update>
+
+    <delete id="deltEvaluMgmtMast" parameterClass="map" >
+        DELETE FROM TB_Evalu_BUSI
+         WHERE (0=0)
+           AND Evalu_BUSI_NO    = #EvaluBusiNo#
+    </delete>
+    
+    
+    <select id="listEvaluStgMgmt" parameterClass="map"  resultClass="hashmap">
+         SELECT
+             A.EVALU_BUSI_NO     as "evaluBusiNo"
+            ,A.EVALU_BUSI_NM     as "evaluBusiNm"
+            ,A.BUSI_POST_NO     as "busiPostNo"
+            ,A.BUSI_ADDR1       as "busiAddr1"
+            ,A.BUSI_ADDR2       as "busiAddr2"
+            ,A.BUSI_ADDR3       as "busiAddr3"
+            ,A.BUSI_ADDR4       as "busiAddr4"
+            ,A.BUSI_ADDR5       as "busiAddr5"
+            ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "busiAddr12"
+            ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "cityauthNm"
+            ,A.BUSI_STT_DATE    as "busiSttDate"
+            ,A.BUSI_END_DATE    as "busiEndDate"
+            ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)||'~'||FN_CONV_VDATEYM(A.BUSI_END_DATE)
+                                                                 as "convBusiPeriod"
+            ,A.BUSI_TYPE        as "busiType"
+            ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_TYPE)             as "busiTypeNm"
+            ,A.BUSI_CATE        as "busiCate"
+            ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_CATE)             as "busiCateNm"                                                                 
+            ,A.TOT_SITE_AREA || NVL2(A.TOT_SITE_AREA, TOT_SITE_UNIT, '')   as "totSiteArea"
+            ,A.TOT_BUSI_EXPS as "totBusiExps"
+            ,B.EVALU_STAGE  as "evaluStage"
+            ,(SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT WHERE EVALU_INDICAT_CD = B.EVALU_STAGE) as "evaluStageNm"
+            ,B.EVALU_DATE as "evaluDate"
+            ,FN_CONV_VDATEYM(TO_CHAR(TO_DATE(B.EVALU_DATE, 'YY-MM-DD'), 'YYYYMMDD')	) as "convEvaluDate"
+          FROM TB_EVALU_DESTI_BUSI_INFO A LEFT OUTER JOIN (    SELECT
+																				        A.*,
+																				        B.FND_CNT 
+																				    FROM                    
+																				        TB_EVALU_DESTI_BUSI_STAGE a LEFT OUTER JOIN (SELECT 
+																				            EVALU_BUSI_NO,
+																				            EVALU_STAGE, 
+																				            COUNT(*) as FND_CNT 
+																				        FROM 
+																				            TB_EVALU_FND 
+																				        GROUP BY EVALU_BUSI_NO, EVALU_STAGE) b
+																				    ON    
+																				        a.EVALU_BUSI_NO = b.EVALU_BUSI_NO AND a.EVALU_STAGE = b.EVALU_STAGE
+          																		) B
+          ON A.EVALU_BUSI_NO = B.EVALU_BUSI_NO
+         WHERE (0=0)
+         <!-- DB입력을 위해 임시 주석처리 -->
+<!--          AND FINAL_EVALU_FND IS NULL AND B.FND_CNT IS NULL    -->
+         <include refid="EvaluMgmt-condition"/> 
+         ORDER BY A.EVALU_BUSI_NM
+    </select>
+    
+    <select id="listEvaluStgMgmtCount" parameterClass="map"  resultClass="int">
+        SELECT COUNT(*)
+          FROM TB_EVALU_DESTI_BUSI_INFO A LEFT OUTER JOIN (    SELECT
+																				        A.*,
+																				        B.FND_CNT 
+																				    FROM                    
+																				        TB_EVALU_DESTI_BUSI_STAGE a LEFT OUTER JOIN (SELECT 
+																				            EVALU_BUSI_NO,
+																				            EVALU_STAGE, 
+																				            COUNT(*) as FND_CNT 
+																				        FROM 
+																				            TB_EVALU_FND 
+																				        GROUP BY EVALU_BUSI_NO, EVALU_STAGE) b
+																				    ON    
+																				        a.EVALU_BUSI_NO = b.EVALU_BUSI_NO AND a.EVALU_STAGE = b.EVALU_STAGE
+          																		)  B
+          ON A.EVALU_BUSI_NO = B.EVALU_BUSI_NO
+         WHERE (0=0)
+          <!-- DB입력을 위해 임시 주석처리 -->
+<!--           AND FINAL_EVALU_FND IS NULL AND B.FND_CNT IS NULL -->
+           <include refid="EvaluMgmt-condition"/>
+    </select>
+    
+    <!-- <select id="listEvaluCommit" parameterClass="map"  resultClass="hashmap">
+         SELECT
+			USER_NM 	as "userNm",
+			USER_ID		as "userId", 
+			ATTACH		as "attach",
+			OCCUPA		as "occupa",
+			CITYAUTH_CD	as "cityAuthCd",
+			ADDR1		as "addr1",
+			ADDR2		as "addr2" ,
+			ADDR3		as "addr3",
+			ADDR4		as "addr4",
+			ADDR5		as "addr5",
+			ADDR1 ||' '|| ADDR2                   as "addr12"		
+          FROM TB_EVALU_COMMIT_INFO
+         WHERE (0=0)
+         AND EVALU_COMMIT_USER_YN = 'Y'
+        <isNotEmpty property="srchBusiAddr1">
+	        AND ADDR1     = (SELECT CITYAUTH_NM
+	                                FROM   TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr1#)
+        </isNotEmpty>
+        <isNotEmpty property="srchBusiAddr2">
+	        AND ADDR2     = (SELECT CITYAUTH_NM
+	                                FROM   TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr2#)
+     	</isNotEmpty>
+        사업구분
+        <isNotEmpty property="srchBusiType">
+            AND BUSI_TYPE = #srchBusiType#
+        </isNotEmpty>
+         평가위원명
+        <isNotEmpty property="srchEvaluCommNm">
+            AND USER_NM LIKE '%'||#srchEvaluCommNm#||'%'
+        </isNotEmpty>             
+    </select> -->
+    
+    <select id="listEvaluCommit" parameterClass="map"  resultClass="hashmap">
+    	SELECT
+			a.USER_NM 	as "userNm",
+			a.USER_ID	as "userId",
+			a.DEPT_NM	as "deptNm",
+			b.CITYAUTH_CD	as "cityAuthCd",
+			b.ADDR1		as "addr1",
+			b.ADDR2		as "addr2" ,
+			b.ADDR3		as "addr3",
+			b.ADDR4		as "addr4",
+			b.ADDR5		as "addr5",
+			b.ADDR1 ||' '|| b.ADDR2                   as "addr12"		
+        FROM TREDSUSER.TB_USER a, TREDSUSER.TB_USCM b
+        WHERE (0=0)
+        AND a.USCM_NO = b.USCM_NO
+        AND	b.USCM_TYPE = 'U11'
+        <isNotEmpty property="srchBusiAddr1">
+	    	AND b.ADDR1     = (SELECT CITYAUTH_NM
+	                                FROM   TREDSUSER.TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr1#)
+        </isNotEmpty>
+        <isNotEmpty property="srchBusiAddr2">
+	        AND b.ADDR2     = (SELECT CITYAUTH_NM
+	                                FROM   TREDSUSER.TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr2#)
+     	</isNotEmpty>
+         <!-- 평가위원명 -->
+        <isNotEmpty property="srchEvaluCommNm">
+            AND a.USER_NM LIKE '%'||#srchEvaluCommNm#||'%'
+        </isNotEmpty>             
+    </select>
+    
+    
+    <!-- <select id="listEvaluCommitCount" parameterClass="map"  resultClass="int">
+        SELECT COUNT(*)
+          FROM TB_EVALU_COMMIT_INFO
+         WHERE (0=0)
+         AND EVALU_COMMIT_USER_YN = 'Y' 
+        <isNotEmpty property="srchBusiAddr1">
+	        AND ADDR1     = (SELECT CITYAUTH_NM
+	                                FROM   TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr1#)
+        </isNotEmpty>
+        <isNotEmpty property="srchBusiAddr2">
+	        AND ADDR2     = (SELECT CITYAUTH_NM
+	                                FROM   TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr2#)
+     	</isNotEmpty>
+        사업구분
+        <isNotEmpty property="srchBusiType">
+            AND BUSI_TYPE = #srchBusiType#
+        </isNotEmpty>
+         평가위원명
+        <isNotEmpty property="srchEvaluCommNm">
+            AND USER_NM LIKE '%'||#srchEvaluCommNm#||'%'
+        </isNotEmpty>            
+    </select> -->
+    
+    <select id="listEvaluCommitCount" parameterClass="map"  resultClass="int">
+        SELECT COUNT(*)
+        FROM TREDSUSER.TB_USER a, TREDSUSER.TB_USCM b
+        WHERE (0=0)
+        AND a.USCM_NO = b.USCM_NO
+        AND	b.USCM_TYPE = 'U11'
+        <isNotEmpty property="srchBusiAddr1">
+	        AND b.ADDR1     = (SELECT CITYAUTH_NM
+	                                FROM   TREDSUSER.TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr1#)
+        </isNotEmpty>
+        <isNotEmpty property="srchBusiAddr2">
+	        AND b.ADDR2     = (SELECT CITYAUTH_NM
+	                                FROM   TREDSUSER.TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr2#)
+     	</isNotEmpty>
+        <!-- 평가위원명 -->
+        <isNotEmpty property="srchEvaluCommNm">
+            AND a.USER_NM LIKE '%'||#srchEvaluCommNm#||'%'
+        </isNotEmpty>            
+    </select>
+    
+    <insert id="regiEvaluStgMgmt" parameterClass="map" >
+    	INSERT INTO	 TB_EVALU_DESTI_BUSI_STAGE
+    	(
+    		EVALU_BUSI_NO,
+    		EVALU_STAGE,
+    		EVALU_DATE,
+    		REGI_ID,
+    		REGI_DATE,
+    		EVALU_BEFO_TRGT,
+    		EVALU_GUBUN
+    	)
+    	VALUES
+    	(
+    		#evaluBusiNo#,
+    		#evaluItem#,
+    		#evaluSttDate#,
+    		'admin',
+    		SYSDATE,
+    		#evaluAssment#,
+    		#evaluGubun#
+    	)
+    </insert>   
+    
+   <insert id="regiEvaluCommitMgmt" parameterClass="map" >
+    INSERT INTO	 TB_EVALU_DESTI_BUSI_COMMIT
+    	(
+    		EVALU_BUSI_NO,
+    		EVALU_STAGE,
+    		USER_ID,
+    		USE_YN,
+    		REGI_ID,
+    		REGI_DATE,
+    		EVALU_PROC_STEP
+    	)
+    	VALUES
+    	(
+    		#evaluBusiNo#,
+    		#evaluItem#,
+    		#evaluCommId#,
+    		'Y',
+    		'admin',
+    		SYSDATE,
+    		'AS10'
+    	)
+    </insert>     
+    
+   <insert id="regiEvaluIndicatMgmt" parameterClass="map" >
+    INSERT INTO	 TB_EVALU_DESTI_BUSI_INDICAT
+    	(
+    		EVALU_BUSI_NO,
+    		EVALU_STAGE,
+    		EVALU_INDICAT_CD,
+    		USE_YN,
+    		REGI_ID,
+    		REGI_DATE
+    	)
+    	VALUES
+    	(
+    		#evaluBusiNo#,
+    		#evaluItem#,
+    		#evaluIndicatCd#,
+    		'Y',
+    		'admin',
+    		SYSDATE
+    	)
+    </insert> 
+    
+    <select id="viewEvaluStgMgmt"  parameterClass="map"  resultClass="hashmap">
+    	SELECT
+    		EVALU_BUSI_NO as "evaluBusiNo",
+    		EVALU_STAGE as "evaluStage",
+    		TO_CHAR(EVALU_DATE, 'YYYY-MM-DD') as "evaluDate",
+    		EVALU_BEFO_TRGT as "evaluBefoTrgt",
+    		EVALU_GUBUN as "evaluGubun",
+    		FINAL_EVALU_FND as "finalEvaluFndCd",
+    	    DECODE(FINAL_EVALU_FND, 'P', '적합', 'C', '조건부적합', 'F', '부적합') as "finalEvaluFnd",
+            FINAL_EVALU_FND_NOTE as "finalEvaluFndNote",
+    		(SELECT EVALU_BUSI_NM FROM TB_EVALU_DESTI_BUSI_INFO WHERE EVALU_BUSI_NO = #evaluBusiNo#) as "evaluBusiNm",
+			NVL(FND_CNT, 0) as "fndCnt"	   		
+    	FROM
+    	(
+    		SELECT
+		        A.*,
+		        B.FND_CNT 
+		    FROM                    
+		        TB_EVALU_DESTI_BUSI_STAGE a LEFT OUTER JOIN (SELECT 
+		            EVALU_BUSI_NO,
+		            EVALU_STAGE, 
+		            COUNT(*) as FND_CNT 
+		        FROM 
+		            TB_EVALU_FND 
+		        GROUP BY EVALU_BUSI_NO, EVALU_STAGE) b
+		    ON    
+		        a.EVALU_BUSI_NO = b.EVALU_BUSI_NO AND a.EVALU_STAGE = b.EVALU_STAGE
+		)
+    	WHERE
+    		EVALU_BUSI_NO = #evaluBusiNo#
+    </select>  
+    
+     <select id="viewEvaluIndiMgmt"  parameterClass="map"  resultClass="hashmap">
+    	SELECT
+    		EVALU_STAGE as "evaluStage",
+    		EVALU_INDICAT_CD as "evaluIndicatCd"
+    	FROM
+    		TB_EVALU_DESTI_BUSI_INDICAT
+    	WHERE
+    		USE_YN = 'Y'	 AND
+    		EVALU_BUSI_NO = #evaluBusiNo#	AND
+    		EVALU_STAGE = #evaluStage#		
+    </select>   
+    
+     <select id="viewEvaluCommMgmt"  parameterClass="map"  resultClass="hashmap">
+        SELECT
+            A.EVALU_STAGE as "evaluStage",
+            A.USER_ID as "userId",
+            B.USER_NM as "userNm"
+        FROM
+            TB_EVALU_DESTI_BUSI_COMMIT A LEFT OUTER JOIN TB_EVALU_COMMIT_INFO B
+        ON
+            A.USER_ID = B.USER_ID     
+        WHERE
+        	USE_YN = 'Y' AND
+    		EVALU_BUSI_NO = #evaluBusiNo#	AND
+    		EVALU_STAGE = #evaluStage#		
+    </select> 
+    
+    <update id="updtEvaluStgMgmt" parameterClass="map">
+    	UPDATE TB_EVALU_DESTI_BUSI_STAGE
+    	SET
+    			EVALU_STAGE = #evaluItem#,
+    			EVALU_DATE = #evaluSttDate#,
+    			EVALU_BEFO_TRGT = #evaluAssment#,
+    			EVALU_GUBUN = #evaluGubun#,
+    			UPDT_ID = 'admin',
+    			UPDT_DATE = SYSDATE
+    	WHERE
+    		EVALU_BUSI_NO = #evaluBusiNo#		
+    </update> 
+    
+    <delete id="deltEvaluIndicatMgmt" parameterClass="map"> 
+    	DELETE 
+    	FROM 
+    		TB_EVALU_DESTI_BUSI_INDICAT
+    	WHERE
+    		EVALU_BUSI_NO = #evaluBusiNo# AND
+    		EVALU_STAGE = #preEvaluItem#			
+    </delete> 
+    
+    <delete id="deltEvaluCommitMgmt" parameterClass="map">
+    	DELETE
+    	FROM
+    		TB_EVALU_DESTI_BUSI_COMMIT
+    	WHERE
+    		EVALU_BUSI_NO = #evaluBusiNo# AND
+    		EVALU_STAGE = #preEvaluItem#			
+    </delete> 
+    
+    <select id="listEvaluBudtMgmt" parameterClass="map"  resultClass="hashmap">
+         SELECT
+             A.EVALU_BUSI_NO     as "evaluBusiNo"
+            ,A.EVALU_BUSI_NM     as "evaluBusiNm"
+            ,A.BUSI_POST_NO     as "busiPostNo"
+            ,A.BUSI_ADDR1       as "busiAddr1"
+            ,A.BUSI_ADDR2       as "busiAddr2"
+            ,A.BUSI_ADDR3       as "busiAddr3"
+            ,A.BUSI_ADDR4       as "busiAddr4"
+            ,A.BUSI_ADDR5       as "busiAddr5"
+            ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "busiAddr12"
+            ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "cityauthNm"
+            ,A.BUSI_STT_DATE    as "busiSttDate"
+            ,A.BUSI_END_DATE    as "busiEndDate"
+            ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)||'~'||FN_CONV_VDATEYM(A.BUSI_END_DATE)
+                                                                 as "convBusiPeriod"
+            ,A.BUSI_TYPE        as "busiType"
+            ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_TYPE)             as "busiTypeNm"
+            ,A.BUSI_CATE        as "busiCate"
+            ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_CATE)             as "busiCateNm"                                                                 
+            ,A.TOT_SITE_AREA || NVL2(A.TOT_SITE_AREA, TOT_SITE_UNIT, '')   as "totSiteArea"
+            ,A.TOT_BUSI_EXPS as "totBusiExps"
+            ,B.EVALU_STAGE  as "evaluStage"
+            ,(SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT WHERE EVALU_INDICAT_CD = B.EVALU_STAGE) as "evaluStageNm"
+            ,B.EVALU_DATE as "evaluDate"
+            ,FN_CONV_VDATEYM(TO_CHAR(TO_DATE(B.EVALU_DATE, 'YY-MM-DD'), 'YYYYMMDD')	) as "convEvaluDate"
+            ,B.FINAL_EVALU_FND as "finalEvaluFnd"
+            ,DECODE(B.FINAL_EVALU_FND, 'P', '적합', 'C', '조건부적합', 'F', '부적합', 'R', '재검토') as "convFinalEvaluFnd"           
+          FROM TB_EVALU_DESTI_BUSI_INFO A LEFT OUTER JOIN TB_EVALU_DESTI_BUSI_STAGE B
+          ON A.EVALU_BUSI_NO = B.EVALU_BUSI_NO
+         WHERE (0=0)
+         <isNotEmpty property="evaluStage">
+         	AND B.EVALU_STAGE = #evaluStage# 
+         </isNotEmpty>
+         <include refid="EvaluMgmt-condition"/>  
+    </select>    
+    
+     <select id="listEvaluBudtMgmtCount" parameterClass="map"  resultClass="int">
+        SELECT COUNT(*)
+          FROM TB_EVALU_DESTI_BUSI_INFO A LEFT OUTER JOIN TB_EVALU_DESTI_BUSI_STAGE B
+          ON A.EVALU_BUSI_NO = B.EVALU_BUSI_NO
+         WHERE (0=0)
+         <isEmpty property="evaluStage">
+         	AND B.EVALU_STAGE = 'EVALU_BUDT' OR B.EVALU_STAGE = 'EVALU_NEWS'
+         </isEmpty>
+         <isNotEmpty property="evaluStage">
+         	AND B.EVALU_STAGE = #evaluStage# 
+         </isNotEmpty>
+           <include refid="EvaluMgmt-condition"/>
+    </select>   
+    
+    <select id="viewEvaluBudtMgmt" parameterClass="map"  resultClass="hashmap">
+            SELECT
+                 A.EVALU_BUSI_NO     as "evaluBusiNo"
+                ,A.EVALU_BUSI_NM     as "evaluBusiNm"
+                ,A.USCM_NO          as "usmcNo"
+                ,A.BUSI_POST_NO     as "busiPostNo"
+                ,A.BUSI_ADDR1       as "busiAddr1"
+                ,A.BUSI_ADDR2       as "busiAddr2"
+                ,A.BUSI_ADDR3       as "busiAddr3"
+                ,A.BUSI_ADDR4       as "busiAddr4"
+                ,A.BUSI_ADDR5       as "busiAddr5"
+                ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "busiAddr12"
+                ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2 ||' '|| A.BUSI_ADDR3 ||' '|| A.BUSI_ADDR4 as "busiAddress1"
+                ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "cityauthNm"
+                ,A.BUSI_STT_DATE    as "busiSttDate"
+                ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)                    as "convBusiSttDate"
+                ,A.BUSI_END_DATE    as "busiEndDate"
+                ,FN_CONV_VDATEYM(A.BUSI_END_DATE)                    as "convBusiEndDate"
+                ,A.BUSI_DEV_ENTY       as "busiDevEnty"
+                ,A.BUSI_PLAN_DATE   as "busiPlanDate"
+                ,FN_CONV_VDATEYM(A.BUSI_PLAN_DATE)                    as "convBusiPlanDate"
+                ,A.BUSI_TYPE        as "busiType"
+                ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_TYPE)             as "busiTypeNm"
+                ,A.BUSI_CATE        as "busiCate"
+                ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_CATE)             as "busiCateNm"                                                                 
+                ,A.TOT_SITE_AREA    as "totSiteArea"
+                ,A.TOT_SITE_AREA || NVL2(A.TOT_SITE_AREA, TOT_SITE_UNIT, '')   as "totSiteAreaUnit"
+                ,A.TOT_SITE_UNIT    as "totSiteUnit"
+                ,A.TOT_BUSI_EXPS    as "totBusiExps"
+                ,A.REGI_ID          as "regiId"
+                ,A.REGI_DATE        as "regiDate"
+                ,A.UPDT_ID          as "updtId"
+                ,A.UPDT_DATE        as "updtDate"
+                ,B.EVALU_USER_NM    as "evaluUserNm"
+                ,B.EVALU_DATE       as "evaluDate"
+                ,FN_CONV_VDATEYM(TO_CHAR(B.EVALU_DATE, 'YYYY-MM-DD')) as "conEvaluDate"
+                ,B.EVALU_BEFO_TRGT  as "evaluBefoTrgt"
+                ,DECODE(B.EVALU_BEFO_TRGT, 'Y', '사전평가대상', 'N', '비사전평가대상') as "convEvaluBefoTrgt"
+                ,EVALU_STAGE_NM     as "evaluStageNm"
+                ,EVALU_STAGE			as "evaluStage"			
+            FROM    
+            (
+                SELECT 
+                 A.EVALU_BUSI_NO
+                ,A.EVALU_BUSI_NM
+                ,A.USCM_NO
+                ,A.BUSI_POST_NO
+                ,A.BUSI_ADDR1
+                ,A.BUSI_ADDR2
+                ,A.BUSI_ADDR3
+                ,A.BUSI_ADDR4
+                ,A.BUSI_ADDR5 
+                ,A.BUSI_STT_DATE
+                ,A.BUSI_END_DATE
+                ,A.BUSI_DEV_ENTY 
+                ,A.BUSI_PLAN_DATE
+                ,A.BUSI_TYPE
+                ,A.BUSI_CATE                                                              
+                ,A.TOT_SITE_AREA
+                ,A.TOT_SITE_UNIT
+                ,A.TOT_BUSI_EXPS
+                ,A.REGI_ID
+                ,A.REGI_DATE
+                ,A.UPDT_ID
+                ,A.UPDT_DATE
+                FROM TB_EVALU_DESTI_BUSI_INFO A
+                WHERE
+                    EVALU_BUSI_NO = #evaluBusiNo#
+            ) A,
+            (
+                SELECT
+                    AA.EVALU_BUSI_NO
+                    ,AA.EVALU_STAGE 
+                    ,(SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT WHERE EVALU_INDICAT_CD = AA.EVALU_STAGE) as "EVALU_STAGE_NM"
+                    ,AA.EVALU_DATE
+                    ,AA.EVALU_BEFO_TRGT
+                    ,DECODE(AA.EVALU_BEFO_TRGT, 'Y', '사전평가대상', 'N', '비사전평가대상') as "convEvaluBefoTrgt"
+                    ,BB.EVALU_USER_NM
+                FROM    
+                (
+                    SELECT * 
+                    FROM 
+                        TB_EVALU_DESTI_BUSI_STAGE 
+                    WHERE 
+                        EVALU_BUSI_NO = #evaluBusiNo# AND EVALU_STAGE= #evaluStage# 
+                )AA,
+                (
+                    SELECT
+                        EVALU_BUSI_NO,
+                        EVALU_STAGE,
+                        LTRIM(SYS_CONNECT_BY_PATH(USER_NM,','),',') AS "EVALU_USER_NM"
+                     FROM   
+                    (
+                        SELECT 
+                            EVALU_BUSI_NO, 
+                            EVALU_STAGE, 
+                            B.USER_NM,
+                            ROW_NUMBER() OVER (PARTITION BY EVALU_BUSI_NO ORDER BY USER_NM) RN,
+                            COUNT (*) OVER (PARTITION BY EVALU_BUSI_NO ) CNT
+                        FROM 
+                        TB_EVALU_DESTI_BUSI_COMMIT A LEFT OUTER JOIN TB_EVALU_COMMIT_INFO B
+                        ON A.USER_ID = B.USER_ID
+                        WHERE A.EVALU_BUSI_NO = #evaluBusiNo# AND A.EVALU_STAGE = #evaluStage# 
+                    )
+                    WHERE LEVEL = CNT
+                    START WITH RN = 1
+                    CONNECT BY PRIOR EVALU_BUSI_NO = EVALU_BUSI_NO AND PRIOR RN = RN-1
+                )BB
+                WHERE
+                    AA.EVALU_BUSI_NO = BB.EVALU_BUSI_NO AND
+                    AA.EVALU_STAGE = BB.EVALU_STAGE
+            ) B
+            WHERE 
+                A.EVALU_BUSI_NO = B.EVALU_BUSI_NO    
+    </select>
+    
+    <select id="viewEvaluBudtMgmt2" parameterClass="map"  resultClass="hashmap">
+         SELECT
+            A.EVALU_INDICAT_CD  as "evaluIndicatCd",
+            A.EVALU_INDICAT_NM  as "evaluIndicatNm",
+            A.EVALU_BUSI_NO     as "evaluBusiNo",
+            A.EVALU_STAGE       as "evaluStage",
+            A.USER_ID           as "commitUserId",
+            A.USER_NM           as "commitUserNm",
+            A.EVALU_PROC_STEP   as "evaluProcStep",
+            B.EVALU_FND_VALUE   as "evaluFndValue",
+            (SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT WHERE EVALU_INDICAT_CD =  B.EVALU_FND_VALUE ) as "convEvaluFndValue",
+            DECODE(B.EVALU_FND_VALUE, 'P', '적합', 'C', '조건부적합', 'F', '부적합') as "convEvaluFndValue1" 
+         FROM      
+         ( 
+            SELECT 
+                A.EVALU_INDICAT_CD,
+                A.EVALU_INDICAT_NM,
+                B.*
+             FROM   
+            (
+                SELECT 
+                	* 
+                FROM 
+                	TB_EVALU_INDICAT 
+                WHERE 
+                	EVALU_INDICAT_CD IN (SELECT
+										            A.EVALU_INDICAT_CD
+										        FROM    
+										        (
+										        SELECT * FROM TB_EVALU_INDICAT WHERE 1 = 1 
+										        <isEqual property="evaluStage"  compareValue="EVALU_DPTH" prepend="AND">
+										        	UPPER_EVALU_INDICAT_CD = 'DP10'
+										        </isEqual>
+										        <isNotEqual property="evaluStage"  compareValue="EVALU_DPTH">
+											        <isEqual property="evaluStage"  compareValue="EVALU_CENT">
+											        	START WITH UPPER_EVALU_INDICAT_CD = 'EVALU_CENT'                                                            
+					                                	CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD 
+											        </isEqual>
+											        <isEqual property="evaluStage"  compareValue="EVALU_PROG">
+											        	START WITH UPPER_EVALU_INDICAT_CD = 'EVALU_PROG'                                                            
+				                                		CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD 
+											        </isEqual>
+											        <isEqual property="evaluStage"  compareValue="EVALU_PREV">
+											        	START WITH UPPER_EVALU_INDICAT_CD = 'EVALU_PREV'                                                            
+			                                			CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD
+											        </isEqual>
+											        <isEqual property="evaluStage"  compareValue="EVALU_FINL">
+											        	START WITH UPPER_EVALU_INDICAT_CD = 'EVALU_FINL'                                                            
+				                                		CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD
+											        </isEqual>
+											        <isEqual property="evaluStage"  compareValue="CENT_2017">
+											        	START WITH UPPER_EVALU_INDICAT_CD = 'EVALU_CENT'                                                            
+				                                		CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD
+											        </isEqual>
+											        <isEqual property="evaluStage"  compareValue="PREV_2017">
+											        	START WITH UPPER_EVALU_INDICAT_CD = 'EVALU_PREV'                                                            
+				                                		CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD
+											        </isEqual>
+											        <isEqual property="evaluStage"  compareValue="AFTR_2017">
+											        	START WITH UPPER_EVALU_INDICAT_CD = 'AFTR_2017'                                                            
+				                                		CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD
+											        </isEqual>
+											        <isEqual property="evaluStage"  compareValue="MNTR_2017">
+											        	START WITH UPPER_EVALU_INDICAT_CD = 'MNTR_2017'                                                            
+				                                		CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD
+											        </isEqual>
+										        </isNotEqual>
+										        )A LEFT OUTER JOIN
+										        (
+										         SELECT * FROM TB_EVALU_DESTI_BUSI_INDICAT WHERE EVALU_BUSI_NO = #evaluBusiNo# AND EVALU_STAGE = #evaluStage#
+										        )B
+										        ON A.EVALU_INDICAT_CD = B.EVALU_INDICAT_CD
+										        WHERE
+										            B.EVALU_BUSI_NO IS NOT NULL)
+            ) a,
+            (
+                SELECT 
+                    A.EVALU_BUSI_NO,
+                    A.EVALU_STAGE,
+                    A.EVALU_PROC_STEP,
+                    B.USER_ID,
+                    B.USER_NM
+                FROM 
+                    TB_EVALU_DESTI_BUSI_COMMIT A, TB_EVALU_COMMIT_INFO B
+                WHERE
+                    A.USER_ID = B.USER_ID AND EVALU_BUSI_NO = #evaluBusiNo# AND EVALU_STAGE = #evaluStage#
+            ) b
+         ) A LEFT OUTER JOIN
+         (   
+           SELECT 
+                USER_ID,
+                EVALU_FND_VALUE,
+                EVALU_INDICAT_CD,
+                EVALU_INPT_CD 
+           FROM 
+                TB_EVALU_FND
+           WHERE
+                EVALU_BUSI_NO = #evaluBusiNo# AND EVALU_STAGE = #evaluStage# AND
+                EVALU_INDICAT_CD IN ( SELECT
+										            A.EVALU_INDICAT_CD
+										        FROM    
+										        (
+										        SELECT  *  FROM TB_EVALU_INDICAT WHERE  1 = 1 
+										        <isEqual property="evaluStage"  compareValue="EVALU_DPTH">
+										        	AND UPPER_EVALU_INDICAT_CD = #evaluStage#
+										        </isEqual>
+										        <isNotEqual property="evaluStage"  compareValue="EVALU_DPTH">
+													<isEqual property="evaluStage"  compareValue="EVALU_CENT">
+														START WITH UPPER_EVALU_INDICAT_CD = 'EVALU_CENT'                                                            
+					                                	CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD 
+													</isEqual>
+													<isNotEqual property="evaluStage"  compareValue="EVALU_CENT">
+														<isEqual property="evaluStage"  compareValue="EVALU_PROG">
+															START WITH UPPER_EVALU_INDICAT_CD = 'EVALU_PROG'                                                            
+						                                	CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD 
+														</isEqual>
+														<isNotEqual property="evaluStage"  compareValue="EVALU_PROG">
+															<isEqual property="evaluStage"  compareValue="EVALU_PREV">
+																START WITH UPPER_EVALU_INDICAT_CD = 'EVALU_PREV'                                                            
+						                                		CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD 
+															</isEqual>
+															<isNotEqual property="evaluStage"  compareValue="EVALU_PREV">
+																START WITH UPPER_EVALU_INDICAT_CD = 'EVALU_FINL'                                                            
+						                                		CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD 
+															</isNotEqual>
+					                                	</isNotEqual>
+													</isNotEqual>
+										        </isNotEqual>
+										        )A LEFT OUTER JOIN
+										        (
+										         SELECT * FROM TB_EVALU_DESTI_BUSI_INDICAT WHERE EVALU_BUSI_NO = #evaluBusiNo# AND EVALU_STAGE = #evaluStage#
+										        )B
+										        ON A.EVALU_INDICAT_CD = B.EVALU_INDICAT_CD
+										        WHERE
+										            B.EVALU_BUSI_NO IS NOT NULL)
+         )B
+         ON
+            A.USER_ID = B.USER_ID 
+	         <isEqual property="evaluStage"  compareValue="EVALU_DPTH">   
+	            AND A.EVALU_INDICAT_CD = B.EVALU_INPT_CD
+	         </isEqual>   
+	         <isNotEqual property="evaluStage"  compareValue="EVALU_DPTH">
+	            AND A.EVALU_INDICAT_CD = B.EVALU_INDICAT_CD
+	         </isNotEqual>   
+         ORDER BY A.USER_ID, A.EVALU_INDICAT_CD
+            
+    </select>   
+    
+    
+    <insert id="regiEvaluBudtMgmt" parameterClass="map">
+        <selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT 
+	        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+	        FROM 
+	        	TB_EVALU_FND
+        </selectKey>    
+    	INSERT INTO TB_EVALU_FND
+    	(
+    		EVALU_FND_SEQ,
+    		EVALU_INDICAT_CD,
+    		EVALU_BUSI_NO,
+    		EVALU_STAGE,
+    		USER_ID,
+    		EVALU_FND_VALUE,
+    		REGI_ID,
+    		REGI_DATE,
+    		EVALU_INPT_CD
+    	<isNotEmpty property="evaluEtcVal" prepend=",">
+    		EVALU_ETC_VALUE
+    	</isNotEmpty>	
+    	<isNotEmpty property="evaluEtcSeq" prepend=",">
+    		EVALU_ETC_SEQ
+    	</isNotEmpty>	
+    	)
+    	VALUES
+    	(
+    		#evaluFndSeq#,
+    		#curtEvaluCode#,
+    		#evaluBusiNo#,
+    		#evaluStage#,
+    		#evaluId#,
+    		#evaluFndVal#,
+    		'admin',
+    		SYSDATE,
+    		#evaluInputCd#
+    	<isNotEmpty property="evaluEtcVal" prepend=",">
+    		#evaluEtcVal#
+    	</isNotEmpty>    		
+    	<isNotEmpty property="evaluEtcSeq" prepend=",">
+    		#evaluEtcSeq#
+    	</isNotEmpty>    		
+    	)
+    </insert>
+    
+    <select id="viewEvaluFnd" parameterClass="map"  resultClass="hashmap">
+    	SELECT
+    		EVALU_FND_SEQ as "evaluFndSeq",
+    		EVALU_INDICAT_CD as "evaluIndicatCd",
+    		EVALU_BUSI_NO as "evaluBusiNo",
+    		EVALU_STAGE as "evaluStage",
+    		USER_ID as "evaluId",
+    		EVALU_FND_VALUE as "evaluFndVal",
+    		EVALU_INPT_CD as "evaluInptCd",
+    		EVALU_ETC_VALUE as "evaluEtcVal",
+    		EVALU_ETC_SEQ as "evaluEtcSeq"
+    	FROM
+    		TB_EVALU_FND
+    	WHERE
+    		EVALU_BUSI_NO = #evaluBusiNo# AND
+    		EVALU_STAGE = #evaluStage#	AND
+    		USER_ID = #evaluId#
+    	<isNotEmpty property="evaluDetailCode">
+    		AND EVALU_INDICAT_CD = #evaluDetailCode# AND EVALU_INPT_CD IS NOT NULL
+    		<isNotEmpty property="evaluEtcSeq">
+    			AND EVALU_ETC_SEQ = #evaluEtcSeq#
+    		</isNotEmpty>
+    	</isNotEmpty>
+    	<isEmpty property="evaluDetailCode">
+    		AND EVALU_INPT_CD IS NULL	
+    	</isEmpty>
+    	ORDER BY EVALU_FND_SEQ	
+    </select>
+    
+    <update id="updtEvaluBudtMgmt" parameterClass="map">
+    	UPDATE TB_EVALU_FND SET
+    		EVALU_FND_VALUE = #evaluFndVal#,
+    		EVALU_ETC_VALUE = #evaluEtcVal#,
+    		UPDT_ID = 'admin',
+    		UPDT_DATE = SYSDATE
+    	WHERE
+    		EVALU_FND_SEQ = #evaluFndSeq#
+    	<isNotEmpty property="evaluEtcSeq">
+    		AND EVALU_ETC_SEQ = #evaluEtcSeq#
+    	</isNotEmpty>			
+    </update>
+    
+    <update id="updtEvaluProcStep" parameterClass="map">
+    	UPDATE TB_EVALU_DESTI_BUSI_COMMIT SET
+    		EVALU_PROC_STEP = #evaluProcStep#
+    	WHERE
+    		EVALU_BUSI_NO = #evaluBusiNo# AND EVALU_STAGE = #evaluStage#
+    	<isNotEmpty property="evaluId" prepend="AND">
+    		USER_ID = #evaluId#
+    	</isNotEmpty>
+    </update>
+    
+    <update id="updtEvaluFinalAppr" parameterClass="map">
+    	UPDATE TB_EVALU_DESTI_BUSI_STAGE SET
+    		FINAL_EVALU_FND = #finalEvaluFnd#,
+    		FINAL_EVALU_FND_NOTE = #finalEvaluFndNote#,
+    		UPDT_ID = 'admin',
+    		UPDT_DATE = SYSDATE
+    	WHERE
+    		EVALU_BUSI_NO = #evaluBusiNo# AND EVALU_STAGE = #evaluStage#
+    </update>
+    
+    <select id="getEvaluEtcSeq" parameterClass="map" resultClass="java.lang.String">
+    	SELECT
+    		COUNT(*)
+    	FROM
+    		TB_EVALU_FND
+    	WHERE
+    		EVALU_INDICAT_CD = #evaluDetailCode# AND EVALU_BUSI_NO = #evaluBusiNo# AND EVALU_STAGE = #evaluStage# AND USER_ID = #evaluId#
+    	GROUP BY EVALU_INDICAT_CD
+    </select>
+    
+    
+
+    <!-- ++++++++++++++++++++++++++++++++++++++
+          기타.
+         ++++++++++++++++++++++++++++++++++++++ -->
+
+    <!-- cityauthCd를 통해 지자체 지역 코드에대한 한글 명 조회 -->
+    <select id="viewEvaluMgmtDefaultCityauthNm" parameterClass="map"  resultClass="hashmap">
+        SELECT
+             (SELECT CITYAUTH_NM
+                FROM TB_CITYAUTH
+               WHERE CITYAUTH_CD = SUBSTR(#cityauthCd#, 1,2)||'00'
+                 AND PARENT_CITYAUTH_CD = 'NONE'                   ) AS "dfSidoNm"
+            ,(SELECT CITYAUTH_NM
+                FROM TB_CITYAUTH
+               WHERE CITYAUTH_CD = #cityauthCd#
+                 AND PARENT_CITYAUTH_CD <![CDATA[<>]]> 'NONE'      ) AS "dfCityNm"
+        FROM DUAL
+    </select>
+    
+    
+    <select id="listEvaluMainStat" parameterClass="map"  resultClass="hashmap">
+ 		       SELECT
+	                AA.EVALU_INDICAT_CD as "evaluIndicatCd",
+	                AA.EVALU_INDICAT_NM as "evaluIndicatNm",
+	                AA.CODE as "code",
+	                AA.CODE_NM as "codeNM",
+               		DECODE(BB.CNT, null, 0, BB.CNT) as "cnt",
+               		AA.MAIN_OPEN_ORD
+               FROM 
+               (
+	               SELECT
+		                A.EVALU_INDICAT_CD,
+		                A.EVALU_INDICAT_NM,
+		                A.CODE_ORD,
+	                	B.*,
+	                	A.MAIN_OPEN_ORD
+	                FROM
+	               (
+	                    SELECT
+	                        *
+	                    FROM
+	                    (    
+	                        SELECT 
+	                             CASE WHEN EVALU_INDICAT_CD = 'EVALU_BUDT' OR EVALU_INDICAT_CD = 'EVALU_NEWS' THEN 'EVALU_PLAN'
+	                                  ELSE EVALU_INDICAT_CD
+	                             END as "EVALU_INDICAT_CD",
+	                             CASE WHEN EVALU_INDICAT_CD = 'EVALU_BUDT' OR EVALU_INDICAT_CD = 'EVALU_NEWS' THEN 1
+	                                  ELSE CODE_ORD
+	                             END as "CODE_ORD",
+	                             CASE WHEN EVALU_INDICAT_CD = 'EVALU_BUDT' OR EVALU_INDICAT_CD = 'EVALU_NEWS' THEN '계획단계 평가'
+	                                  ELSE EVALU_INDICAT_NM
+	                             END as "EVALU_INDICAT_NM",
+	                             MAIN_OPEN_ORD
+	                        FROM 
+	                            TB_EVALU_INDICAT 
+	                        WHERE 
+	                            UPPER_EVALU_INDICAT_CD = 'EVALU_ITEM'
+	                        AND 
+	                        	MAIN_OPEN_YN = 'Y'
+	                    )
+	                    GROUP BY
+	                        EVALU_INDICAT_CD, CODE_ORD, EVALU_INDICAT_NM, MAIN_OPEN_ORD
+	                )A,
+	                (
+	               		SELECT * FROM SYS_CODE WHERE PARENT_CODE = 'APPR_STAT' AND USE_YN = 'Y'
+	                )B
+               )AA LEFT OUTER JOIN
+               (               
+                   SELECT
+                      B.EVALU_STAGE,
+                      B.EVALU_PROC_STEP,
+                      COUNT(*)AS "CNT"
+                   FROM
+                   (                 
+                       SELECT 
+                         CASE WHEN EVALU_STAGE = 'EVALU_BUDT' OR EVALU_STAGE = 'EVALU_NEWS' THEN 'EVALU_PLAN'
+                              ELSE EVALU_STAGE
+                         END as "EVALU_STAGE",
+                         EVALU_PROC_STEP ,
+                         EVALU_BUSI_NO 
+                       FROM 
+                         TB_EVALU_DESTI_BUSI_COMMIT
+                       GROUP BY                        
+                         EVALU_STAGE, EVALU_PROC_STEP, EVALU_BUSI_NO
+                   ) B  
+                   GROUP BY EVALU_STAGE, EVALU_PROC_STEP
+               )BB
+               ON AA.CODE = BB.EVALU_PROC_STEP AND AA.EVALU_INDICAT_CD = BB.EVALU_STAGE
+               ORDER BY MAIN_OPEN_ORD, CODE_ORD, CODE   
+    </select>
+    
+    <select id="listEvaluMainStat02" parameterClass="map"  resultClass="hashmap">
+		WITH AA AS (
+ 			SELECT 		EVALU_STAGE, count(*) as cntN
+			FROM 		TB_EVALU_DESTI_BUSI_STAGE
+			WHERE 		EVALU_FINAL_YN = 'N'
+			GROUP BY 	EVALU_STAGE
+		), BB AS (
+		    SELECT 		EVALU_STAGE, count(*) as cntY
+		   	FROM 		TB_EVALU_DESTI_BUSI_STAGE
+		    WHERE 		EVALU_FINAL_YN = 'Y'
+		    GROUP BY 	EVALU_STAGE
+		), CC AS (
+		    SELECT 	EVALU_INDICAT_CD, EVALU_INDICAT_NM, CODE_ORD
+		    FROM 	TB_EVALU_INDICAT
+		    WHERE 	UPPER_EVALU_INDICAT_CD = 'EVALU_ITEM'
+			AND 	MAIN_OPEN_YN = 'Y'
+		)
+		SELECT CC.EVALU_INDICAT_CD, CC.EVALU_INDICAT_NM, AA.cntN, BB.cntY
+		FROM CC LEFT OUTER JOIN AA ON CC.EVALU_INDICAT_CD = AA.EVALU_STAGE
+				LEFT OUTER JOIN BB ON CC.EVALU_INDICAT_CD = BB.EVALU_STAGE
+
+    </select>
+    
+    <select id="listEvaluFinalBusi" parameterClass="map"  resultClass="hashmap">
+ 		      SELECT
+                A.EVALU_BUSI_NO as "evaluBusiNo",
+                A.EVALU_BUSI_NM as "evaluBusiNm",
+                B.EVALU_STAGE   as "evaluStage",
+                B.CMCNT         as "cmCnt",
+                B.FNCNT         as "fnCnt",
+                (SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT WHERE EVALU_STAGE = EVALU_INDICAT_CD) AS "evaluIndicatNm"
+              FROM   
+              ( 
+              SELECT 
+                 EVALU_BUSI_NO,
+                 EVALU_BUSI_NM
+               FROM 
+                 (               SELECT 
+                    A.*, 
+                    B.EVALU_BUSI_NM 
+               FROM 
+                    TB_EVALU_DESTI_BUSI_STAGE A, TB_EVALU_DESTI_BUSI_INFO B
+               WHERE
+                A.EVALU_BUSI_NO = B.EVALU_BUSI_NO)
+              ) A,
+              ( 
+               SELECT
+                *
+               FROM
+               ( 
+               SELECT EVALU_BUSI_NO, EVALU_STAGE, COUNT(*) as "CMCNT", COUNT(CASE WHEN EVALU_PROC_STEP = 'AS90' THEN 1 end) AS "FNCNT" from TB_EVALU_DESTI_BUSI_COMMIT
+               GROUP BY EVALU_BUSI_NO, EVALU_STAGE
+               )
+               WHERE 
+                CMCNT = FNCNT
+              ) B
+              WHERE
+                A.EVALU_BUSI_NO = B.EVALU_BUSI_NO   
+    </select>
+    
+    <select id="listEvaluCommitStat" parameterClass="map"  resultClass="hashmap">
+       		SELECT
+                 DECODE(B.CODE_NM, null, '총합계', B.CODE_NM) as "codeNm" ,
+                 B.CODE 	as "field",
+                 NVL2(A.CNT, A.CNT,0) as "cnt",
+                 NVL(ROUND(((CNT / TOTCNT) * 100), 0), 0)  as "percent"
+             FROM
+             (    
+             SELECT A.FIELD, COUNT(*) AS "CNT",
+                    (SELECT COUNT(*) FROM TB_EVALU_COMMIT_FIELD) AS "TOTCNT"
+             FROM TB_EVALU_COMMIT_FIELD A
+             GROUP BY ROLLUP(A.FIELD)  
+             )A, (SELECT * FROM SYS_CODE WHERE PARENT_CODE = 'FIELD_TYPE') B
+             WHERE
+                 A.FIELD(+) = B.CODE
+             ORDER BY FIELD      
+    </select>
+	
+	<statement id="regiEvaluCentMgmt750" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT750' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #CT750#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT750',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#CT750#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<statement id="regiEvaluCentMgmt740" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT740' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #CT740#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT740',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#CT740#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<statement id="regiEvaluCentMgmt610" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT610' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #CT610#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT610',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#CT610#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<statement id="regiEvaluCentMgmt620" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT620' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #CT620#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT620',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#CT620#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<statement id="regiEvaluCentMgmt630" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT630' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #CT630#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT630',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#CT630#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<statement id="regiEvaluCentMgmt640" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT640' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #CT640#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT640',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#CT640#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- CT410 - 첨부파일 입력 -->
+	<statement id="regiEvaluCentMgmt410" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT410' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #fileOrgNm#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT410',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#fileOrgNm#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- CT310 - 판정 의견 결과 입력 -->
+	<statement id="regiEvaluCentMgmt310" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT310' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #CT310#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT310',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#CT310#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- CT210 - 종합의견2(사업추진의 필요성 및 당위성에 관한 의견) 입력 -->
+	<statement id="regiEvaluCentMgmt210" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT210' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #CT210#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT210',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#CT210#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- CT220 - 종합의견2(개선 의견) 입력 -->
+	<statement id="regiEvaluCentMgmt220" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT220' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #CT220#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT220',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#CT220#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- CT230 - 종합의견2(권고(자문) 사항) 입력 -->
+	<statement id="regiEvaluCentMgmt230" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT230' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #CT230#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT230',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#CT230#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+
+	<!-- CT110 - 종합의견1(판정결과 근거 중심 기술) 입력 -->
+	<statement id="regiEvaluCentMgmt110" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'CT110' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #CT110#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'CT110',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#CT110#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+
+	<!-- PR310 - 판정의견 결과 입력 -->
+	<statement id="regiEvaluProgMgmt310" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PR310' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PR310#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PR310',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PR310#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+
+	<!-- PR220 - 권고(자문)사항 입력 -->
+	<statement id="regiEvaluProgMgmt220" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PR220' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PR220#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PR220',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PR220#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+
+	<!-- PR210 - 개선의견 입력 -->
+	<statement id="regiEvaluProgMgmt210" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PR210' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PR210#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PR210',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PR210#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+
+	<!-- PR110 - 검토의견서 입력 -->
+	<statement id="regiEvaluProgMgmt110" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PR110' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #fileOrgNm#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PR110',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#fileOrgNm#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+
+	<!-- PV110 - 검토의견서 입력 -->
+	<statement id="regiEvaluPrevMgmt110" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV110' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #fileOrgNm#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV110',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#fileOrgNm#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV510 입력 -->
+	<statement id="regiEvaluPrevMgmt510" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV510' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV510#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV510',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV510#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV520 입력 -->
+	<statement id="regiEvaluPrevMgmt520" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV520' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV520#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV520',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV520#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV530 입력 -->
+	<statement id="regiEvaluPrevMgmt530" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV530' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV530#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV530',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV530#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV610 입력 -->
+	<statement id="regiEvaluPrevMgmt610" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV610' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV610#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV610',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV610#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV620 입력 -->
+	<statement id="regiEvaluPrevMgmt620" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV620' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV620#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV620',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV620#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV630 입력 -->
+	<statement id="regiEvaluPrevMgmt630" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV630' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV630#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV630',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV630#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV640 입력 -->
+	<statement id="regiEvaluPrevMgmt640" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV640' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV640#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV640',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV640#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV650 입력 -->
+	<statement id="regiEvaluPrevMgmt650" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV650' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV650#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV650',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV650#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV660 입력 -->
+	<statement id="regiEvaluPrevMgmt660" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV660' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV660#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV660',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV660#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV710 입력 -->
+	<statement id="regiEvaluPrevMgmt710" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV710' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV710#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV710',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV710#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV720 입력 -->
+	<statement id="regiEvaluPrevMgmt720" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV720' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV720#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV720',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV720#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV730 입력 -->
+	<statement id="regiEvaluPrevMgmt730" parameterClass="map">
+		MERGE INTO TB_EVALU_FND
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV730' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV730#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV730',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV730#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV211 입력 -->
+	<statement id="regiEvaluPrevMgmt211" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV211' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV211#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV211',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV211#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV212 입력 -->
+	<statement id="regiEvaluPrevMgmt212" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV212' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV212#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV212',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV212#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV213 입력 -->
+	<statement id="regiEvaluPrevMgmt213" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV213' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV213#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV213',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV213#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV221 입력 -->
+	<statement id="regiEvaluPrevMgmt221" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV221' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV221#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV221',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV221#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV222 입력 -->
+	<statement id="regiEvaluPrevMgmt222" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV222' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV222#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV222',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV222#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV223 입력 -->
+	<statement id="regiEvaluPrevMgmt223" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV223' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV223#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV223',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV223#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV311 입력 -->
+	<statement id="regiEvaluPrevMgmt311" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV311' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV311#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV311',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV311#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV312 입력 -->
+	<statement id="regiEvaluPrevMgmt312" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV312' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV312#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV312',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV312#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV321 입력 -->
+	<statement id="regiEvaluPrevMgmt321" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV321' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV321#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV321',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV321#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV322 입력 -->
+	<statement id="regiEvaluPrevMgmt322" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV322' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV322#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV322',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV322#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV331 입력 -->
+	<statement id="regiEvaluPrevMgmt331" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV331' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV331#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV331',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV331#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV332 입력 -->
+	<statement id="regiEvaluPrevMgmt332" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV332' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV332#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV332',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV332#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV341 입력 -->
+	<statement id="regiEvaluPrevMgmt341" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV341' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV341#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV341',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV341#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV342 입력 -->
+	<statement id="regiEvaluPrevMgmt342" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV342' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV342#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV342',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV342#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV411 입력 -->
+	<statement id="regiEvaluPrevMgmt411" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV411' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV411#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV411',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV411#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV412 입력 -->
+	<statement id="regiEvaluPrevMgmt412" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV412' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV412#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV412',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV412#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV413 입력 -->
+	<statement id="regiEvaluPrevMgmt413" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV413' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV413#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV413',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV413#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV421 입력 -->
+	<statement id="regiEvaluPrevMgmt421" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV421' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV421#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV421',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV421#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV422 입력 -->
+	<statement id="regiEvaluPrevMgmt422" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV422' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV422#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV422',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV422#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	<!-- PV423 입력 -->
+	<statement id="regiEvaluPrevMgmt423" parameterClass="map">
+		MERGE INTO TB_EVALU_FND_PREV
+		USING DUAL
+		ON (EVALU_INDICAT_CD = 'PV423' AND EVALU_BUSI_NO = #evaluBusiNo# AND USER_ID = #evaluId#)
+		WHEN MATCHED THEN
+			UPDATE SET EVALU_FND_VALUE = #PV423#
+		WHEN NOT MATCHED THEN
+			INSERT
+				(
+					EVALU_FND_SEQ,
+		    		EVALU_INDICAT_CD,
+		    		EVALU_BUSI_NO,
+		    		EVALU_STAGE,
+		    		USER_ID,
+		    		EVALU_FND_VALUE,
+		    		REGI_ID,
+		    		REGI_DATE	
+				)
+			VALUES
+				(
+					(
+						SELECT 
+				        	NVL(MAX(EVALU_FND_SEQ),0) + 1
+				        FROM 
+				        	TB_EVALU_FND
+					),
+		    		'PV423',
+		    		#evaluBusiNo#,
+		    		#evaluStage#,
+		    		#evaluId#,
+		    		#PV423#,
+		    		'admin',
+		    		SYSDATE
+				)
+	</statement>
+	
+	
+	<select id="listCent2017" parameterClass="map" resultClass="java.util.HashMap">
+		SELECT
+	        A.EVALU_FND_SEQ
+	        , A.EVALU_INDICAT_CD
+	        , A.EVALU_BUSI_NO
+	        , A.EVALU_STAGE 
+	        , (SELECT B.USER_NM FROM TB_EVALU_COMMIT_INFO B WHERE B.USER_ID = A.USER_ID) AS USER_NM
+	        , A.USER_ID
+	        , A.EVALU_FND_VALUE  
+	    FROM
+	        TB_EVALU_FND A  
+	    WHERE
+	    	EVALU_BUSI_NO =  #evaluBusiNo#   
+	</select>
+
+	<select id="listCent2017User" parameterClass="map" resultClass="java.util.HashMap">
+		SELECT
+			A.USER_ID as "commitUserId"
+	        , (SELECT B.USER_NM FROM TB_EVALU_COMMIT_INFO B WHERE B.USER_ID = A.USER_ID) AS USER_NM
+	    FROM
+	        TB_EVALU_DESTI_BUSI_COMMIT A
+	    WHERE
+	    	EVALU_BUSI_NO =  #evaluBusiNo#    
+	</select>
+	
+	<delete id="deltCent2017" parameterClass="map">
+		DELETE TB_EVALU_FND
+		WHERE 
+			EVALU_BUSI_NO =  #evaluBusiNo#
+		AND
+			USER_ID = #commitUserId#
+	</delete>
+	<delete id="deltPrev2017" parameterClass="map">
+		DELETE TB_EVALU_FND
+		WHERE 
+			EVALU_BUSI_NO =  #evaluBusiNo#
+		AND
+			USER_ID = #evaluId#
+		AND
+			EVALU_INDICAT_CD ^= 'PV110'
+	</delete>
+	
+	<insert id="saveCent2017CT750" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'CT750', #CT750#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+
+	<insert id="saveCent2017CT740" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'CT740', #CT740#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+	
+	<insert id="saveCent2017CT610" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'CT610', #CT610#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+	
+	<insert id="saveCent2017CT620" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'CT620', #CT620#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+	
+	<insert id="saveCent2017CT630" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'CT630', #CT630#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+	
+	<insert id="saveCent2017CT640" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'CT640', #CT640#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+	
+	<delete id="deltCent2017CT410" parameterClass="map">
+		DELETE
+			TB_EVALU_FND
+		WHERE
+			EVALU_BUSI_NO = #evaluBusiNo#
+		AND
+			USER_ID = #evaluId#
+	</delete>
+	
+	<delete id="deltPrev2017PV110" parameterClass="map">
+		DELETE
+			TB_EVALU_FND
+		WHERE
+			EVALU_BUSI_NO = #evaluBusiNo#
+		AND
+			USER_ID = #evaluId#
+		AND
+			EVALU_INDICAT_CD = 'PV110'
+	</delete>
+	
+	<insert id="savePrev2017PV110" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'PV110', #fileOrgNm#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+	
+	<insert id="saveCent2017CT410" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'CT410', #fileOrgNm#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+	
+	<insert id="saveCent2017CT310" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'CT310', #CT310#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+	
+	<insert id="saveCent2017CT210" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'CT210', #CT210#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+	
+	<insert id="saveCent2017CT220" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'CT220', #CT220#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+	
+	<insert id="saveCent2017CT230" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'CT230', #CT230#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+
+
+
+	<insert id="savePrev2017PV210" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'PV210', #PV210#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+
+	<insert id="savePrev2017PV220" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'PV220', #PV220#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+
+	<insert id="savePrev2017PV310" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'PV310', #PV310#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+
+	<insert id="savePrev2017PV320" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'PV320', #PV320#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+
+	<insert id="savePrev2017PV330" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'PV330', #PV330#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+
+	<insert id="savePrev2017PV340" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'PV340', #PV340#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+
+	<insert id="savePrev2017PV410" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'PV410', #PV410#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+
+	<insert id="savePrev2017PV420" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'PV420', #PV420#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+
+	<insert id="savePrev2017PV430" parameterClass="map">
+		<selectKey resultClass="java.lang.String" keyProperty="evaluFndSeq">
+	        SELECT NVL(MAX(EVALU_FND_SEQ),0) + 1 FROM TB_EVALU_FND
+	    </selectKey> 
+		INSERT INTO TB_EVALU_FND
+		(	EVALU_FND_SEQ, EVALU_INDICAT_CD, EVALU_FND_VALUE, EVALU_BUSI_NO, EVALU_STAGE, USER_ID,  REGI_ID, REGI_DATE)
+		VALUES
+		(	#evaluFndSeq#, 'PV430', #PV430#, #evaluBusiNo#, #evaluStage#, #evaluId#,  #gsUserId#, sysdate)
+	</insert>
+
+
+
+	<!-- 연도별 평가현황 -->
+	<select id="listEvaluYearInfo" parameterClass="map"  resultClass="hashmap">
+		select 
+		        a.EVALU_STAGE,
+		        (select EVALU_INDICAT_NM from TB_EVALU_INDICAT where EVALU_INDICAT_CD = a.EVALU_STAGE) as EVALU_NAME,
+		        CASE WHEN (select count(*) from TB_EVALU_DESTI_BUSI_STAGE where EVALU_STAGE = a.EVALU_STAGE and EVALU_GUBUN = 2014) > 0
+		            THEN (select count(*) from TB_EVALU_DESTI_BUSI_STAGE where EVALU_STAGE = a.EVALU_STAGE and EVALU_GUBUN = 2014) ELSE 0 END as "y2014",
+		        CASE WHEN (select count(*) from TB_EVALU_DESTI_BUSI_STAGE where EVALU_STAGE = a.EVALU_STAGE and EVALU_GUBUN = 2015) > 0
+		            THEN (select count(*) from TB_EVALU_DESTI_BUSI_STAGE where EVALU_STAGE = a.EVALU_STAGE and EVALU_GUBUN = 2015) ELSE 0 END as "y2015",
+		        CASE WHEN (select count(*) from TB_EVALU_DESTI_BUSI_STAGE where EVALU_STAGE = a.EVALU_STAGE and EVALU_GUBUN = 2016) > 0
+		            THEN (select count(*) from TB_EVALU_DESTI_BUSI_STAGE where EVALU_STAGE = a.EVALU_STAGE and EVALU_GUBUN = 2016) ELSE 0 END as "y2016",
+		        CASE WHEN (select count(*) from TB_EVALU_DESTI_BUSI_STAGE where EVALU_STAGE = a.EVALU_STAGE and EVALU_GUBUN = 2017) > 0
+		            THEN (select count(*) from TB_EVALU_DESTI_BUSI_STAGE where EVALU_STAGE = a.EVALU_STAGE and EVALU_GUBUN = 2017) ELSE 0 END as "y2017",
+		        CASE WHEN (select count(*) from TB_EVALU_DESTI_BUSI_STAGE where EVALU_STAGE = a.EVALU_STAGE and EVALU_GUBUN = 2018) > 0
+		            THEN (select count(*) from TB_EVALU_DESTI_BUSI_STAGE where EVALU_STAGE = a.EVALU_STAGE and EVALU_GUBUN = 2018) ELSE 0 END as "y2018"
+		from TB_EVALU_DESTI_BUSI_STAGE a
+		where a.EVALU_STAGE IN (select EVALU_INDICAT_CD from TB_EVALU_INDICAT where UPPER_EVALU_INDICAT_CD = 'EVALU_ITEM' and MAIN_OPEN_YN = 'Y')
+		group by a.EVALU_STAGE
+		order by a.EVALU_STAGE
+	</select>
+
+
+</sqlMap>

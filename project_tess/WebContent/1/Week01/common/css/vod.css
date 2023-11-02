@@ -1,0 +1,99 @@
+﻿
+@font-face {font-family:nanum; src:url(../images/NanumGothic.eot)}
+#hd {font-family:nanum; font-size:12px}
+@charset "utf-8";
+@import url('default.css');
+
+/*VOD Player
+*/
+#vod{width:334px;height:57px;background:url(../images/bg_vod.gif) no-repeat left top;}
+.player{width:321px;padding:0 0 9px 6px;height:48px;}/*27px 10px 9px 4px;*/
+
+			.bar_blue{float:left;padding:8px 0 0 4px} 
+			.volume{float:left;padding-top:5px;width:35px}
+			.sync{float:left;font:10px/1 "돋움",dotum;padding-top:7px;width:78px;padding-left:8px}
+			.view_max{float:right;width:25px;height:19px;margin-top:4px;cursor:pointer;background:url(../images/bu6.gif) no-repeat left top;font-size:0;text-indent:-999px;overflow:hidden}
+			.view_max.select{background-position:left -19px}
+			/*버튼*/
+		.play{clear:both;float:left}
+				.btn_play{cursor:pointer;width:31px;height:29px;float:left;background:url(../images/bu1_1.gif) no-repeat left -29px;font-size:0;text-indent:-999px;overflow:hidden}
+				.btn_play.select{background-position:left top}
+				.btn_play.pause{cursor:pointer;background-position:left -58px}
+				.btn_play.pause.select{background-position:left -87px}
+				.btn_stop{cursor:pointer;width:31px;height:29px;float:left;background:url(../images/bu2_1.gif) no-repeat left top;font-size:0;text-indent:-999px;overflow:hidden}
+				.btn_stop.select{background-position:left -29px}
+		.rewind{margin-left:50px;float:left;padding-top:2px}
+			.btn_sp10{cursor:pointer;width:25px;height:26px;background:url(../images/bu3.gif) no-repeat left top;float:left}
+			.btn_sp10.select,
+			.btn_sp30.select,
+			.btn_sp60.select{background-position:left -26px}
+			.btn_sp30{cursor:pointer;margin-left:3px;width:25px;height:25px;background:url(../images/bu4.gif) no-repeat left top;float:left}
+			.btn_sp60{cursor:pointer;margin-left:3px;width:25px;height:25px;background:url(../images/bu5.gif) no-repeat left top;float:left}			
+
+		.speed{float:left;padding-top:2px;padding-left:53px;}
+			.current_sp{font:11px/1 gulim,"굴림",arial;float:left;padding-top:10px;}
+			.btn_sp1,.btn_sp2,.btn_sp3{cursor:pointer;width:25px;height:26px;float:left;margin-left:3px}
+			.btn_sp1{background:url(../images/bu7.gif) no-repeat left top;}
+			.btn_sp2{background:url(../images/bu8.gif) no-repeat left top;}
+			.btn_sp3{background:url(../images/bu9.gif) no-repeat left top;}
+			
+			.btn_sp1{margin-left:7px}
+			.btn_sp1.select,
+			.btn_sp2.select,
+			.btn_sp3.select
+			{background-position:left -26px}
+			.btn_sp1.off,
+			.btn_sp2.off,
+			.btn_sp3.off
+			{background-position:left -52px}
+
+
+
+	
+/*------------- Player ------------- */
+.playBar {
+    float: left;
+    clear: left;
+    width: 170px;
+    height: 4px;
+    background: none;
+    border: none;
+	margin:10px 0 0 5px
+}
+.volumeSlide {
+    float: left;
+    clear: left;
+    width: 43px;
+    height: 3px;
+    background: none;
+    border: none;
+}
+.playBar .ui-slider-range {
+    background: url(../images/bar1_HD.gif);
+    height: 4px;
+	
+}
+.playBar .ui-slider-handle {
+    width: 10px;
+    height: 10px;
+    background: url(../images/ctbu1.gif) no-repeat left top;
+    border: none;
+    margin: 3px 0 0 -1px;
+	cursor:pointer
+}
+.volumeSlide .ui-slider-range {
+    background: url(../images/bar2.gif);
+	 width: 35px;
+	 height: 4px;
+	margin:6px 0 0 5px
+}
+.volumeSlide .ui-slider-handle {
+    width: 10px;
+    height: 10px;
+
+    background: url(../images/ctbu2.gif) no-repeat left top;
+    border: none;
+    margin: 9px 0 0 3px;
+	cursor:pointer
+}
+/*---------------------------------- */

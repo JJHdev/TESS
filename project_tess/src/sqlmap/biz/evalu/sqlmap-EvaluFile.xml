@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# @Description : 관광개발사업 첨부파일 관련 sql
+# @author LCS
+# @version 1.0 2014/10/10
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-->
+<sqlMap namespace="EvaluFile">
+
+
+    <!-- +++++++++++++++++++++++++++++++++++
+            기본 내용.
+         +++++++++++++++++++++++++++++++++++ -->
+         
+    <select id="listEvaluFile" parameterClass="java.util.HashMap"  resultClass="java.util.HashMap">
+        SELECT
+             A.EVALU_FILE_NO  as "evaluFileNo"
+            ,A.ROOT_NO       as "rootNo"
+            ,A.ROOT_SEQ      as "rootSeq"
+            ,A.DOCU_TYPE     as "docuType"
+            ,(SELECT CODE_NM FROM SYS_CODE WHERE CODE = ATTH_TYPE) as "docuTypeNm"
+            ,A.ATTH_TYPE     as "atthType"
+            ,A.FILE_ORG_NM   as "fileOrgNm"
+            ,A.FILE_SVR_NM   as "fileSvrNm"
+            ,A.FILE_PATH     as "filePath"
+            ,A.FILE_SIZE     as "fileSize"
+            ,A.ATTH_RMK      as "atthRmk"
+            ,A.REGI_ID       as "regiId"
+            ,A.REGI_DATE     as "regiDate"
+          FROM TB_EVALU_DESTI_FILE A
+         WHERE (0=0)
+           AND ROOT_NO   = #rootNo#
+           <isNotEmpty property="docuType">
+           	   AND DOCU_TYPE = #docuType#
+           </isNotEmpty>
+           <isNotEmpty property="rootSeq">
+               AND ROOT_SEQ  = #rootSeq#
+           </isNotEmpty>
+           <isNotEmpty property="atthType">
+               AND ROOT_NO = #atthType#
+           </isNotEmpty>
+           <isNotEmpty property="arrAtthType" prepend="AND">
+                   ATTH_TYPE IN
+                <iterate property="arrAtthType" conjunction="," open="(" close=")">
+                    #arrAtthType[]#
+                </iterate>
+           </isNotEmpty>
+         ORDER BY A.ATTH_TYPE, A.EVALU_FILE_NO
+    </select>
+    
+    <select id="viewEvaluFile" parameterClass="map"  resultClass="hashmap">
+        SELECT
+             A.EVALU_FILE_NO  as "evaluFileNo"
+            ,A.ROOT_NO       as "rootNo"
+            ,A.ROOT_SEQ      as "rootSeq"
+            ,A.DOCU_TYPE     as "docuType"
+            ,A.ATTH_TYPE     as "atthType"
+            ,A.FILE_ORG_NM   as "fileOrgNm"
+            ,A.FILE_SVR_NM   as "fileSvrNm"
+            ,A.FILE_PATH     as "filePath"
+            ,A.FILE_SIZE     as "fileSize"
+            ,A.ATTH_RMK      as "atthRmk"
+            ,A.REGI_ID       as "regiId"
+            ,A.REGI_DATE     as "regiDate"
+          FROM TB_EVALU_DESTI_FILE A
+         WHERE (0=0)
+           AND EVALU_FILE_NO = #evaluFileNo#
+    </select>
+    
+    <select id="listEvaluFileDelt"  parameterClass="map"  resultClass="hashmap">
+        SELECT
+             FILE_SVR_NM AS "fileSvrNm"
+            ,FILE_PATH AS "filePath"
+        FROM
+            TB_EVALU_DESTI_FILE
+        WHERE (0=0)
+           <isNotEmpty property="rootNo" prepend="AND">
+                ROOT_NO = #rootNo#
+           </isNotEmpty>
+           <isNotEmpty property="arrFileNo" prepend="AND">
+                   EVALU_FILE_NO IN
+                <iterate property="arrFileNo" conjunction="," open="(" close=")">
+                    #arrFileNo[]#
+                </iterate>
+           </isNotEmpty>
+    </select>
+    <insert id="regiEvaluFile" parameterClass="map" >
+        INSERT INTO TB_EVALU_DESTI_FILE (
+             EVALU_FILE_NO
+            ,ROOT_NO
+            ,ROOT_SEQ
+            ,DOCU_TYPE
+            ,ATTH_TYPE
+            ,FILE_ORG_NM
+            ,FILE_SVR_NM
+            ,FILE_PATH
+            ,FILE_SIZE
+            ,ATTH_RMK
+            ,REGI_ID
+            ,REGI_DATE
+            ,EVALU_STAGE
+            ,EVALU_STAGE_YEAR
+        ) VALUES (
+             (
+               SELECT NVL(MAX(EVALU_FILE_NO), 0) + 1
+               FROM   TB_EVALU_DESTI_FILE
+             )
+            ,#rootNo#
+            ,#rootSeq#
+            ,#docuType#
+            ,#atthType#
+            ,#fileOrgNm#
+            ,#fileSvrNm#
+            ,#filePath#
+            ,#fileSize#
+            ,#atthRmk#
+            ,#regiId#
+            ,SYSDATE
+            ,#evaluStage#
+            ,#evaluGubun#
+        )
+    </insert>
+    <update id="updtEvaluFile" parameterClass="map" >
+        UPDATE TB_EVALU_DESTI_FILE SET
+             ROOT_NO      = #rootNo#
+            ,ROOT_SEQ     = #rootSeq#
+            ,DOCU_TYPE    = #docuType#
+            ,ATTH_TYPE    = #atthType#
+            ,FILE_ORG_NM  = #fileOrgNm#
+            ,FILE_SVR_NM  = #fileSvrNm#
+            ,FILE_PATH    = #filePath#
+            ,FILE_SIZE    = #fileSize#
+            ,ATTH_RMK     = #atthRmk#
+            ,UPDT_ID      = #updtId#
+            ,UPDT_DATE    = SYSDATE
+         WHERE (0=0)
+           AND EVALU_FILE_NO = #evaluFileNo#
+    </update>
+    <delete id="deltEvaluFile" parameterClass="map" >
+        DELETE FROM TB_EVALU_DESTI_FILE
+         WHERE (0=0)
+           AND Evalu_FILE_NO = #evaluFileNo#
+    </delete>
+    
+    <delete id="deltEvaluFileAll" parameterClass="map" >
+        DELETE FROM TB_EVALU_DESTI_FILE
+         WHERE (0=0)
+           AND ROOT_NO = #rootNo#
+    </delete>
+    
+</sqlMap>

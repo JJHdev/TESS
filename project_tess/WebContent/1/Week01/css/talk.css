@@ -1,0 +1,20 @@
+﻿@charset "utf-8";
+/*
+2013-05-16 jian
+공통사항은 common을 참조. 
+*/
+
+/*quiz*/
+.quiz_bg {background:url(../images/bg_story.png) no-repeat;}
+.talk_bg {background:url(../images/bg_task.png) no-repeat;}
+.talk_sb {padding:110px 0 0 60px; width:600px}
+.talk_tip{padding:30px 0 0 60px; color:#ee6f0e} 
+
+.orangetitle01{
+   margin:3px 0 0 0;
+   padding:2px 0 0 22px; font-size:12px;
+   height:20px;
+   background: url(../images/w_ico.gif) no-repeat  0 3px;
+}  
+.dot{padding-left:10px;background:url(../images/dot.gif) no-repeat 0px 6px; line-height:1.4em}
+.save_btn{float:right; padding:5px 55px 0 0}

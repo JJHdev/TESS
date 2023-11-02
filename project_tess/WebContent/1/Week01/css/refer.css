@@ -1,0 +1,20 @@
+@charset "utf-8";
+/*
+2013-05-16 jian
+공통사항은 common을 참조. 
+*/
+
+/*참고문헌*/
+.direc{padding-bottom:72px}
+dl.refernc {padding:0 0 0 37px;width:880px}
+dl.refernc>dt{float:left;height:80px;padding-right:18px;width:88px}
+dl.refernc dd{float:left;width:760px;line-height:1.8em;}
+dl.book dt{width:90px;float:left}
+dl.book dt img{border:1px solid #d9d9cc;padding:3px}
+dl.book dd{padding:5px 0 5px 10px;float:left;width:648px;}
+dl.book dd.title{background:#f6eed3;padding:10px;font:12px/1 "돋움", dotum, "나눔고딕", "맑은고딕", Arial, san-serif;color:#543b18}
+			dd strong{font-weight:bold;color:#a1702b}
+			dd.dot{padding:20px 0 3px 0;border-bottom:1px dotted #543b18}
+			dd.btn{padding-top:7px}
+			dd.btn button{float:right}
+

@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- @(#)sqlmap-Bbs.xml 1.0 2014/11/07                                  													   -->
+<!--                                                                         														   -->
+<!-- COPYRIGHT (C) 2006 CUBES CO., INC.                                                                                    -->
+<!-- ALL RIGHTS RESERVED.                                                                                                     -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- 게시판를 관리하는 SQL Map 파일이다.                       -->
+<!--                                                                         -->
+<!-- @author 신영민                                                          -->
+<!-- @version 1.0  2013.10.15                                                 -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<sqlMap namespace="Additionals">
+
+
+    <sql id="Case-SrchCondition">
+		
+    </sql>
+    
+    <!-- 검색 데이터 -->
+    <select id="listCase" parameterClass="map" resultClass="hashmap">
+    SELECT
+        ROWNUM AS "rNum",
+        c.CASE_NO AS "caseNo",
+        c.CASE_SUBJECT AS "caseSubject",
+        BUSI_NM AS "busiNm",
+        c.NEW_YN AS "newyn",
+        c.USER_ID AS "userId",
+        c.USER_NM AS "userNm",
+        c.VIEW_CNT AS "viewCnt",
+        c.START_DATE AS "startDate",
+        c.END_DATE AS "endDate",
+        c.OPEN_YN AS "openYn",
+        c.DEL_YN AS "delYn",
+        c.REGI_ID AS "regiId",
+        c.REGI_DATE AS "regiDate",
+        c.UPDT_ID AS "updtId",
+        c.UPDT_DATE AS "updtDate",
+        c.FL_CHK AS "flChk" 
+    FROM
+    	(
+	    SELECT
+	        CASE_NO,
+	        CASE_SUBJECT,
+	        BUSI_NM,
+	        <!-- BEGIN 2013.12.13 [1] K.E.S -->
+	        CASE
+	        WHEN REGI_DATE > SYSDATE - 7
+	        THEN 'Y'
+	        ELSE 'N'
+	        END AS NEW_YN,
+	        <!-- END 2013.12.13 [1] -->
+	        USER_ID,
+	        USER_NM,
+	        VIEW_CNT,
+	        START_DATE,
+	        END_DATE,
+	        OPEN_YN,
+	        DEL_YN,
+	        REGI_ID,
+	        TO_CHAR(REGI_DATE, 'YYYY-MM-DD') as REGI_DATE,
+	        UPDT_ID,
+	        UPDT_DATE,
+	        NVL2(ROOT_NO,'Y','N') AS FL_CHK               
+	    FROM
+	        TB_ADDTN_EVALUCASE a         
+	    LEFT OUTER JOIN
+	        (SELECT ROOT_NO FROM TB_ATTHFILE WHERE DEL_YN = 'N' AND DOCU_TYPE = 'CASE' GROUP BY ROOT_NO) b          
+	            ON a.CASE_NO = b.ROOT_NO 
+        WHERE
+        	DEL_YN = 'N'
+        	<!-- 
+         	<isNotEqual property="roleId" compareValue="ROLE_AUTH_SYS" prepend="AND">
+        		REGI_ID = #userId# 		
+        	</isNotEqual>
+        	-->
+		<include refid="Case-SrchCondition" />  
+	    ORDER BY
+            CASE_NO DESC	
+        ) c
+        WHERE 1=1
+        <isNotEmpty property="search_busi">
+        AND BUSI_NM LIKE '%'||#search_busi#||'%'
+        </isNotEmpty>
+        <isNotEmpty property="dateRegiSt">
+ 		AND REGI_DATE <![CDATA[>=]]> #dateRegiSt# 
+ 		</isNotEmpty>
+ 		<isNotEmpty property="dateRegiEnd">
+ 		AND REGI_DATE <![CDATA[<=]]> #dateRegiEnd#
+ 		</isNotEmpty>
+    </select>
+    
+    <!-- 검색 카운트 -->
+    <select id="listCaseCount" parameterClass="map" resultClass="int">
+		SELECT
+        COUNT(*)           
+	    FROM
+	        TB_ADDTN_EVALUCASE a         
+	    LEFT OUTER JOIN
+	        (SELECT ROOT_NO FROM TB_ATTHFILE WHERE DEL_YN = 'N' AND DOCU_TYPE = 'CASE' GROUP BY ROOT_NO) b          
+	            ON a.CASE_NO = b.ROOT_NO 
+        WHERE
+        	DEL_YN = 'N' 
+        	<isNotEmpty property="search_busi">
+        	AND BUSI_NM LIKE '%'||#search_busi#||'%'
+        	</isNotEmpty>
+        	<isNotEmpty property="dateRegiSt">
+ 			AND REGI_DATE <![CDATA[>=]]> #dateRegiSt# 
+ 			</isNotEmpty>
+ 			<isNotEmpty property="dateRegiEnd">
+ 			AND REGI_DATE <![CDATA[<=]]> #dateRegiEnd#
+ 			</isNotEmpty>
+        	      	
+		<include refid="Case-SrchCondition" />  
+	    ORDER BY
+            CASE_NO DESC
+    </select>
+    
+	<!-- 게시판 상세조회 -->
+    <select id="viewCase" parameterClass="map" resultClass="hashmap">
+    SELECT
+	    CASE_NO as "caseNo",
+	    CASE_SUBJECT as "caseSubject",
+	    BUSI_NM as "busiNm",
+	    USER_ID as "userId",
+	    USER_NM as "userNm",
+	    VIEW_CNT as "viewCnt",
+	    OPEN_YN as "openYn",
+	    DEL_YN as "delYn",
+	    START_DATE as "strDate",
+	    REGI_ID as "regiId",
+	    "regiDate",
+	    "nextSeq",
+	   	"preSeq",
+	   	"nextTitle",
+	   	"preTitle"
+    FROM
+    (	
+        SELECT
+            CASE_NO,
+            CASE_SUBJECT,
+            BUSI_NM,
+            USER_ID,
+            USER_NM,
+            VIEW_CNT,
+            OPEN_YN,
+            DEL_YN,
+            START_DATE,
+            REGI_ID,
+            TO_CHAR(REGI_DATE, 'YYYY-MM-DD') as "regiDate",
+            LEAD (CASE_NO, 1) OVER (ORDER BY CASE_NO) as "nextSeq",
+        	LAG (CASE_NO, 1) OVER (ORDER BY CASE_NO) as "preSeq",
+        	LEAD (CASE_SUBJECT, 1) OVER (ORDER BY CASE_NO) as "nextTitle",
+        	LAG (CASE_SUBJECT, 1) OVER (ORDER BY CASE_NO) as "preTitle"
+        FROM
+            TB_ADDTN_EVALUCASE a 
+        WHERE 
+        	DEL_YN = 'N' 
+		<include refid="Case-SrchCondition" />
+	    ORDER BY
+            a.CASE_NO	
+    ) c
+    	WHERE
+        CASE_NO = #case_no#
+    </select>
+    
+	<!-- 우수사례 내용검색 -->
+    <select id="viewCaseDesc" parameterClass="map" resultClass="hashmap">
+    	SELECT
+    		*
+    	FROM
+    		TB_ADDTN_EVALUCASE_DESC
+    	WHERE
+    		CASE_NO = #case_no#
+    </select>
+    
+    <!-- 게시판 등록 -->
+    <insert id="saveCase" parameterClass="map">
+    	<selectKey resultClass="string" keyProperty="case_no">
+	        SELECT 
+	        	NVL(MAX(CASE_NO),0) + 1
+	        FROM 
+	        	TB_ADDTN_EVALUCASE
+		</selectKey>
+        INSERT INTO TB_ADDTN_EVALUCASE 
+               (
+                   CASE_NO,
+                   CASE_SUBJECT,
+                   BUSI_NM,
+                   USER_ID,
+                   USER_NM,
+                   VIEW_CNT,
+                   DEL_YN,
+                   REGI_ID,
+                   REGI_DATE
+               )
+        VALUES (
+                   #case_no#,
+                   #caseSubject#,
+                   #evaluBusiNm#,
+                   #gsUserId#,
+                   #gsUserNm#,
+                   0,
+                   'N',
+                   #regiId#,
+                   sysdate
+               )    
+    </insert>
+    
+    <!-- 게시판 등록 -->
+    <insert id="saveCaseDesc" parameterClass="map">
+    	<selectKey resultClass="string" keyProperty="seq">
+	        SELECT 
+	        	NVL(MAX(SEQ),0) + 1
+	        FROM 
+	        	TB_BBS_DESC
+		</selectKey>
+        INSERT INTO TB_ADDTN_EVALUCASE_DESC 
+               (
+                   CASE_NO,
+				   SEQ,
+				   CASE_DESC
+               )
+        VALUES (
+                   #case_no#,
+				   #seq#,
+				   #caseDesc#	
+               )    
+    
+    </insert>
+    
+    <!-- 조회수 1증가 -->
+    <update id="updtCaseCnt" parameterClass="map">
+    	 UPDATE	
+    		TB_ADDTN_EVALUCASE
+    	 SET	
+    	   	VIEW_CNT = NVL(VIEW_CNT,0) + 1
+    	 WHERE
+    	 	CASE_NO = #case_no#
+    </update>
+    
+    <!-- 게시판 수정 -->
+    <update id="updtCase" parameterClass="map">
+    	UPDATE
+    		TB_ADDTN_EVALUCASE
+    	SET
+    		CASE_SUBJECT = #caseSubject#,
+    		BUSI_NM = #busiNm#,
+    		UPDT_ID = #gsUserId#,
+    		UPDT_DATE = sysdate
+    	WHERE
+    		CASE_NO = #case_no#	
+    </update>
+    
+        <!-- 게시판 내용 삭제 -->
+    <delete id="delCaseDesc" parameterClass="map">
+    	DELETE
+    	FROM
+    		TB_ADDTN_EVALUCASE_DESC
+    	WHERE
+    		CASE_NO = #case_no#	
+    </delete>
+    
+      <!-- 게시판 삭제 -->
+    <update id="deltCase" parameterClass="map">
+    	UPDATE
+    		TB_ADDTN_EVALUCASE
+    	SET
+    		DEL_YN = 'Y'
+    	WHERE
+    		CASE_NO = #case_no#		
+    </update>
+    
+    
+    
+    <!-- 사업 목록 -->    
+    <select id="listEvaluMbrBusi" parameterClass="map"  resultClass="hashmap">
+     SELECT BUSIINFO.USER_ID as "userId"
+		      ,BUSIINFO.USER_NM as "userNm"
+		      ,BUSIINFO.BUSI_NO as "evaluBusiNo"
+		      ,BUSIINFO.BUSI_NM as "evaluBusiNm"
+		      ,BUSIINFO.BUSI_ADDR1 as "addr1"
+		      ,BUSIINFO.BUSI_ADDR2 as "cityauthNm"
+		      ,BUSIINFO.BUSI_ADDR3 as "addr3"
+		      ,BUSIINFO.BUSI_ADDR4 as "addr4"
+		      ,BUSIINFO.BUSI_ADDR5 as "addr5"
+		      ,BUSIINFO.ST_DATE as "stDate"
+		      ,BUSIINFO.END_DATE as "endDate"
+		      ,BUSIINFO.BUSI_CATE as "busiCate"
+		      ,BUSIINFO.COMMIT_STAGE as "evaluStage"
+		      ,(SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT WHERE EVALU_INDICAT_CD=BUSIINFO.COMMIT_STAGE) AS "evaluStageNm" 
+		      ,BS.FINAL_EVALU_FND as "convFinalEvaluFnd"
+		      ,TO_CHAR(BS.EVALU_DATE) as "convEvaluDate"
+	  FROM      
+				    (
+				    SELECT COMINFO.USER_ID
+				          ,COMINFO.USER_NM
+				          ,COMINFO.BUSI_NO
+				          ,BI.EVALU_BUSI_NM AS BUSI_NM
+				          ,BI.BUSI_ADDR1
+				          ,BI.BUSI_ADDR2
+				          ,BI.BUSI_ADDR3
+				          ,BI.BUSI_ADDR4
+				          ,BI.BUSI_ADDR5
+				          ,COMINFO.COMMIT_STAGE 
+				          ,BUSI_STT_DATE AS ST_DATE
+				          ,BUSI_END_DATE AS END_DATE
+				          ,BUSI_CATE
+				        FROM     
+				        (
+				        SELECT CI.USER_ID 
+				               ,CI.USER_NM
+				               ,BC.EVALU_BUSI_NO AS BUSI_NO
+				               ,BC.EVALU_STAGE as COMMIT_STAGE
+				        FROM TB_EVALU_COMMIT_INFO CI LEFT OUTER JOIN  TB_EVALU_DESTI_BUSI_COMMIT BC ON (CI.USER_ID=BC.USER_ID)
+				        ) COMINFO LEFT OUTER JOIN TB_EVALU_DESTI_BUSI_INFO BI ON (COMINFO.BUSI_NO=BI.EVALU_BUSI_NO)
+				    ) BUSIINFO LEFT OUTER JOIN TB_EVALU_DESTI_BUSI_STAGE BS ON (BUSIINFO.BUSI_NO=BS.EVALU_BUSI_NO) 
+				WHERE 1=1
+				AND USER_ID = #evaluUserId#
+				AND FINAL_EVALU_FND is not null
+				ORDER BY USER_ID
+    </select>
+    
+    <select id="listEvaluMbrBusiCount" parameterClass="map"  resultClass="int">
+      SELECT COUNT(*)
+				FROM      
+				    (
+				    SELECT COMINFO.USER_ID
+				          ,COMINFO.USER_NM
+				          ,COMINFO.BUSI_NO
+				          ,BI.EVALU_BUSI_NM AS BUSI_NM
+				          ,BI.BUSI_ADDR1
+				          ,BI.BUSI_ADDR2
+				          ,BI.BUSI_ADDR3
+				          ,BI.BUSI_ADDR4
+				          ,BI.BUSI_ADDR5
+				          ,COMINFO.COMMIT_STAGE 
+				          ,BUSI_STT_DATE AS ST_DATE
+				          ,BUSI_END_DATE AS END_DATE
+				          ,BUSI_CATE
+				        FROM     
+				        (
+				        SELECT CI.USER_ID 
+				               ,CI.USER_NM
+				               ,BC.EVALU_BUSI_NO AS BUSI_NO
+				               ,BC.EVALU_STAGE as COMMIT_STAGE
+				        FROM TB_EVALU_COMMIT_INFO CI LEFT OUTER JOIN  TB_EVALU_DESTI_BUSI_COMMIT BC ON (CI.USER_ID=BC.USER_ID)
+				        ) COMINFO LEFT OUTER JOIN TB_EVALU_DESTI_BUSI_INFO BI ON (COMINFO.BUSI_NO=BI.EVALU_BUSI_NO)
+				    ) BUSIINFO LEFT OUTER JOIN TB_EVALU_DESTI_BUSI_STAGE BS ON (BUSIINFO.BUSI_NO=BS.EVALU_BUSI_NO) 
+				WHERE 1=1
+				AND USER_ID = #evaluUserId#
+				AND FINAL_EVALU_FND is not null
+				ORDER BY USER_ID
+    </select>
+    
+    <select id="getBusiList" parameterClass="map" resultClass="hashmap">
+    SELECT
+        BI.EVALU_BUSI_NO as "busiNo" 
+        ,EVALU_BUSI_NM as "busiNm"
+        ,BUSI_ADDR1 || ' ' || BUSI_ADDR2  as "addr12"
+        , (SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT 
+          WHERE EVALU_STAGE=EVALU_INDICAT_CD)  as "evaluStage"
+        ,FINAL_EVALU_FND as "convFinalEvaluFnd"   
+        ,TO_CHAR(EVALU_DATE) as "convEvaluDate"  
+    FROM
+        TB_EVALU_DESTI_BUSI_INFO BI 
+    LEFT OUTER JOIN
+        TB_EVALU_DESTI_BUSI_STAGE BS                                                   
+            ON (
+                BI.EVALU_BUSI_NO = BS.EVALU_BUSI_NO
+            )  
+	WHERE 1=1
+	<isNotEmpty property="srchBusiNm">
+	AND EVALU_BUSI_NM LIKE  '%'||#srchBusiNm#||'%'
+	</isNotEmpty>
+	<isNotEmpty property="busiStg">
+	AND EVALU_STAGE = #busiStg#
+	</isNotEmpty>
+	<!--
+	<isNotEmpty property="srchBusiAddr1">
+	AND BUSI_ADDR1 = #srchBusiAddr1#
+	</isNotEmpty>
+	<isNotEmpty property="srchBusiAddr2">
+	AND BUSI_ADDR2 = #srchBusiAddr2#
+	</isNotEmpty>
+	-->
+	AND FINAL_EVALU_FND is not null
+	ORDER BY EVALU_BUSI_NM
+    </select>
+
+   <select id="getBusiListCount" parameterClass="map"  resultClass="int">
+   
+   SELECT
+       COUNT(*)
+    FROM
+        TB_EVALU_DESTI_BUSI_INFO BI 
+    LEFT OUTER JOIN
+        TB_EVALU_DESTI_BUSI_STAGE BS                                                   
+            ON (
+                BI.EVALU_BUSI_NO = BS.EVALU_BUSI_NO
+            )  
+	WHERE 1=1
+	<isNotEmpty property="busiNm">
+	AND EVALU_BUSI_NM LIKE  '%'||#busiNm#||'%'
+	</isNotEmpty>
+	<!--
+	<isNotEmpty property="srchBusiAddr1">
+	AND BUSI_ADDR1 = #srchBusiAddr1#
+	</isNotEmpty>
+	<isNotEmpty property="srchBusiAddr2">
+	AND BUSI_ADDR2 = #srchBusiAddr2#
+	</isNotEmpty>
+	-->
+	AND FINAL_EVALU_FND is not null
+	ORDER BY EVALU_BUSI_NM
+	
+    </select>
+    
+</sqlMap>

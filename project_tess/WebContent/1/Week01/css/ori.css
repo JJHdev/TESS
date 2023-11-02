@@ -1,0 +1,8 @@
+@charset "utf-8";
+/* CSS Document */
+
+.ori_bg {background:url(../images/bg_ori.png) no-repeat;}
+.orientation{padding-top:29px; padding-left:299px; height:420px;}
+#header h1{width:425px;height:42px; padding:0px 0px 0px 130px; background:url(../images/title01.png) no-repeat bottom right;text-indent:-999px;overflow:hidden;}
+#content{min-height:30px;padding:0px 0 0 0px;}
+

@@ -1,0 +1,50 @@
+@charset "utf-8";
+/*
+2013-05-16 jian
+공통사항은 common을 참조. 
+*/
+
+
+
+/*선행학습*/
+#header h1{position:absolute; top:0px; left:765px; width:425px;height:42px; background:url(../images/title01.png) no-repeat top right;text-indent:-999px;overflow:hidden; z-index:1;}
+
+#content{padding:0px 0px 0px 0px;z-index:1;position:relative;}
+.review_bg {background:url(../images/bg_review.png) no-repeat;}
+a {color:#fff7db; text-decoration: none;font:1em/1 굴림, "gulim" ,"Arial"}
+p.navi_direc{margin-top:-2px; color:#ccc;}
+
+dl.review {padding:5px 0 0 50px;;width:900px; height:430px; overflow:hidden}
+dl.review dt{
+	position:absolute;
+	top:35px;
+	left:50px;
+}
+dl.review dd{width:875px; padding:10px 0 0 10px;line-height:2em;}
+* html dl.review dd{width:737px;}/*IE6 이하핵*/
+dl.review dd strong{color:#000;}
+.wid{width:880px; height:420px; overflow-y:auto;overflow-x:hidden;}
+ol{width:830px; padding-left:20px;}
+.nu{list-style-image:url(../images/sum_dot.png);font-weight:normal; line-height:22px; background-image:url(../images/sum_line.png);}
+.nu2{font-weight:normal; line-height:20px; padding-top:10px; text-align:center;}
+
+table {
+    margin-top: 14px;
+    empty-cells: hide; /*비어있는 셀을 안보이게 설정*/
+	background-color:#fff;
+	text-align:center;
+	margin-bottom:9px;
+}
+th, td {
+    border: 1px solid #888;
+    width: 150px;
+    text-align: center;
+    padding: 3px 10px;
+}
+th {
+    background-color: #ddd;
+}
+
+
+
+

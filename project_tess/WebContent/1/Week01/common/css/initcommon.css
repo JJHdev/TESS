@@ -1,0 +1,7 @@
+﻿@charset "utf-8";
+
+/*공통*/
+.display_none{display:none}
+.click_layer{position:relative}
+.click_layer span{position:absolute;left:0;top:0;cursor:pointer;display:inline-block;background:#dadaed;padding:2px;}
+.click_layer span.layer_img{background:#dadaed url(../../images/mouse.png) no-repeat center center}

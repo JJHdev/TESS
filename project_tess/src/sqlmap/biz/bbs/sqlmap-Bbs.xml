@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- @(#)sqlmap-Bbs.xml 1.0 2014/11/07                                  													   -->
+<!--                                                                         														   -->
+<!-- COPYRIGHT (C) 2006 CUBES CO., INC.                                                                                    -->
+<!-- ALL RIGHTS RESERVED.                                                                                                     -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- 게시판를 관리하는 SQL Map 파일이다.                       -->
+<!--                                                                         -->
+<!-- @author 신영민                                                          -->
+<!-- @version 1.0  2013.10.15                                                 -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<sqlMap namespace="Bbs">
+
+    <sql id="Bbs-SrchCondition">
+		<isNotEmpty property="search_word" prepend="AND">
+	        <isEqual property="search_name" compareValue="title">
+	            UPPER(BBS_SUBJECT) LIKE UPPER('%'||#search_word#||'%')
+	        </isEqual>
+	        <isEqual property="search_name" compareValue="content">
+	            a.BBS_NO IN (SELECT BBS_NO FROM TB_BBS_DESC WHERE UPPER(BBS_DESC) LIKE UPPER('%'||#search_word#||'%') GROUP BY BBS_NO)
+	        </isEqual>
+        </isNotEmpty>
+        <isNotEmpty property="docu_kind" prepend="AND">
+            DOCU_KIND         = #docu_kind#
+        </isNotEmpty>
+    </sql>
+
+    <!-- 검색 데이터 -->
+    <select id="listBbs" parameterClass="map" resultClass="hashmap">
+    SELECT
+        ROWNUM AS "rNum",
+        c.BBS_NO AS "bbsNo",
+        c.PARENT_BBS_NO AS "parentBbsNo",
+        c.REPLY_NO AS "replyNo",
+        c.BBS_KIND_NM AS "bbsKindNm",
+        c.BBS_KIND AS "bbsKind",
+        c.DOCU_KIND AS "docuKind",
+        c.BBS_SUBJECT AS "bbsSubject",
+        c.NEW_YN AS "newyn",
+        c.USER_ID AS "userId",
+        c.USER_NM AS "userNm",
+        c.VIEW_CNT AS "viewCnt",
+		SUBSTR(c.START_DATE,0,4) || '-' || SUBSTR(c.START_DATE,5,2) || '-' || SUBSTR(c.START_DATE,7,2) AS "startDate",
+		SUBSTR(c.END_DATE,0,4) || '-' || SUBSTR(c.END_DATE,5,2) || '-' || SUBSTR(c.END_DATE,7,2) AS "endDate",
+        c.OPEN_YN AS "openYn",
+        c.DEL_YN AS "delYn",
+        c.REGI_ID AS "regiId",
+        c.REGI_DATE AS "regiDate",
+        c.UPDT_ID AS "updtId",
+        c.UPDT_DATE AS "updtDate",
+        c.FL_CHK AS "flChk" 
+    FROM
+    	(
+	    SELECT
+	        BBS_NO,
+	        PARENT_BBS_NO,
+	        (SELECT d.BBS_NO FROM TB_BBS d WHERE d.DEL_YN = 'N' AND a.BBS_NO = d.PARENT_BBS_NO) AS REPLY_NO,
+	        (SELECT CODE_NM FROM SYS_CODE WHERE PARENT_CODE = #bbs_type# AND CODE = a.DOCU_KIND) as BBS_KIND_NM,
+	        BBS_KIND,
+	        DOCU_KIND,
+	        BBS_SUBJECT,
+	        <!-- BEGIN 2013.12.13 [1] K.E.S -->
+	        CASE
+	        WHEN REGI_DATE > SYSDATE - 7
+	        THEN 'Y'
+	        ELSE 'N'
+	        END AS NEW_YN,
+	        <!-- END 2013.12.13 [1] -->
+	        USER_ID,
+	        USER_NM,
+	        VIEW_CNT,
+	        START_DATE,
+	        END_DATE,
+	        OPEN_YN,
+	        DEL_YN,
+	        REGI_ID,
+	        TO_CHAR(REGI_DATE, 'YYYY-MM-DD') as REGI_DATE,
+	        UPDT_ID,
+	        UPDT_DATE,
+	        NVL2(ROOT_NO,'Y','N') AS FL_CHK               
+	    FROM
+	        TB_BBS a         
+	    LEFT OUTER JOIN
+	        (SELECT ROOT_NO FROM TB_ATTHFILE WHERE DEL_YN = 'N' AND DOCU_TYPE = #bbs_type# GROUP BY ROOT_NO) b          
+	            ON a.BBS_NO = b.ROOT_NO 
+        WHERE
+        	DEL_YN = 'N' AND
+        	a.BBS_KIND = #bbs_type#	
+        <!--<isEqual property="bbs_type" compareValue="B02" prepend="AND">-->
+        	<!--PARENT_BBS_NO = 0 -->
+         	<!--<isNotEqual property="roleId" compareValue="ROLE_AUTH_SYS" prepend="AND">-->
+        		<!--REGI_ID = #userId# 		&lt;!&ndash; 자기 등록내용만 보이도록 수정 2015-01-28 &ndash;&gt;-->
+        	<!--</isNotEqual>       	-->
+        <!--</isEqual> 	-->
+		<include refid="Bbs-SrchCondition" />  
+	    ORDER BY
+            BBS_NO DESC	
+        ) c
+    <isEqual property="bbs_type" compareValue="B02">
+        START WITH PARENT_BBS_NO = 0
+        CONNECT BY PRIOR BBS_NO = PARENT_BBS_NO
+        ORDER SIBLINGS BY BBS_NO DESC
+    </isEqual>    
+    </select>
+    
+    <!-- 검색 카운트 -->
+    <select id="listBbsCount" parameterClass="map" resultClass="int">
+		SELECT
+			COUNT(*)
+		FROM
+			TB_BBS a
+		WHERE
+			DEL_YN = 'N' AND
+			BBS_KIND = #bbs_type#
+		<!--<isEqual property="bbs_type" compareValue="B02" prepend="AND">-->
+        	<!--PARENT_BBS_NO = 0 -->
+        	<!--<isNotEqual property="roleId" compareValue="ROLE_AUTH_SYS" prepend="AND">-->
+        		<!--REGI_ID = #userId# 		&lt;!&ndash; 자기 등록내용만 보이도록 수정 2015-01-28 &ndash;&gt;-->
+        	<!--</isNotEqual>       				-->
+        <!--</isEqual>-->
+      	<include refid="Bbs-SrchCondition" /> 		
+    </select>
+    
+    <!-- 게시판 등록 -->
+    <insert id="saveBbs" parameterClass="map">
+    	<selectKey resultClass="string" keyProperty="bbs_no">
+	        SELECT 
+	        	NVL(MAX(BBS_NO),0) + 1
+	        FROM 
+	        	TB_BBS
+		</selectKey>
+        INSERT INTO TB_BBS 
+               (
+                   BBS_NO,
+             <isEqual property="bbs_type" compareValue="B02">
+             	   PARENT_BBS_NO,
+             </isEqual>        
+                   BBS_KIND,
+                   DOCU_KIND,
+                   BBS_SUBJECT,
+                   USER_ID,
+                   USER_NM,
+                   VIEW_CNT,
+                   DEL_YN,
+             <isEqual property="bbs_type" compareValue="B02">
+             	   OPEN_YN,
+             </isEqual>      
+             <isEqual property="bbs_type" compareValue="B04">
+             	   START_DATE,
+             </isEqual>      
+                   REGI_ID,
+                   REGI_DATE
+               )
+        VALUES (
+                   #bbs_no#,
+             <isEqual property="bbs_type" compareValue="B02">
+             	<isNull property="parent_bbs_no">
+             		0,
+             	</isNull>
+             	<isNotEmpty property="parent_bbs_no">
+             		#parent_bbs_no#,
+             	</isNotEmpty>
+             </isEqual>    
+                   #bbs_type#,
+                   #docuKind#,
+                   #bbsSubject#,
+                   #userId#,
+                   #userNm#,
+                   0,
+                   'N',
+             <isEqual property="bbs_type" compareValue="B02">
+             	   #openYn#,
+             </isEqual>
+             <isEqual property="bbs_type" compareValue="B04">
+             		#strDate#,
+             </isEqual>
+                   #regiId#,
+                   sysdate
+               )    
+    
+    </insert>
+    
+    <!-- 게시판 등록 -->
+    <insert id="saveBbsDesc" parameterClass="map">
+    	<selectKey resultClass="string" keyProperty="seq">
+	        SELECT 
+	        	NVL(MAX(SEQ),0) + 1
+	        FROM 
+	        	TB_BBS_DESC
+		</selectKey>
+        INSERT INTO TB_BBS_DESC 
+               (
+                   BBS_NO,
+				   SEQ,
+				   BBS_DESC
+               )
+        VALUES (
+                   #bbs_no#,
+				   #seq#,
+				   #bbsDesc#	
+               )    
+    
+    </insert>
+    
+    <!-- 조회수 1증가 -->
+    <update id="updtBbsCnt" parameterClass="map">
+    	 UPDATE	
+    		TB_BBS
+    	 SET	
+    	   	VIEW_CNT = NVL(VIEW_CNT,0) + 1
+    	 WHERE
+    	 	BBS_NO = #bbs_no#
+    </update>
+    
+     <!-- 게시판 상세조회 -->
+    <select id="viewBbs" parameterClass="map" resultClass="hashmap">
+    SELECT
+	    BBS_NO as "bbsNo",
+	    PARENT_BBS_NO as "parentBbsNo",
+	    BBS_KIND as "bbsKind",
+	    DOCU_KIND as "docuKind",
+	    "docuNm",
+	    BBS_SUBJECT as "bbsSubject",
+	    USER_ID as "userId",
+	    USER_NM as "userNm",
+	    VIEW_CNT as "viewCnt",
+	    OPEN_YN as "openYn",
+	    DEL_YN as "delYn",
+		SUBSTR(START_DATE,0,4) || '-' || SUBSTR(START_DATE,5,2) || '-' || SUBSTR(START_DATE,7,2) as "strDate",
+	    REGI_ID as "regiId",
+	    "regiDate",
+	    "nextSeq",
+	   	"preSeq",
+	   	"nextTitle",
+	   	"preTitle"
+    FROM
+    (	
+        SELECT
+            BBS_NO,
+            PARENT_BBS_NO,
+            BBS_KIND,
+            DOCU_KIND,
+            (SELECT CODE_NM FROM SYS_CODE WHERE PARENT_CODE = #bbs_type# and a.DOCU_KIND = CODE) AS "docuNm",
+            BBS_SUBJECT,
+            USER_ID,
+            USER_NM,
+            VIEW_CNT,
+            OPEN_YN,
+            DEL_YN,
+            START_DATE,
+            REGI_ID,
+            TO_CHAR(REGI_DATE, 'YYYY-MM-DD') as "regiDate",
+            LEAD (BBS_NO, 1) OVER (ORDER BY BBS_NO) as "nextSeq",
+        	LAG (BBS_NO, 1) OVER (ORDER BY BBS_NO) as "preSeq",
+        	LEAD (BBS_SUBJECT, 1) OVER (ORDER BY BBS_NO) as "nextTitle",
+        	LAG (BBS_SUBJECT, 1) OVER (ORDER BY BBS_NO) as "preTitle"
+        FROM
+            TB_BBS a 
+        WHERE 
+        	DEL_YN = 'N' AND
+        	a.BBS_KIND = #bbs_type#
+        <!--<isEqual property="bbs_type" compareValue="B02" prepend="AND">-->
+        	<!--PARENT_BBS_NO = 0        	-->
+        	<!--<isNotEqual property="roleId" compareValue="ROLE_AUTH_SYS" prepend="AND">-->
+        		<!--REGI_ID = #userId# 		&lt;!&ndash; 자기 등록내용만 보이도록 수정 2015-01-28 &ndash;&gt;-->
+        	<!--</isNotEqual>  -->
+        <!--</isEqual> 			-->
+		<include refid="Bbs-SrchCondition" />
+	    ORDER BY
+            a.BBS_NO	
+    ) c
+    	WHERE
+        BBS_NO = #bbs_no#
+    </select>
+    
+    <!-- 게시판 내용검색 -->
+    <select id="viewBbsDesc" parameterClass="map" resultClass="hashmap">
+    	SELECT
+    		*
+    	FROM
+    		TB_BBS_DESC
+    	WHERE
+    		BBS_NO = #bbs_no#
+    </select>
+    
+    <!-- 게시판 수정 -->
+    <update id="updtBbs" parameterClass="map">
+    	UPDATE
+    		TB_BBS
+    	SET
+    		DOCU_KIND = #docuKind#,
+    		BBS_SUBJECT = #bbsSubject#,
+    		UPDT_ID = #updtId#,
+    		UPDT_DATE = sysdate
+     	<isEqual property="bbs_type" compareValue="B02" prepend=",">
+        	OPEN_YN = #openYn#
+        </isEqual>
+     	<isEqual property="bbs_type" compareValue="B04" prepend=",">
+        	START_DATE = #strDate#
+        </isEqual>
+    	WHERE
+    		BBS_NO = #bbs_no#	
+    </update>
+    
+    <!-- 게시판 내용 삭제 -->
+    <delete id="delBbsDesc" parameterClass="map">
+    	DELETE
+    	FROM
+    		TB_BBS_DESC
+    	WHERE
+    		BBS_NO = #bbs_no#	
+    </delete>
+    
+      <!-- 게시판 삭제 -->
+    <update id="deltBbs" parameterClass="map">
+    	UPDATE
+    		TB_BBS
+    	SET
+    		DEL_YN = 'Y'
+    	WHERE
+    		BBS_NO = #bbs_no#		
+    </update>
+    
+    <select id="ajaxReplyData" parameterClass="map" resultClass="hashmap">
+    	SELECT
+    		BBS_NO as "reply_bbs_no",
+    		BBS_SUBJECT as "reply_bbs_subject"
+    	FROM
+    		TB_BBS
+    	WHERE
+    		PARENT_BBS_NO = #bbs_no#				
+    </select>
+    
+     <!-- 게시판 답글검색 -->
+    <select id="viewReplyBbs" parameterClass="map" resultClass="hashmap">
+    	SELECT
+    		BBS_NO as "bbsNo",
+    		PARENT_BBS_NO as "parentBbsNo",
+    		BBS_SUBJECT as "bbsSubject",
+    		DOCU_KIND as "docuKind",
+    		USER_NM as "userNm",
+    		TO_CHAR(REGI_DATE, 'YYYY-MM-DD') as "regiDate"
+    	FROM
+    		TB_BBS
+    	WHERE
+    		DEL_YN = 'N' AND
+    		PARENT_BBS_NO = #bbs_no#
+    </select>
+
+	<!-- 일정 조회-->
+	<select id="getDayScheduleList" parameterClass="string" resultClass="hashmap">
+		SELECT		BBS_SUBJECT bbsSubject,
+		      		BBS_NO bbsNo,
+			   		SUBSTR(START_DATE,5,2) || '-' || SUBSTR(START_DATE,7,2) bbsDate
+		FROM 		(
+						SELECT
+			                	BBS_SUBJECT,
+			                	BBS_NO,
+			                	START_DATE
+			            FROM TB_BBS
+			            WHERE BBS_KIND = 'B04'
+			            ORDER BY START_DATE DESC	
+					)
+		WHERE 		<![CDATA[ ROWNUM <= 5 ]]>
+		<!-- and SUBSTR(START_DATE,0,6) = #date# -->
+	</select>
+
+</sqlMap>

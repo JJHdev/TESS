@@ -1,0 +1,38 @@
+@charset "utf-8";
+
+/*layout*/
+ul.list {position:absolute;top:95px;left:30px}
+ul.list li{margin-bottom:19px}
+ul.list li a{display:block;height:19px;width:120px;padding:8px 15px 8px 15px;text-align:right;background:#ffccff;/*padding:5px  7px 7px 12px;  탭 리스트간 간격*/
+	}
+ul.list li a.on{background:#ff33cc}
+/* 보여질 컨텐트 */
+.contentView {margin:15px 0 0 180px;width:700px;height:380px;padding:10px 15px;overflow-y:auto;overflow-x:hidden;border:2px solid red}
+dl{padding:0 10px}
+dt{padding:0 0 5px 5px;color:#33c}
+dd{padding-left:40px;line-height:1.8em}
+dl.tool {margin-top:30px;padding-left:30px}
+dl.tool dt{padding:0;line-height:2em;}
+dl.tool dd{padding:0 0 10px 20px}
+/*type_face*/
+ul.list li a:link,
+ul.list li a:visited,
+ul.list li a:hover,
+ul.list li a:active{font:bold 12px/1.5 "굴림", gulim, Arial;text-decoration:none}
+ul.list li a {font-weight:bold;color:#b7b7b7}
+ul.list li a.on{color:#fff}
+ul.list li a:hover,ul.list li a:active{color:#ffff33}
+dt{font:bold 12px/1.5 "굴림", gulim, Arial}
+dd{padding-left:30px;line-height:1.8em;}
+
+table {font-size:12px }
+th {text-align:center; background:#666; padding:4px; color:#fff;}
+td {text-align:center; padding:4px;}
+.bg_gray {background:#CCC;}
+.bg_purple {background:#DFD1E0;}
+.bg_blur {background:#5B7EAA;}
+.mt10 {margin-top:10px;}
+.strOrg {color:#fa5200}
+
+ol li {line-height:2em}
+

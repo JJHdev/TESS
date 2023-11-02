@@ -1,0 +1,78 @@
+@charset "utf-8";
+/*
+2013-05-16 jian
+공통사항은 common을 참조. 
+*/
+
+/*intro*/
+.intro_bg {background:url(../images/bg_intro.png) no-repeat;}
+#content
+dl.outline {
+	position: absolute;
+	top: 221px;
+	left: 348px;
+	width: 600px;
+	color: #40342a;
+}
+dl.outline dt{height:80px;padding-right:18px; float:left;}
+dl.outline.sum dt{height:200px}
+dl.outline dd{padding:0px 0px 0 20px; line-height:18px; font-weight:bold;color:#296811;}
+		   dd strong{font-weight:bold;color:#40342a;}
+			
+
+/*학습목표*/
+dl.goal{
+	position: absolute;
+	left: 356px;
+	top: 327px;
+	padding: 0 10px 0 0;
+	width: 440px;
+	height: 100px;
+	line-height: 18px;
+}
+dl.goal dt{height:35px;padding-right:18px;}
+dl.goal dd{width:450px;padding:5px 0 0 0px; line-height:1.8em; letter-spacing:-1px;}
+dd strong{font-weight:bold;color:#802a17;}
+dl.goal.dot dd{padding-left:30px;background:url(../images/dot.gif) no-repeat 22px 17px; line-height:18px;  color: #792815;}
+dl.goal dd.n1{
+	width: 440px;
+	margin: 0px 0 0 0px;
+	color: #792815;
+	line-height: 20px;
+	background: url(../images/n1.png) no-repeat 10px 8px;
+	padding-left: 27px;
+	font-weight: bold;
+	font-size: 12px
+}
+dl.goal dd.n2{width:440px;margin:0px 0 0 0px; line-height:20px;color:#636876;background:url(../images/n2.png) no-repeat 10px 8px;padding-left:27px;font-weight:bold;font-size:12px; color: #792815;}
+dl.goal dd.n3{width:440px;margin:0px 0 0 0px; line-height:20px;color:#636876;background:url(../images/n3.png) no-repeat 10px 8px;padding-left:27px;font-weight:bold;font-size:12px; color: #792815;}
+dl.goal dd.n4{width:440px;margin:0px 0 0 0px; line-height:20px;color:#636876;background:url(../images/n4.png) no-repeat 10px 8px;padding-left:27px;font-weight:bold;font-size:12px; color: #792815;}
+dl.goal dd.n5{width:440px;margin:0px 0 0 0px; line-height:20px;color:#636876;background:url(../images/n5.png) no-repeat 10px 8px;padding-left:27px;font-weight:bold;font-size:12px; color: #792815;}
+
+
+.keyword{
+	width:660px;
+	color:#5f1c8e;
+	position:absolute;
+	left:263px;
+	top:386px;
+	line-height:18px;
+}
+
+dl.keyword>dt{position:absolute; top:10px; left:30px;}
+dl.keyword dd{padding:70px 0 0 50px; font-weight:bold;}
+dl.keyword dd strong{font-weight:bold; color:#666;}
+
+
+
+
+
+.paper li {height:15px; padding:5px 2px; font-size:1em; margin:0; float:left; cursor:pointer; border:none;}
+.paper li a {text-decoration:none; color:#525050; font-weight:normal; padding:4px 13px; letter-spacing:1px;} 
+.paper li a:hover, .paper li a:active, .paper li a.on{font-weight:bold; color:#fff; background:#0067b3; letter-spacing:0;}
+
+
+
+
+dd.comme {padding:10px 10px 0 0; float:right; color:#838383}	
+.arr{padding-left:10px;background:url(../images/arrow_r.gif) no-repeat 0 5px; line-height:1.6em; height:28px}  

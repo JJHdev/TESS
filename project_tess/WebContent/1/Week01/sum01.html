@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko" lang="ko">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<title>관광개발론</title>
+<script src="common/js/common.js" type="text/javascript"></script>
+<link  href="css/default.css" rel="stylesheet" type="text/css"/>
+<link  href="css/common.css" rel="stylesheet" type="text/css"/>
+<link  href="css/sum.css" rel="stylesheet" type="text/css"/>
+</head>
+<body class="sum01_bg">
+<ul id="acc">
+  <li><a accesskey="1" href="#gnb">주메뉴 바로가기</a></li>
+  <li><a accesskey="2" href="#content">본문내용 바로가기</a></li>
+  <li><a accesskey="3" href="#footer">하단내용 바로가기</a></li>
+</ul>
+<div id="wrapper">
+  <div id="header"> </div>
+  <!-- //header -->
+  <h3 class="hide">본문</h3>
+  <div id="content">
+    <h4 class="hide">정리하기</h4>
+    <p class="navi_direc"><img src="images/arrow_location.png" /><b>정리하기</b></p>
+    <div id="printme1">
+      <dl class="sum">
+        <dt class="sum01_tit"><img src="images/sum01_tit.png" alt="학습정리" /></dt>
+        <dd class="dot wid">
+          <ol>
+            <li class="first nu">
+              관광개발이란 관광자원의 가치창조와 증대를 통해 관광객 욕구를 충족시키고 <br />
+              지역주민의 삶의 질을 향상시키며 지역과 국가의 경제 및 사회발전을 도모하기 위한 <br />체계적이고 계획된 일련의 과정이다.
+</li>
+            <li class="nu">민간부문의 관광개발 목적은 이윤창출과 기업이미지 제고이며 공공부문의 관광개발 목적은 관광객 만족 증대, 지역경제 활성화, 지역이미지 개선, 지역민의 삶의 질 향상, 관광자원의 보호, 국토의 효율적 이용 및 균형발전 등이다.
+
+            </li>
+            <li class="nu">관광개발은 사업(개발)주체에 따라 공공개발, 민간개발, 민관합동개발과 이들의 조합에 의한 방식으로, 시간적 추진형태에 따라 동시개발과 단계개발로, 지역사회와의 통합형태에 따라 통합형 개발과 고립형 개발로, 그리고 공간개발전략에 따라 거점개발방식과 균형개발방식으로 구분할 수 있다.
+</li>
+
+<li class="nu">Butler(1980)의 관광지 진화주기 모형은 관광지를 탐험, 개입, 개발, 강화, 정체, 쇠퇴 또는 회복의 6단계로 구분한 진화론적 모형이다.
+
+</li>
+          </ol>
+        </dd>
+      </dl>
+    </div>
+    <!-- 프린트 레이어 시작 -->
+    <div id="print" class="print">
+      <button type="submit" onclick="printIt(document.getElementById('printme1').innerHTML);"><img src="images/btn_print.png" alt="인쇄하기" /></button>
+      <input type="hidden" id="main_title" value="관광개발론" />
+      <!-- 프린트 페이지 과목명 매강 확인할것-->
+      <input type="hidden" id="sub_title" value="1강. 관광개발의 기초개념" />
+      <!-- 프린트 페이지 강의 소제목 매강 확인할것 --> 
+    </div>
+    <!-- 프린트 레이어 끝 --> 
+  </div>
+  <!-- //content --> 
+</div>
+<!-- //wrapper--> 
+<!-- footer-->
+<div id="footer"> </div>
+<!-- //footer-->
+
+</body>
+</html>
+<script type="text/javascript" src="common/js/header.js"></script>

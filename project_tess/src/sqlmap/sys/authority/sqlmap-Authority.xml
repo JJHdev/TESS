@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Authority">
+
+	<select id="getAuthorityUser" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT CASE WHEN AUTH_YN = 0 THEN 'X'
+               ELSE 'O'
+               END AS "auth"
+		FROM   (
+					SELECT   SIGN(COUNT(b.role_id)) AS AUTH_CNT
+						   , SIGN(COUNT(c.role_id)) AS AUTH_YN
+					FROM   SYS_PROG a, SYS_AUTHORITY b,
+						   (SELECT role_id
+							FROM   SYS_ROLE
+							CONNECT BY PRIOR role_id = parent_role_id
+							START WITH role_id in (SELECT role_id
+												   FROM   SYS_ROLE_USER
+												   WHERE  user_id = #userId#)) c
+					WHERE  a.prog_id = b.prog_id
+					AND    b.role_id = c.role_id(+)
+					AND    a.prog_pattern = #url#
+				)
+		WHERE   AUTH_CNT > 0
+	</select>
+
+</sqlMap>

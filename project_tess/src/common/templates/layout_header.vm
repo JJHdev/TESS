@@ -1,0 +1,358 @@
+#set ($urlHome                = "/main.do")                                                <!-- 홈 -->
+#set ($urlLogin                = "/login.do")                                                <!-- 로그인 -->
+#set ($urlLogout                = "/j_logout_check.do")                                <!-- 로그아웃 -->
+
+#set ($listEvalu                = "listEvaluMgmt.jsp")                                                <!-- 홈 -->
+#set ($viewEvalu                = "viewEvaluMgmtSumm.jsp")                                                <!-- 로그인 -->
+#set ($regiEvalu                = "openRegiEvaluMgmtSumm.jsp")                                <!-- 로그아웃 -->
+#set ($updtEvalu            = "regiEvaluMgmtSumm.jsp")            <!-- 회원가입 -->
+#set ($listEvaluStg            = "listEvaluStgMgmt.jsp")                <!-- 회원수정 -->
+#set ($regiEvaluStg            = "regiEvaluStgMgmt.jsp")                    <!-- 아이디찾기 -->
+#set ($listEvaluBudt            = "listEvaluBudtMgmt.jsp")            <!-- 회원탈퇴 -->
+#set ($viewEvaluBudt        = "viewEvaluBudtMgmt.jsp")            <!-- 회원탈퇴 -->
+#set ($viewEvaluBudt2        = "viewEvaluBudtMgmt2.jsp")            <!-- 회원탈퇴 -->
+#set ($regiEvaluBudt        = "regiEvaluBudtMgmt.jsp")            <!-- 회원탈퇴 -->
+
+#set ($urlAdmin                = "/admn/listAdmnUser.do")                        <!-- 관리자-->
+
+
+#if($type == 'normal')
+<!--<div class="menu001Banner">--><!-- ******************************** 메인배너 ****************************** -->
+#end
+#if($type == 'main')
+<div class="mainBanner"><!-- ******************************** 메인배너 ****************************** -->
+#end
+
+#if($type == 'normal')
+
+    <!-- ******************************** 메인메뉴 레이아웃 ****************************** -->
+    <nav class="navbar navbar-fixed-top navbar-default gnb" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand evtdss-logo" title="TDSS 평가지원시스템" href="$urlHome"><img alt="TDSS 평가지원시스템" src="/img/logo_evtdss.png"
+                                                                                              title="TDSS 평가지원시스템"><span
+                        class="sr-only">TDSS 평가지원시스템</span></a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse evtdss-top">
+                <ul class="nav navbar-nav evtdss-menu">
+                    <!-- <li class="active"><a href="javascript:void(0);">메뉴명 <span class="sr-only">현재메뉴활성화 : li 'active' 클래스 활성화</span></a></li> -->
+
+                    #set ($seq                = 1)
+                    #set ($prevLevel        = 0)
+                    #set ($num                = 0)
+                    #set ($targetUrl        = "")
+                    #set ($prevFirstId        = "MN-INFO")
+                    #set ($trgtClass        = "")
+
+                    #foreach( $map in $menuList)
+
+                        #if ("$!map.tagtUrl" == "")
+                            #set ($targetUrl        = "#none")
+                        #else
+                            #if ($map.popupYn == 'Y')
+                                #set ($targetUrl        =
+                                    "javascript:newWindow('${map.tagtUrl}','$map.menuId', '1150', '680', 'yes', 'yes');")
+                            #else
+                                #set ($targetUrl        = $map.tagtUrl)
+                            #end
+                        #end
+                    ##<!-- 대메뉴 -->
+
+                        #if ($map.menuLvl >= 1 && $map.menuLvl <= 3)
+                            #if ($map.level == 1)
+                                <li><a href="$!{targetUrl}" title="$!{map.menuNm}">$!{map.menuNm}</a></li>
+                            #end
+                        #end
+
+                        #if ($map.menuLvl == 4)
+                            #if ($map.level == 1)
+                            <li class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                   aria-haspopup="true" aria-expanded="false" title="$!{map.menuNm}">$!{map.menuNm}
+                                    <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                            #end
+                        ##<!-- 서브 메뉴 -->
+                            #if ($map.level == 2 || $map.level == 3)
+                                <li><a href="$!{targetUrl}" title="$!{map.menuNm}">$!{map.menuNm}</a></li>
+                            #end
+                        #end
+
+                        #if ($map.menuLvl >= 5)
+                        ##<!-- 회원가입 메뉴 제외 -->
+                            #break
+                        #end
+
+
+                        #if ($map.level <= 3 )
+                            #set ($prevLevel    = $map.level)
+                            #set ($prevFirstId    = $map.firstMenuId)
+                            #set ($seq    = $seq + 1)
+                        #end
+
+                    #end
+                </ul>
+                </li>
+                </ul>
+
+                <form class="navbar-form navbar-right" role="form">
+                    <div class="user-wrap">
+                        <ul class="user-menus">
+							<!--<li><a title="사이트맵" href="./html/additional/sitemap.html">사이트맵</a></li>-->																																																										
+						
+                            #if (!$gsUserId) 
+                            
+                            #else
+                            	<li><a title="평가소개" href="/info/viewHowto.do">평가소개</a></li>
+                            	<li><a title="자료실" href="/bbs/listBbsFile.do">자료실</a></li>
+                            #end
+                        </ul>
+                        <ul class="user-infos">
+                            <li><span class="glyphicon glyphicon-user" aria-hidden="true"></span></li>
+                            
+                            #if (!$gsUserId)
+                            <li><a href="${urlLogin}" title="로그인">
+                                <button type="button" class="login">로그인</button>
+                            </a></li>
+                            #else
+                            <li><strong>$gsUserNm</strong> 님</li>
+                            <!--<li><a href="#" title="내정보">
+                                <small><u>내정보</u></small>
+                            </a></li>-->
+                            <li><a href="${urlLogout}" title="로그아웃">
+                                <button title="로그아웃" type="button" class="logout">로그아웃</button>
+                            </a></li>
+                            #end
+                            
+                            
+                        </ul>
+                    </div>
+
+                    <!-- 모바일 -->
+                    <ul class="nav navbar-nav mobile-menu">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false" title="관리자"><span
+                                    class="glyphicon glyphicon-user" aria-hidden="true"></span> <span
+                                    class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="${urlLogout}" title="로그아웃">로그아웃</a></li>
+                                <li><a href="./html/mypage/my.html" title="내정보">내정보</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="./html/additional/sitemap.html" title="사이트맵">사이트맵</a></li>
+                                <li><a href="./html/info/howto.html" title="평가소개">평가소개</a></li>
+                                <li><a href="./html/bbs/pdsList.html" title="자료실">자료실</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </form>
+
+            </div><!--/.navbar-collapse -->
+        </div>
+    </nav>
+
+#end
+
+#if($type == 'main')
+
+    <!-- ******************************** 메인메뉴 레이아웃 ****************************** -->
+    <nav class="navbar navbar-fixed-top navbar-default gnb" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand evtdss-logo" title="TDSS 평가지원시스템" href="./main.do"><img
+                        src="./img/logo_evtdss.png" alt="TDSS 평가지원시스템" title="TDSS 평가지원시스템"><span class="sr-only">TDSS 평가지원시스템</span></a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse evtdss-top">
+                <ul class="nav navbar-nav evtdss-menu">
+                    <!-- <li class="active"><a href="#">메뉴명 <span class="sr-only">현재메뉴활성화 : li 'active' 클래스 활성화</span></a></li> -->
+
+                    #set ($seq                = 1)
+                    #set ($prevLevel        = 0)
+                    #set ($num                = 0)
+                    #set ($targetUrl        = "")
+                    #set ($prevFirstId        = "MN-INFO")
+                    #set ($trgtClass        = "")
+
+                    #foreach( $map in $menuList)
+
+                        #if ("$!map.tagtUrl" == "")
+                            #set ($targetUrl        = "#none")
+                        #else
+                            #if ($map.popupYn == 'Y')
+                                #set ($targetUrl        =
+                                    "javascript:newWindow('${map.tagtUrl}','$map.menuId', '1150', '680', 'yes', 'yes');")
+                            #else
+                                #set ($targetUrl        = $map.tagtUrl)
+                            #end
+                        #end
+                    ##<!-- 대메뉴 -->
+
+                        #if ($map.menuLvl >= 1 && $map.menuLvl <= 3)
+                            #if ($map.level == 1)
+                                <li><a href="$!{targetUrl}" title="$!{map.menuNm}">$!{map.menuNm}</a></li>
+                            #end
+                        #end
+
+                        #if ($map.menuLvl == 4)
+                            #if ($map.level == 1)
+                            <li class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                   aria-haspopup="true" aria-expanded="false" title="$!{map.menuNm}">$!{map.menuNm}
+                                    <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                            #end
+                        ##<!-- 서브 메뉴 -->
+                            #if ($map.level == 2 || $map.level == 3)
+                                <li><a href="$!{targetUrl}" title="$!{map.menuNm}">$!{map.menuNm}</a></li>
+                            #end
+                        #end
+
+                        #if ($map.menuLvl >= 5)
+                        ##<!-- 회원가입 메뉴 제외 -->
+                            #break
+                        #end
+
+
+                        #if ($map.level <= 3 )
+                            #set ($prevLevel    = $map.level)
+                            #set ($prevFirstId    = $map.firstMenuId)
+                            #set ($seq    = $seq + 1)
+                        #end
+
+                    #end
+                </ul>
+                </li>
+                </ul>
+
+                <form class="navbar-form navbar-right" role="form">
+                    <div class="user-wrap">
+                        <ul class="user-menus">
+                            <!--<li><a title="사이트맵" href="./html/additional/sitemap.html">사이트맵</a></li>-->
+                            <li><a title="평가소개" href="/info/viewHowto.do">평가소개</a></li>
+                            <li><a title="자료실" href="/bbs/listBbsFile.do">자료실</a></li>
+                        </ul>
+                        <ul class="user-infos">
+                        
+                        	
+                        	#if (!$gsUserId)
+                            <li><a href="${urlLogin}" title="로그인">
+                                <button type="button" class="login">로그인</button>
+                            </a></li>
+                            #else
+                            <li><strong>$gsUserNm</strong> 님</li>
+                            <!--<li><a href="javascript:void(0);" title="내정보">
+                                <small><u>내정보</u></small>
+                            </a></li>-->
+                            <li><a href="${urlLogout}" title="로그아웃">
+                                <button type="button" class="logout">로그아웃</button>
+                            </a></li>
+                            #end
+                            
+                        </ul>
+                    </div>
+
+                    <!-- 모바일 -->
+                    <ul class="nav navbar-nav mobile-menu">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-haspopup="true" aria-expanded="false" title="관리자"><span
+                                    class="glyphicon glyphicon-user" aria-hidden="true"></span> <span
+                                    class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="${urlLogout}" title="로그아웃">로그아웃</a></li>
+                                <li><a href="./html/mypage/my.html" title="내정보">내정보</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="./html/additional/sitemap.html" title="사이트맵">사이트맵</a></li>
+                                <li><a href="./html/info/howto.html" title="평가소개">평가소개</a></li>
+                                <li><a href="./html/bbs/pdsList.html" title="자료실">자료실</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </form>
+
+            </div><!--/.navbar-collapse -->
+        </div>
+    </nav>
+
+#end
+
+#if($type == 'normal')
+
+    <!-- 메인배너 텍스트 -->
+    <!--<div class="container">
+        <h2 class="subMainText">평가관리</h2>
+    </div>-->
+    <!-- //메인배너 텍스트 -->
+
+#end
+
+</div><!--/mainBanner-->
+
+<!-- ******************************** 메인내용 ****************************** -->
+<div class="section">
+    <!--<div class="container">-->
+
+##    #if($type == 'normal' and $firstMenuId != 'MN-BBS' and $firstMenuId != 'MN-BUSI'  and $firstMenuId != 'MN-BUSI')
+##
+##        <div class="lnb">
+##            <div class="container">
+##                <div class="lnb-roller">
+##                    <a href="javascript:void(0);" title="메뉴보기" onclick="lnbScroll()"><img alt="메뉴보기" src="/img/arrow_bottom_medium.png"></a>
+##                </div>
+##                <ul class="evtdss-localmenu">
+##                    <!-- <li class="active"><a title="메뉴명" href="javascript:void(0);">메뉴명 <span class="sr-only">현재메뉴활성화 : li 'active' 클래스 활성화</span></a></li> -->
+##                    <li class="active"><a href="/mng/listEvaluBusiMgmt.do" title="평가사업관리">평가사업관리$!{firstMenuId}</a>
+##                    </li>
+##                    <li><a href="../../html/admin/environmentIndex.html" title="평가환경설정">평가환경설정</a></li>
+##                    <li><a href="../../html/admin/committeeList.html" title="평가위원관리">평가위원관리</a></li>
+##                    <li><a href="../../html/admin/environmentCategory.html" title="카테고리관리">카테고리관리</a></li>
+##                    <li><a href="../../html/admin/environmentBbs.html" title="게시판관리">게시판관리</a></li>
+##                    <li><a href="../../html/admin/analytics.html" title="이용통계">이용통계</a></li>
+##                </ul>
+##            </div>
+##        </div>
+##
+##    #end
+
+
+
+
+##    #if($firstMenuId == 'MN-BBS' || $firstMenuId == 'MN-BUSI')
+
+
+        <div class="lnb">
+##            $!{firstMenuId}
+
+            <div class="container">
+                <div class="lnb-roller">
+                    <a href="javascript:void(0);" title="메뉴보기" onclick="lnbScroll()"><img alt="메뉴보기" src="/img/arrow_bottom_medium.png"></a>
+                </div>
+                <ul class="evtdss-localmenu">
+                    #foreach( $map in $menuList)
+                        #set ($class = '')
+                        #if ( $map.level == 2 and $map.parentId == $firstMenuId)
+                            #if ($map.menuId == $secondMenuId)
+                                #set ($class = 'active')
+                            #end
+                            <li class="$!{class}"><a href="$!{map.tagtUrl}" title="$!{map.menuNm}">$!{map.menuNm}</a></li>
+                        #end
+                    #end
+                </ul>
+            </div>
+        </div>
+
+##    #end

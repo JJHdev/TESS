@@ -1,0 +1,90 @@
+@charset "utf-8";
+/*
+2013-05-16 jian
+공통사항은 common을 참조. 
+*/
+/*study*/
+#wrapper{background:url(../images/bg_study02.png) no-repeat left top}
+#content{min-height:30px;padding:10px 0}
+h4 {padding-left:30px;} 
+p.navi_direc{margin-left:25px}
+p.direc{margin-left:25px; line-height:16px}
+	.study{padding-top:3px;height:518px;width:100%;}
+p.stite{position:absolute;top:101px;left:65px;}
+p.stite02{position:absolute;top:99px;left:65px;}
+p.wbu{position:absolute;top:510px;left:805px;}
+
+/*용어사전*/
+.study02_pa{background:url(../images/bg_word.png) no-repeat left top}
+.word_p{
+	margin-top:90px; margin-left:50px; width:700px;
+}
+.orangetitle01{
+   margin:3px 0 0 0;
+   padding:2px 0 0 22px; font-size:12px;
+   height:20px;
+   background: url(../images/w_ico.gif) no-repeat  0 3px;
+}
+dd.w22{padding:0 0 0 23px}
+
+.cored{color:#F30}
+.coblu{color:#036}
+
+p.wbu02{position:absolute;top:560px;left:730px;} 
+
+
+
+.table_tab{
+  margin:80px 0 0 90px;
+  font-size:12px;
+}
+.round_table1{
+ width:780px;
+ height:260px;
+ margin:5px 20px 0px 60px;
+ padding:5px 35px 10px 30px;
+ line-height:20px; overflow:auto;
+ word-break:keep-all; text-align:justify;
+}
+.dot{padding-left:10px;background:url(../images/dot.gif) no-repeat 0 5px; line-height:1.4em}
+.arr{padding-left:10px;background:url(../images/arrow_r.gif) no-repeat 0 5px; line-height:1.6em}
+
+.tab_off{ 
+ float:left; margin-right:2px;
+ color:#112e2e;
+ background:#b1dd7e; 
+ width:153px;height:25px;border:1px solid #8cbc5a ;text-align:center; padding:3px 0 0 0;
+
+ 
+
+}
+
+.tab_on{
+ float:left; margin-right:2px;
+ color:#112e2e;
+ background:#40ac54; 
+ width:153px;height:25px;border:1px solid #8cbc5a ;text-align:center; padding:3px 0 0 0;
+
+ }
+
+
+.table_tab .tab_on a{
+ color:#fff;
+ text-decoration:none;
+ display:block;height:25px;
+ 
+ 
+}
+
+.table_tab .tab_off a{
+ color:#052502;
+ text-decoration:none;
+ font-weight:normal;
+  display:block;height:25px;
+
+}
+
+.30m{ margin:0 0 0 30px}
+.20m{margin-left:20px}
+.10m{margin-left:10px}
+.b{font-weight:bold}

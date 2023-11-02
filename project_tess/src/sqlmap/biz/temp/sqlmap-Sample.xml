@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Sample">
+
+	<!-- 프로시저 Parameter Map 정의 -->
+	<parameterMap id="procedureMap" class="java.util.Map">
+		<parameter property="strTblName" jdbcType="VARCHAR" mode="IN"/>
+		<parameter property="strCompNo" jdbcType="NVARCHAR" mode="IN"/>
+		<parameter property="maxChgReqSeq" jdbcType="INT" mode="IN"/>
+
+		<parameter property="rtnNum" jdbcType="VARCHAR" mode="OUT"/>
+		<parameter property="rtnMsg" jdbcType="VARCHAR" mode="OUT"/>
+	</parameterMap>
+
+	<!-- Sample List -->
+	<select id="listSample" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		SELECT   SEQ                              AS "seq"
+		       , USER_ID                          AS "userId"
+		       , USER_NM                          AS "userNm"
+               , TITLE                            AS "title"
+               , USER_TYPE						  AS "userType"
+               , (SELECT CODE_NM FROM SYS_CODE WHERE PARENT_CODE = 'USER_TYPE' AND CODE = a.USER_TYPE) AS "userTypeNm"
+			   , TO_CHAR(REGI_DATE, 'yyyy-mm-dd hh24:mi:ss')  AS "regiDttm"
+			   , TO_CHAR(REGI_DATE, 'yyyy-mm-dd')  AS "regiDate"
+               , '1234.00'                        AS "amt"
+		FROM   Z_SAMPLE a
+        <dynamic prepend="WHERE">
+            <isNotEmpty prepend="AND" property="schUserId">
+                USER_ID like '%'||#schUserId#||'%'
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="schUserNm">
+                USER_NM like '%'||#schUserNm#||'%'
+            </isNotEmpty>
+        </dynamic>
+        ORDER BY SEQ DESC
+	</select>
+	<!-- Sample List Count -->
+	<select id="listSampleCount" resultClass="java.lang.Integer" parameterClass="java.util.HashMap">
+		SELECT COUNT(*)
+		FROM   Z_SAMPLE
+        <dynamic prepend="WHERE">
+        	<isNotEmpty prepend="AND" property="schUserId">
+        		USER_ID like '%'||#schUserId#||'%'
+        	</isNotEmpty>
+        	<isNotEmpty prepend="AND" property="schUserNm">
+        		USER_NM like '%'||#schUserNm#||'%'
+        	</isNotEmpty>
+        </dynamic>
+	</select>
+
+	<!-- Sample View -->
+	<select id="viewSample" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		SELECT   USER_ID                          AS "userId"
+		       , USER_NM                          AS "userNm"
+			   , TITLE                            AS "title"
+			   , CONTENT                          AS "content"
+			   , TO_CHAR(REGI_DATE, 'yyyy-mm-dd hh24:mi:ss')  AS "regiDttm"
+			   , USER_TYPE						  AS "userType"
+		FROM   Z_SAMPLE
+		WHERE  SEQ = #seq#
+	</select>
+
+	<!-- Sample Insert -->
+	<insert id="regiSample" parameterClass="java.util.Map">
+		INSERT INTO Z_SAMPLE (
+			SEQ,
+			USER_ID,
+			USER_NM,
+			TITLE,
+			CONTENT,
+			USER_TYPE,
+			REGI_DATE
+		) VALUES (
+			(
+				SELECT NVL(MAX(SEQ), 0) + 1
+				FROM   Z_SAMPLE
+			) ,
+			#gsUserId#,
+			#userNm#,
+			#title#,
+			#content#,
+			#userType#,
+			systimestamp
+		)
+	</insert>
+
+	<insert id="regiSample2" parameterClass="java.util.Map" >
+		<selectKey resultClass="java.lang.String" keyProperty="seq">
+			SELECT NVL(MAX(SEQ), 0) + 1 AS SEQ FROM Z_SAMPLE
+		</selectKey>
+		INSERT INTO Z_SAMPLE (
+			SEQ,
+			USER_ID,
+			USER_NM,
+			TITLE,
+			CONTENT,
+			USER_TYPE,
+			REGI_DATE
+		) VALUES (
+			#seq#,
+			#gsUserId#,
+			#userNm#,
+			#title#,
+			#content#,
+			#userType#,
+			systimestamp
+		)
+	</insert>
+	<update id="updtSample" parameterClass="java.util.Map">
+		UPDATE  Z_SAMPLE
+		SET     USER_ID         = #gsUserId#,
+				USER_NM         = #userNm#,
+				TITLE           = #title#,
+				CONTENT         = #content#,
+				UPDT_DATE         = systimestamp
+		WHERE   SEQ = #seq#
+	</update>
+	<update id="deltSample" parameterClass="java.util.Map">
+		DELETE FROM Z_SAMPLE
+		WHERE  SEQ  = #seq#
+	</update>
+
+
+	<procedure id="saveChgMode" parameterMap="procedureMap" resultClass="java.util.HashMap">
+		{ call SP_CHGMODE_SAVE( ? , ? , ?, ? , ? )}
+	</procedure>
+
+	<!-- GRID data -->
+	<update id="updtSampleGrid" parameterClass="java.util.Map">
+		UPDATE  Z_SAMPLE
+		SET     USER_ID         = #gsUserId#,
+				USER_NM         = #userNm#,
+				TITLE           = #title#,
+				USER_TYPE		= #userTypeNm#,
+				UPDT_DATE         = systimestamp
+		WHERE   SEQ = #seq#
+	</update>
+
+	<update id="deltSampleGrid" parameterClass="java.util.Map">
+		DELETE FROM Z_SAMPLE
+		WHERE  0 = 0
+		<isNotEmpty property="arrSeq">
+			<iterate prepend="AND" property="arrSeq" open="(" close=")" conjunction="OR">
+				SEQ  = $arrSeq[]$
+			</iterate>
+		</isNotEmpty>
+	</update>
+
+
+	<!--  접속통계 -->
+	<select id="listSampleChart" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+
+		<!-- 임시사용 -->
+		SELECT   A.USER_ID			AS "userId"
+		       , NVL(B.RATE,0)  	AS "rate"
+		       , A.MM||'월'			AS "chartNm"
+		       , A.USER_NM			AS "chartLabel"
+		       , NVL(B.CNT,0)   	AS "chartVal"
+		       , ROW_NUMBER()OVER(PARTITION BY A.MM ORDER BY A.USER_NM) AS "chartSeq"
+		FROM (
+		        SELECT *
+		        FROM   (
+		                    SELECT ROWNUM AS MM
+		                    FROM   DUAL
+		                    CONNECT BY LEVEL <![CDATA[<=]]>  12
+		                ) T1,
+		                (
+		                    SELECT USER_ID, USER_NM
+		                    FROM   TB_USER
+		                    WHERE  USER_ID IN ('admin','test02')
+		                ) T2
+
+		     ) A,
+		     (
+		        SELECT   L.USER_ID  AS USER_ID
+		               , LOGIN_MM   AS MM
+		               , COUNT(*)   AS CNT
+		               , ROUND(RATIO_TO_REPORT(COUNT(*)) OVER(PARTITION BY GROUPING_ID(LOGIN_MM)) * 100, 2) AS RATE
+		        FROM   SYS_LOGHIST L, TB_USER U
+		        WHERE  L.LOGIN_YYYY = '2014'
+		        AND    L.USER_ID = U.USER_ID
+		        AND    U.USER_ID IN ('admin','test02')
+		        GROUP BY L.USER_ID, L.LOGIN_MM
+		     ) B
+		WHERE A.MM      = B.MM(+)
+		AND   A.USER_ID = B.USER_ID(+)
+		ORDER BY  A.MM
+
+		<!--
+		SELECT B.MENU_NM		AS "menuNm",
+		       COUNT(*)			AS "cnt",
+		       TO_CHAR(MAX(A.ACCHIST_DTTM), 'yyyy-mm-dd hh24:mi:ss')	AS "lastDay",
+		       ROUND(RATIO_TO_REPORT(COUNT(*)) OVER(PARTITION BY GROUPING_ID(B.MENU_NM)) * 100, 2) AS "rate",
+		       B.MENU_NM		AS "chartName",
+		       COUNT(*)			AS "chartVal"
+		FROM   SYS_ACCHIST A,
+		       SYS_MENU B,
+		       SYS_PROG C
+		WHERE  A.PROG_URL   = C.PROG_PATTERN(+)
+		AND    B.MENU_ID    = C.MENU_ID
+		GROUP BY B.MENU_ID, B.MENU_NM
+		ORDER BY B.MENU_ID, B.MENU_NM
+		-->
+	</select>
+
+</sqlMap>

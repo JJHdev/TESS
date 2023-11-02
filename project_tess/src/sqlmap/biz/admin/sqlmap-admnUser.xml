@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AdmnUser">
+
+    <!-- 조회조건. -->
+    <sql id="AdmnUser-SrchCondition">
+        <isNotEmpty property="srchFromJoinDate">
+            <![CDATA[
+               AND A.JOIN_DATE   >= TO_DATE(#srchFromJoinDate#, 'YYYY/MM/DD')
+            ]]>
+        </isNotEmpty>
+        <isNotEmpty property="srchToJoinDate">
+            <![CDATA[
+               AND A.JOIN_DATE   <  TO_DATE(#srchToJoinDate#, 'YYYY/MM/DD')+1
+            ]]>
+        </isNotEmpty>
+        <isNotEmpty property="srchUserType">
+               AND A.USCM_TYPE LIKE '%'||#srchUserType#||'%'
+        </isNotEmpty>
+        <isNotEmpty property="srchUseStat">
+               AND A.USE_STAT = #srchUseStat#
+        </isNotEmpty>
+        <isNotEmpty property="cityauthCd1">
+               AND SUBSTR(A.CITYAUTH_CD, 1,2) || '00'= #cityauthCd1#
+        </isNotEmpty>
+        <isNotEmpty property="cityauthCd">
+               AND A.CITYAUTH_CD = #cityauthCd#
+        </isNotEmpty>
+        <isNotEmpty property="srchSrchType">
+            <isEqual property="srchSrchType" compareValue="1">
+                AND A.USER_ID LIKE '%'||#srchSrchTxt#||'%'
+            </isEqual>
+            <isEqual property="srchSrchType" compareValue="2">
+                AND A.USER_NM LIKE '%'||#srchSrchTxt#||'%'
+            </isEqual>
+            <isEqual property="srchSrchType" compareValue="3">
+                AND A.USCM_NM LIKE '%'||#srchSrchTxt#||'%'
+            </isEqual>
+            <isEqual property="srchSrchType" compareValue="4">
+                AND A.DEPT_NM LIKE '%'||#srchSrchTxt#||'%'
+            </isEqual>
+            <isEqual property="srchSrchType" compareValue="5">
+                AND A.USCM_ROLE LIKE '%'||#srchSrchTxt#||'%'
+            </isEqual>
+        </isNotEmpty>
+    </sql>
+	<!-- 조회조건. -->
+	
+    <!-- 회원관리 리스트 조회 쿼리 -->
+    <select id="getAdmnUser" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+
+	        SELECT
+				A.USER_ID				AS "userId",
+				A.USER_NM				AS "userNm",
+				A.PASSWD				AS "password",
+				A.EMAIL					AS "email",	
+				A.TEL_NO					AS "telNo",
+				A.CELL_NO				AS	"cellphoneNo",
+				A.DEPT_CD				AS	"DeptCd",	
+				NVL2(A.DEPT_CD, FN_GET_CODENM('DEPT_CD', A.DEPT_CD), A.DEPT_NM)				AS	"deptNm",
+				TO_CHAR(TO_DATE(A.JOIN_DATE, 'YY-MM-DD'), 'YYYYMMDD')			AS "joinDate",
+				A.USE_YN					AS "useYn",
+				(SELECT CODE_NM FROM SYS_CODE B WHERE PARENT_CODE = 'USE_STAT' AND A.USE_STAT = B.CODE) AS "useStatNm",
+				A.USCM_NO				AS "uscmNo",
+				A.USCM_NM				AS "uscmNm",
+				(SELECT CODE_NM FROM SYS_CODE B WHERE PARENT_CODE = 'USCM_TYPE' AND A.USCM_TYPE = B.CODE) AS "uscmTypeNm",
+				A.USCM_TYPE			AS "uscmType",
+				A.USCM_DEPT_CD		AS "uscmDeptCd",
+				A.USCM_DEPT_NM		AS "uscmdeptNm",
+				A.BUSI_REGN_NO		AS "busiRegnNo",
+				A.OWNER_NM			AS "ownerNm",
+				A.CITYAUTH_CD 		AS "cityAuthCd",
+				A.POST_NO 				AS "roadPostNo",
+	            A.ADDR1||' '||A.ADDR2||' '||A.ADDR3||' '||A.ADDR4||' '||A.ADDR5 AS "roadAddress1",
+				A.ADDR1					AS "roadAddr1",
+				A.ADDR2					AS "roadAddr2",
+				A.ADDR3					AS "roadAddr3",
+				A.ADDR4					AS "roadAddr4",
+				A.ADDR5   				AS "roadAddr5"
+	        FROM VW_USER A
+	        WHERE (0=0)
+	     <include refid="AdmnUser-SrchCondition" />    
+        <isNotEmpty  property="sidx">
+        	ORDER BY $sidx$ $sord$
+        </isNotEmpty> 
+        <isEmpty  property="sidx">
+        	ORDER BY joinDate desc
+        </isEmpty>
+                
+    </select> 
+    
+    <!-- 회원관리 리스트 카운트 조회. -->
+     <select id="getAdmnUserCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+        SELECT
+			COUNT(*)
+        FROM VW_USER A
+        WHERE (0=0)
+       <include refid="AdmnUser-SrchCondition" />
+    </select>
+    
+    <!-- 회원정보 입력 -->
+	<insert id="regiAdmnUser" parameterClass="java.util.Map">
+		INSERT INTO TB_USER
+		(
+			USER_ID,
+			USCM_NO,
+			USER_NM,
+			PASSWD,
+			EMAIL,
+			TEL_NO,
+			CELL_NO,			
+			DEPT_CD,
+			DEPT_NM,	
+			USE_YN,
+			JOIN_DATE,
+			USE_STAT,
+			TEST_USE_YN,
+			REGI_ID,
+			REGI_DATE
+		)
+		VALUES
+		(
+			#userId#,
+			#uscmNo#,
+			#userNm#,
+			#passwd#,
+			#email#,
+			#telNo#,
+			#cellphoneNo#,			
+			#deptCd#,
+			#deptNm#,	
+			#useYn#,
+			TO_DATE(sysdate, 'YYYY-MM-DD'),
+			#useStat#,
+			#testUseYn#,
+			#regiId#,
+			sysdate
+		)
+	</insert>
+	
+	<!-- 개인(업체) 기본정보 신규등록 -->	
+	<insert id="regiAdmnUscm" parameterClass="java.util.Map">
+		<selectKey resultClass="java.lang.String" keyProperty="uscmNo">
+            SELECT
+                TO_CHAR(SYSDATE, 'YY')
+                || LPAD(NVL( TO_NUMBER( SUBSTR(MAX(USCM_NO),3,10) ), 0) + 1, 8,'0') AS "uscmNo"
+            FROM TB_USCM
+            WHERE USCM_NO LIKE TO_CHAR(SYSDATE, 'YY')||'%'
+        </selectKey>	
+		INSERT INTO TB_USCM
+		(
+			USCM_NO,
+			USCM_NM,
+			USCM_ROLE,
+			USCM_TYPE,			
+			DEPT_CD,
+			DEPT_NM,
+			OWNER_NM,	
+			BUSI_REGN_NO,			
+			CITYAUTH_CD,			
+			POST_NO,
+			ADDR1,
+			ADDR2,
+			ADDR3,
+			ADDR4,
+			ADDR5,
+			USE_STAT,
+			USE_YN,
+			REGI_ID,
+			REGI_DATE
+		)
+		VALUES
+		(
+			#uscmNo#,		
+			#uscmNm#,	
+			#uscmRole#,
+			#uscmType#,	
+			#deptCd#,
+			#deptNm#,
+			#ownerNm#,	
+			#busiRegnNo#,	
+			#cityauthCd#,		
+			#roadPostNo#,
+			#roadAddr1#,
+			#roadAddr2#,
+			#roadAddr3#,
+			#roadAddr4#,
+			#roadAddr5#,
+			#useStat#,
+			#testUseYn#,
+			#regiId#,
+			sysdate
+		)
+	</insert>
+	
+	 <!-- 해당 사용자의 모든 권한을 삭제 -->
+    <delete id="deltAdmnAllUserRole" parameterClass="java.util.Map" >
+        DELETE 
+        FROM 
+        	SYS_ROLE_USER
+        WHERE 
+        	USER_ID = #userId#
+    </delete>
+
+    <!-- 해당사용자의 권한정보를 등록. -->
+    <insert id="regiAdmnUserRole" parameterClass="java.util.Map" >
+        INSERT INTO SYS_ROLE_USER (
+             USER_ID
+            ,ROLE_ID
+            ,REGI_ID
+            ,REGI_DATE
+        ) VALUES (
+             #userId#
+            ,#roleId#
+            ,#regiId#
+            ,SYSDATE
+        )
+    </insert>	
+	
+	 <!-- 사용자 ID 중복 검사 -->
+    <select id="viewAdmnCheckDuplUserId" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+        SELECT 
+        	SUM(CNT) AS CNT FROM 
+        (
+            SELECT 
+            	COUNT(*) AS CNT
+             FROM 
+             	TB_USER
+            WHERE 
+            	USER_ID = #userId#
+        )
+    </select>
+    
+     <!-- 사용자 기본정보 조회. -->
+    <select id="viewAdmnUser" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+        SELECT
+			A.USER_ID				AS "userId",
+			A.USER_NM				AS "userNm",
+			A.PASSWD				AS "password",
+			A.EMAIL					AS "email",	
+			A.TEL_NO					AS "telNo",
+			A.CELL_NO				AS	"cellphoneNo",
+			A.DEPT_CD				AS	"deptCd",	
+			A.DEPT_NM			    AS "deptNm", 
+			A.JOIN_DATE				AS "joinDate",
+			A.USE_YN					AS "useYn",
+			A.USE_STAT				AS "useStat",
+			A.USCM_NO				AS "uscmNo",
+			A.USCM_NM				AS "uscmNm",
+			A.USCM_ROLE			AS "uscmRole",
+			A.USCM_TYPE			AS "uscmType",
+			A.USCM_DEPT_CD		AS "uscmDeptCd",
+			A.USCM_DEPT_NM		AS "uscmDeptNm",
+			A.BUSI_REGN_NO		AS "busiRegnNo",
+			A.OWNER_NM			AS "ownerNm",
+			A.CITYAUTH_CD 		AS "cityAuthCd",
+			A.POST_NO 				AS "roadPostNo",
+            A.ADDR1||' '||A.ADDR2||' '||A.ADDR3||' '||A.ADDR4||' '||A.ADDR5 AS "roadAddress1",
+			A.ADDR1					AS "roadAddr1",
+			A.ADDR2					AS "roadAddr2",
+			A.ADDR3					AS "roadAddr3",
+			A.ADDR4					AS "roadAddr4",
+			A.ADDR5   				AS "roadAddr5",
+            (SELECT
+                (SELECT 
+                    CITYAUTH_NM
+                FROM 
+                    TB_CITYAUTH
+                WHERE
+                    PARENT_CITYAUTH_CD = 'NONE' AND 
+                    CITYAUTH_CD = (SUBSTR (A.CITYAUTH_CD, 1, 2) || '00'))||' '||
+                (SELECT 
+                    CITYAUTH_NM
+                FROM 
+                    TB_CITYAUTH
+                WHERE
+                     PARENT_CITYAUTH_CD = (SUBSTR (A.CITYAUTH_CD, 1, 2) || '00') AND  
+                     CITYAUTH_CD = A.CITYAUTH_CD)
+            FROM
+                 DUAL) as "cityAuthNm"			
+        FROM VW_USER A
+        WHERE (0=0)
+          AND
+          		USER_ID = #userId#
+    </select>
+    
+    <!-- 비밀번호 수정  -->
+    <update id="saveResetUserPwd" parameterClass="map">
+         UPDATE 
+         	TB_USER A
+         SET   
+         	A.PASSWD = #passwd#
+         WHERE 
+         	A.USER_ID = #userId#
+    </update>
+    
+    	<!-- 개인(업체) 기본정보 수정 -->
+    <update id="updtAdmnUscm" parameterClass="java.util.Map">
+    	UPDATE
+    		TB_USCM
+    	SET
+    		USCM_NM = #uscmNm#,	
+    		USCM_ROLE = #uscmRole#,	
+    		USCM_TYPE = #uscmType#,	
+    		DEPT_CD = #deptCd#,	
+    		DEPT_NM = #deptNm#,	
+    		OWNER_NM = #ownerNm#,	
+    		BUSI_REGN_NO = #busiRegnNo#,	
+    		CITYAUTH_CD = #cityauthCd#,	
+    		POST_NO = #roadPostNo#,	
+    		ADDR1 = #roadAddr1#,	
+    		ADDR2 = #roadAddr2#,	
+    		ADDR3 = #roadAddr3#,	
+    		ADDR4 = #roadAddr4#,	
+    		ADDR5 = #roadAddr5#,	
+    		UPDT_ID = #userId#,	
+    		UPDT_DATE = sysdate
+    	WHERE
+    		(0=0)
+          	AND USCM_NO = #uscmNo#	
+    </update>
+    
+    <!-- 회원정보 수정 -->
+    <update id="updtAdmnUser" parameterClass="java.util.Map">
+        UPDATE
+    		TB_USER
+    	SET
+    	<isNotEmpty property="chgUscmNo">
+    		USCM_NO = #chgUscmNo#,
+    	</isNotEmpty>
+    		EMAIL = #email#,
+    		TEL_NO = #telNo#,
+    		CELL_NO = #cellphoneNo#,
+    		DEPT_CD = #deptCd#,
+    		DEPT_NM = #deptNm#,
+    	<isNotEmpty property="useYn">
+    		USE_YN = #useYn#,
+    	</isNotEmpty>
+    	<isNotEmpty property="useStat">
+    		USE_STAT = #useStat#,
+    	</isNotEmpty>	
+    		UPDT_ID = #userId#,	
+    		UPDT_DATE = sysdate
+    	WHERE
+    		 (0=0)
+          	AND (    USER_ID = #userId#  )		
+    </update>
+    
+    <!-- 회원 탈퇴처리 -->
+    <update id="updtAdmnUserBlock" parameterClass="java.util.Map">
+    	UPDATE
+    		TB_USER
+    	SET
+    		USE_YN = 'N'
+    	WHERE
+    		1 = 1 AND
+    		USE_YN = 'Y'
+    		USER_ID = #currUserId#		
+    </update>
+    
+    <!-- 업무선택 조회 -->
+    <select id="getUserUscmList" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+	    SELECT 
+            a.USCM_NO as "uscmNo", 
+            a.USCM_ROLE as "uscmRole",
+            a."uscmTypeNm", 
+            a."DEPT_NM" as "deptNm",
+            a."cityAuthNm",
+            a."cityAuthNm1",
+            a.CITYAUTH_CD as "cityAuthCd" 
+	    FROM
+	    (
+	        SELECT 
+	            a.USCM_NO, 
+	            a.USCM_ROLE,
+	            (SELECT CODE_NM FROM SYS_CODE WHERE CODE = a.USCM_TYPE) as "uscmTypeNm", 
+	            NVL2(a.DEPT_CD, (SELECT  CODE_NM FROM SYS_CODE WHERE CODE = a.DEPT_CD), a.DEPT_NM) as "DEPT_NM",
+	            (SELECT CITYAUTH_NM FROM TB_CITYAUTH b WHERE b.CITYAUTH_CD = SUBSTR(a.CITYAUTH_CD, 1,2)||'00') as "cityAuthNm",
+	            (SELECT CITYAUTH_NM FROM TB_CITYAUTH b WHERE b.CITYAUTH_CD = a.CITYAUTH_CD and PARENT_CITYAUTH_CD != 'NONE') as "cityAuthNm1",
+	            a.CITYAUTH_CD
+	        FROM 
+	            TB_USCM a
+	        WHERE
+	            USCM_ROLE IS NOT NULL AND USCM_TYPE IN ('U3','U4') AND USE_YN = 'N'
+           <isNotEmpty property="uscmNo" prepend="AND">
+	            USCM_NO != #uscmNo#
+	       </isNotEmpty>	            
+	     ) a
+	     WHERE
+	        1 = 1
+	     <include refid="AdmnUser-SrchCondition" />
+        <isNotEmpty  property="sidx">
+        	ORDER BY $sidx$ $sord$
+        </isNotEmpty> 
+        <isEmpty  property="sidx">
+        	ORDER BY uscmNo desc
+        </isEmpty>	         
+    </select>
+    
+    <!-- 업무선택 조회 카운트 -->
+    <select id="getUserUscmListCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	    SELECT 
+			COUNT(*)
+	    FROM
+	    (
+	        SELECT 
+	            a.USCM_NO, 
+	            a.USCM_ROLE,
+	            (SELECT CODE_NM FROM SYS_CODE WHERE CODE = a.USCM_TYPE) as "uscmTypeNm", 
+	            NVL2(a.DEPT_CD, (SELECT  CODE_NM FROM SYS_CODE WHERE CODE = a.DEPT_CD), a.DEPT_NM) as "DEPT_NM",
+	            (SELECT CITYAUTH_NM FROM TB_CITYAUTH b WHERE b.CITYAUTH_CD = SUBSTR(a.CITYAUTH_CD, 1,2)||'00') as "cityAuthNm",
+	            (SELECT CITYAUTH_NM FROM TB_CITYAUTH b WHERE b.CITYAUTH_CD = a.CITYAUTH_CD and PARENT_CITYAUTH_CD != 'NONE') as "cityAuthNm1",
+	            a.CITYAUTH_CD
+	        FROM 
+	            TB_USCM a
+	        WHERE
+	            USCM_ROLE IS NOT NULL AND USCM_TYPE IN ('U3','U4') AND USE_YN = 'N' 
+           <isNotEmpty property="uscmNo" prepend="AND">
+	            USCM_NO != #uscmNo#
+	       </isNotEmpty>      
+	     ) a
+	     WHERE
+	        1 = 1
+	     <include refid="AdmnUser-SrchCondition" />
+        <isNotEmpty  property="sidx">
+        	ORDER BY $sidx$ $sord$
+        </isNotEmpty> 
+        <isEmpty  property="sidx">
+        	ORDER BY uscmNo
+        </isEmpty>	    
+    </select>
+    
+     <!-- 업체정보  조회. -->
+    <select id="viewAdmnUscm" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+        SELECT
+			A.USCM_NO				AS "uscmNo",
+			A.USCM_NM				AS "uscmNm",
+			A.USCM_ROLE			AS "uscmRole",
+			A.USCM_TYPE			AS "uscmType",	
+<!--  	부서명, 부서이름은 사용자 입력정보로 사용		
+			A.DEPT_CD				AS "deptCd",
+			A.DEPT_NM				AS	"deptNm",
+-->				
+			A.OWNER_NM			AS	"ownerNm",	
+			A.BUSI_REGN_NO		AS	"busiRegnNo",
+        	SUBSTR(A.CITYAUTH_CD, 1, 2)||'00'   AS "cityauthCd1",			
+			A.CITYAUTH_CD			AS "cityauthCd",
+			A.CITYAUTH_CD			AS "cityauthCdVal",
+			A.POST_NO 				AS "roadPostNo",
+			SUBSTR(A.POST_NO, 1, 3) AS "roadPostNo1", 
+			SUBSTR(A.POST_NO, 5, 7) AS "roadPostNo2",
+            A.ADDR1||' '||A.ADDR2||' '||A.ADDR3||' '||A.ADDR4||' '||A.ADDR5 AS "roadAddress1",
+			A.ADDR1					AS "roadAddr1",
+			A.ADDR2					AS "roadAddr2",
+			A.ADDR3					AS "roadAddr3",
+			A.ADDR4					AS "roadAddr4",
+			A.ADDR5   				AS "roadAddr5",
+            (SELECT
+                (SELECT 
+                    CITYAUTH_NM
+                FROM 
+                    TB_CITYAUTH
+                WHERE
+                    PARENT_CITYAUTH_CD = 'NONE' AND 
+                    CITYAUTH_CD = (SUBSTR (A.CITYAUTH_CD, 1, 2) || '00'))||' '||
+                (SELECT 
+                    CITYAUTH_NM
+                FROM 
+                    TB_CITYAUTH
+                WHERE
+                     PARENT_CITYAUTH_CD = (SUBSTR (A.CITYAUTH_CD, 1, 2) || '00') AND  
+                     CITYAUTH_CD = A.CITYAUTH_CD)
+            FROM
+                 DUAL) as "cityAuthNm"			
+        FROM
+        	TB_USCM A
+        WHERE (0=0)
+          AND
+          		USCM_NO = #uscmNo#
+    </select>  
+    
+    <!-- 사용여부 값 변경 N->Y -->
+    <delete id="deltAdmnUscm" parameterClass="java.lang.String">
+    		UPDATE
+    			TB_USCM
+    		SET
+    			USE_YN = 'Y'	
+    		WHERE
+    			USCM_NO = #uscmNo#		
+    </delete>
+    
+        <!-- 사업정보 테이블에서 등록 카운트 수 조회 -->
+    <select id="viewRegiTodeCnt" parameterClass="java.lang.String"  resultClass="java.util.HashMap">
+		SELECT            
+		   (        
+		    SELECT
+		        COUNT(*)      
+		    FROM
+		        TB_TODE_BUSI a      
+		    WHERE
+		        a.USCM_NO = #uscmNo#   
+		   ) as "todeCnt"
+		   ,
+		   ( 
+		    SELECT 
+		        COUNT(*)
+		    FROM 
+		        TB_USER 
+		    WHERE USCM_NO = #uscmNo#
+		    ) as "uscmCnt"
+		FROM
+		    DUAL    				
+    </select>
+   
+</sqlMap>

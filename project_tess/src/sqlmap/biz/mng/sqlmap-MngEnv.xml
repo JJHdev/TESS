@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# @Description : 관리자 - 평가환경설정 sql
+# @author lsz
+# @version 1.0 2018/11/27
+# Used Table(주요) : TB_EVALU_INDICAT  (평가지표)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-->
+<sqlMap namespace="MngEnv">
+
+
+	<!-- 평가단계 조회 -->
+	<select id="listEvaluEnvStep" parameterClass="map"  resultClass="hashmap">
+        SELECT
+				EVALU_INDICAT_CD 			as "evaluIndicatCd",
+				UPPER_EVALU_INDICAT_CD 		as "upperEvaluIndicatCd",
+				CODE_ORD 					as "codeOrd",
+				EVALU_INDICAT_NM 			as "evaluIndicatNm",
+				EVALU_INDICAT_USE_YN 		as "evaluIndicatUseYn",
+				MAIN_OPEN_YN				as "mainOpenYn",
+				MAIN_OPEN_ORD				as "mainOpenOrd",
+				REGI_DATE 					as "regiDate"
+        FROM TB_EVALU_INDICAT
+        WHERE UPPER_EVALU_INDICAT_CD = 'EVALU_ITEM'
+        ORDER BY CODE_ORD
+    </select>
+    
+    <!-- 평가단계 등록 -->
+    <insert id="regiEvaluEnvStep" parameterClass="map">
+    	<selectKey resultClass="java.lang.String" keyProperty="codeOrd">
+	        SELECT 
+	        	NVL(MAX(CODE_ORD),0) + 1
+	        FROM 
+	        	TB_EVALU_INDICAT
+        </selectKey>  
+    	INSERT INTO TB_EVALU_INDICAT 
+    	(
+    		EVALU_INDICAT_CD,
+    		UPPER_EVALU_INDICAT_CD,
+    		CODE_ORD,
+    		EVALU_INDICAT_NM,
+    		EVALU_INDICAT_USE_YN,
+    		MAIN_OPEN_YN,
+    		REGI_ID,
+    		REGI_DATE
+    	) VALUES (
+    		#evaluIndicatCd#,
+    		'EVALU_ITEM',
+    		#codeOrd#,
+    		#evaluIndicatNm#,
+    		#evaluIndicatUseYn#,
+    		#mainOpenYn#,
+    		'admin',
+    		SYSDATE
+    	)
+    </insert>
+    
+    <!-- 평가단계 수정 -->
+    <update id="updtEvaluEnvStep" parameterClass="map">
+    	UPDATE TB_EVALU_INDICAT	SET	
+    		EVALU_INDICAT_NM = #evaluIndicatNm#,
+    		EVALU_INDICAT_USE_YN = #evaluIndicatUseYn#,
+    		MAIN_OPEN_YN = #mainOpenYn#,
+    		MAIN_OPEN_ORD = #mainOpenOrd#
+    	WHERE EVALU_INDICAT_CD = #evaluIndicatCd#
+    </update>
+    
+    <!-- 평가단계 삭제 -->
+    <delete id="deltEvaluEnvStep" parameterClass="map">
+    	DELETE 
+    	FROM 
+    		TB_EVALU_INDICAT
+    	WHERE
+    		EVALU_INDICAT_CD = #evaluIndicatCd#
+    </delete>
+    
+    <!-- 평가지표 조회 -->
+    <select id="listEvaluEnvIndexCodeTree" parameterClass="map"  resultClass="hashmap">
+        SELECT
+        	EVALU_INDICAT_CD		AS "code",
+        	UPPER_EVALU_INDICAT_CD	AS "parentCode",
+        	CODE_ORD	AS "codeOdr",
+        	EVALU_INDICAT_NM	as "codeNm",
+        	EVALU_TYPE	as "codeType",
+        	EVALU_INDICAT_USE_YN		as "useYn",
+        	REGI_ID                               AS "regiId",
+        	TO_CHAR(REGI_DATE, 'yyyy-mm-dd')      AS "regiDate",
+        	LEVEL - 1                             AS "level",
+        	UPPER_EVALU_INDICAT_CD     AS "parent",
+            'false'                               AS "expanded",
+            'true'                                AS "loaded"           	
+        FROM TB_EVALU_INDICAT A
+        WHERE (0=0)
+        <isNotEmpty property="srchEvaluStage">
+            AND (
+                EVALU_INDICAT_CD IN (
+                    SELECT EVALU_INDICAT_CD FROM TB_EVALU_INDICAT
+	                CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD             
+	                START WITH EVALU_INDICAT_CD = #srchEvaluStage# 
+                )
+                OR
+                EVALU_INDICAT_CD IN(
+                    SELECT EVALU_INDICAT_CD FROM TB_EVALU_INDICAT
+                    CONNECT BY PRIOR UPPER_EVALU_INDICAT_CD = EVALU_INDICAT_CD             
+                    START WITH EVALU_INDICAT_CD = #srchEvaluStage#            
+                )
+            )
+        </isNotEmpty>
+        <isNotEmpty property="srchEvaluIndicat">
+           AND  EVALU_INDICAT_CD IN(
+                    SELECT EVALU_INDICAT_CD FROM TB_EVALU_INDICAT
+                    CONNECT BY PRIOR UPPER_EVALU_INDICAT_CD = EVALU_INDICAT_CD             
+                    START WITH EVALU_INDICAT_CD IN ( SELECT EVALU_INDICAT_CD FROM TB_EVALU_INDICAT   WHERE UPPER_EVALU_INDICAT_CD =  #srchEvaluIndicat#)            
+                )
+        </isNotEmpty> 
+         CONNECT BY
+            PRIOR      EVALU_INDICAT_CD        = UPPER_EVALU_INDICAT_CD
+            START WITH UPPER_EVALU_INDICAT_CD = 'NONE' 
+         ORDER SIBLINGS BY  CODE_ORD
+    </select>
+    
+    <!-- 평가지표 등록 -->
+    <insert id="regiEvaluEnvIndex" parameterClass="java.util.Map">
+		INSERT INTO TB_EVALU_INDICAT (
+			UPPER_EVALU_INDICAT_CD,
+			EVALU_INDICAT_CD,
+			EVALU_INDICAT_NM,
+			CODE_ORD,
+			EVALU_INDICAT_USE_YN,
+			REGI_ID,
+			REGI_DATE
+		) VALUES (
+			#parentCode#,
+			#code#,
+			#codeNm#,
+			<!-- <isEmpty property="codeOdr">
+                [20140911 lcs] Tree view일 때 code 그룹을 등록할 때 '0'으로 전달됨
+                <isEqual property="codeOdr" compareValue="0">
+                    $codeOdr$,
+                </isEqual>
+                <isNotEqual property="codeOdr" compareValue="0">
+				(SELECT NVL(MAX(CODE_ORD), 0) + 1
+				   FROM TB_EVALU_INDICAT
+				  WHERE UPPER_EVALU_INDICAT_CD = #parentCode#),
+                </isNotEqual>
+			</isEmpty> -->
+			(SELECT NVL(MAX(CODE_ORD), 0) + 1
+			   FROM TB_EVALU_INDICAT
+			  WHERE UPPER_EVALU_INDICAT_CD = #parentCode#),
+			#useYn#,
+			#gsUserId#,
+			SYSDATE
+		)
+	</insert>
+	
+	<!-- 평가지표 수정 -->
+	<update id="updtEvaluEnvIndex" parameterClass="java.util.Map">
+		UPDATE TB_EVALU_INDICAT
+		SET    EVALU_INDICAT_NM       = #codeNm#,
+			   EVALU_INDICAT_USE_YN		 = #useYn#,
+			   <!-- UPDT_ID       = #gsUserId#, -->
+			   UPDT_DATE     = SYSDATE
+		WHERE  UPPER_EVALU_INDICAT_CD   = #parentCode#
+		AND    EVALU_INDICAT_CD          = #code#
+	</update>
+    
+    <!-- 평가지표 삭제 -->
+    <delete id="deltEvaluEnvIndex" parameterClass="java.util.Map">
+		DELETE FROM TB_EVALU_INDICAT
+		WHERE  CODE_ORD     > 0
+        AND (EVALU_INDICAT_CD = #code# OR UPPER_EVALU_INDICAT_CD = #code#)
+	</delete>
+    
+    
+
+</sqlMap>

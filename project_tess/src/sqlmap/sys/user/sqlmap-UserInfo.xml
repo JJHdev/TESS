@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="UserInfo">
+
+	<typeAlias alias="userInfo" type="common.user.UserInfo"/>
+
+	<!-- 사용자정보 가져온다. -->
+	<select id="getUserInfo" resultClass="userInfo" parameterClass="java.util.Map">
+		SELECT
+			  USER_ID				AS "userId"
+			, USER_NM				AS "userNm"
+			, PASSWD					AS "passwd"
+			, EMAIL					AS "email"
+			, TEL_NO					AS "telNo"
+			, CELL_NO				AS "cellNo"
+			, DEPT_CD				AS "deptCd"
+			, DEPT_NM				AS "deptNm"
+			, CERT_NO				AS "certNo"
+			, JOIN_DATE				AS "joinDate"
+			, SMS_AGRE_YN			AS "smsAgreYn"
+			, USE_YN					AS "useYn"
+			, APPR_DATE				AS "apprDate"
+			, PASS_LOCK_DATE		AS "passLockDate"
+			, TEST_USE_YN			AS "testUseYn"
+			, USE_STAT				AS "useStat"
+			, USCM_TYPE				AS "uscmType"
+			, ROLE_ID				AS "roleId"
+		FROM  TREDSUSER.VW_USER
+        WHERE 0 = 0
+		<isEqual property="loginType" compareValue="cert">
+			AND CERT_NO = #certNo#
+		</isEqual>
+		<isNotEqual property="loginType" compareValue="cert">
+			AND USER_ID = #userId#
+		</isNotEqual>
+    </select>
+
+</sqlMap>

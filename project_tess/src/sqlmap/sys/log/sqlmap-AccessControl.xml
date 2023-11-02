@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AccessControl">
+
+	<insert id="regiAccessLog" parameterClass="java.util.Map">
+		INSERT INTO SYS_ACCHIST (
+			ACCHIST_SEQ,
+			PROG_URL,
+			ACCHIST_TYPE,
+			USER_ID,
+			ACCHIST_YYYY,
+			ACCHIST_MM,
+			ACCHIST_DD,
+			ACCHIST_DTTM,
+			IP_ADDR,
+			SERVER_NM
+		) VALUES (
+			SEQ_ACCHIST.nextval,
+			#progNm#,
+			#acchistType#,
+			#userId#,
+			to_char(sysdate, 'yyyy'),
+			to_char(sysdate, 'mm'),
+			to_char(sysdate, 'dd'),
+			systimestamp,
+			#userIp#,
+			#serverNm#
+		)
+	</insert>
+
+	<insert id="regiLoginInfo" parameterClass="java.util.Map">
+		INSERT INTO SYS_LOGHIST (
+			LOGIN_SEQ,
+			USER_ID,
+			LOGIN_YYYY,
+			LOGIN_MM,
+			LOGIN_DD,
+			LOGIN_DTTM,
+			LOGIN_STAT,
+			LOGIN_REAS,
+			IP_ADDR,
+			SERVER_NM
+		) VALUES (
+			SEQ_LOGHIST.nextval,
+			#userId#,
+			to_char(sysdate, 'yyyy'),
+			to_char(sysdate, 'mm'),
+			to_char(sysdate, 'dd'),
+			systimestamp,
+			#loginStat#,
+			#loginReas#,
+			#userIp#,
+			#serverNm#
+		)
+	</insert>
+</sqlMap>

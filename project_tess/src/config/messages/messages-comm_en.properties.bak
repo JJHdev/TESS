@@ -1,0 +1,223 @@
+﻿#*********************** egov message  ***************************#
+# eclipse ALT+ENTER, Text file encoding, Other, UTF-8
+fail.common.msg=error ocurred!
+fail.common.sql=sql error ocurred! error code: {0}, error msg: {1}
+info.nodata.msg=no data found.
+
+#UI Common resource#
+button.search=Search
+button.use=use
+button.notUsed=Not used
+button.inquire=inquire
+button.update=update
+button.create=create
+button.delete=delete
+button.close=close
+button.save=save
+button.list=list
+button.reset=reset
+
+
+#UI Common Message#
+common.save.msg=confirm save?
+common.regist.msg=confirm regist?
+common.delete.msg=confirm delete?
+common.update.msg=confirm update?
+common.nodata.msg=There is no data. please choose another seach keyword
+common.required.msg=is required field
+common.newRegisterPage.msg=Write new manifest.
+
+success.request.msg=you're request successfully done
+
+success.common.select=successfully selected
+success.common.insert=successfully inserted
+success.common.update=successfully updated
+success.common.delete=successfully deleted
+
+fail.common.insert = fail to insert.
+fail.common.update = fail to update
+fail.common.delete = fail to delete
+fail.common.select = fail to select
+common.isExist.msg = already exist
+fail.common.login = login information is not correct
+fail.common.idsearch = can not find id
+fail.common.pwsearch = can not find password
+
+#Vlidator Errors#
+errors.required={0} is required.
+errors.minlength={0} can not be less than {1} characters.
+errors.maxlength={0} can not be greater than {1} characters.
+errors.invalid={0} is invalid.
+
+errors.byte={0} must be a byte.
+errors.short={0} must be a short.
+errors.integer={0} must be an integer.
+errors.long={0} must be a long.
+errors.float={0} must be a float.
+errors.double={0} must be a double.
+
+errors.date={0} is not a date.
+errors.range={0} is not in the range {1} through {2}.
+errors.creditcard={0} is an invalid credit card number.
+errors.email={0} is an invalid e-mail address.
+
+errors.notdeldata=Not exist delete data.
+errors.notprocdata=Not exist process data.
+
+
+
+
+# UI Alert Message #
+alt.sample.userNm=User Name
+alt.sample.title=Title
+alt.sample.content=Contents
+
+alt.comm.searchWsteCdNm=Waste Name(Code)
+alt.comm.schCompCdNm=Company Name(Code)
+
+relt.regi.msg=Plesae write result report.
+relt.exist.msg=Result report is already submitted. Please check on the list.
+
+
+#*********************** Custom Message  ***************************#
+exception.Throwable=unexpected exception
+exception.login=Login required
+
+# Business Exception
+exception.NoResult=No result
+exception.NoRequestData=No data
+exception.NoSuccess=No success
+
+exception.notDifferent='Parent Role' and 'Child Role', the value must be different.
+
+# Alert Message
+prompt.login=Can not find login information. Please login first!
+prompt.duplicate=Already existing data. Check it out and try again please !
+
+prompt.success=Your request was done successfully !
+prompt.successSend=Your request was done sent successfully message !
+
+prompt.comboTextAll=::: All  :::
+prompt.comboTextSel=::: Select. :::
+prompt.comboValueAll=all
+
+error.comm.fail=Processing has failed.
+
+## BASE ##
+exception.base.duplHWMC=HWM-ID is already registered!
+exception.base.duplUserId=User ID is already registered!
+exception.base.duplUserRole=User role has been duplicated!
+exception.base.changedData=This data has been already changed by another user.
+exception.base.noExistCompInfo=Company information does not exist.
+exception.base.noExistCompChgInfo=Company Change information does not exist.
+exception.base.failChgPwd=Failure to change your password.
+exception.base.failChgApproval=Change the approval failed.
+exception.base.failChgReject=Change the reject failed.
+exception.base.failChgRequest=Change requests failed.
+exception.base.notExistFavo=Favorite information does not exist.
+exception.base.failSavFavo=Failed to save favorite information.
+exception.base.failRegiFaciUser=Failed to register facilities user information.
+exception.base.failChngFaciUser=Failed to change facilities user information.
+exception.base.failRemoveFaciUser=Failed to remove facility user information.
+exception.base.unknownCompType=Unknown the company type.
+
+exception.base.failRcptChngPlntUserInactive=Failed to change to inactive facilities user.
+exception.base.failRcptChngPlntUserRoleInactive=Failed to change to inactive facilities user role.
+exception.base.failRcptChngPlntUser=Failed to change facilities user information.
+exception.base.failRcptChngPlntUserRole=Failed to change role information of facilities user.
+exception.base.failRcptRegiPlntUser=Failed to register facilities user information.
+exception.base.failRcptRegiPlntUserRole=Failed to register role information of facilities user.
+exception.base.duplRcptPlntUserRole=Facilities user ID has been duplicated!
+
+exception.base.passedIncorrectInfo=Incorrect information was passed.
+exception.base.wrongAccess=It's the wrong access.
+
+
+## USER MGMT ##
+exception.user.duplUserId=User ID is already registered!
+exception.user.failRegi=Failed to save the new user information!
+exception.user.failSave=Failed to save user information!
+exception.user.failChgStat=Failed to change the user status!
+exception.user.failChgPwd=Failed to change the user password!
+exception.user.notExistUserInfo=User information does not exist.
+exception.user.notExistCompUserInfo=Company user information does not exist.
+exception.user.processDspoAmt=disposal amount processed.
+exception.user.failUpdateViewFg=Failed to update the Generator view state!
+
+## BBS ##
+exception.bbs.failSaveBbs=Failed to save.
+exception.bbs.failDeltBbs=Failed to delete.
+exception.bbs.notWxistBbs=Board data does not exist.
+
+## LEDG ##
+exception.ledg.failSaveLedg=Fail to save Ledgr First Amount information
+exception.ledg.notWxistLedg=Ledger First Amount information does not exist.
+
+
+#*********************** Button ************************************#
+## ALL
+btn.appr = Approve
+btn.approve = Approve
+btn.reject = Reject
+
+## Write
+btn.regi = Regist
+btn.regist = Regist
+btn.updt = Update
+btn.update = Update
+btn.delt = Delete
+btn.delete = Delete
+btn.save = Save
+btn.repl = Reply
+btn.reply = Reply
+btn.submit = Submit
+btn.confirm = Confirm
+btn.regiopen = Regist Open
+btn.updtopen = Update Open
+btn.send = Send
+btn.add = Add
+btn.copy = Copy
+btn.previous = Previous
+btn.next = Next
+btn.agency = Agency
+btn.complete = Complete
+btn.chngpwd = Change password
+btn.create = Create
+btn.authorize = Authorize
+btn.finish = Finish
+btn.temp = Temp
+btn.favorite = Favorite
+btn.request = Request
+btn.process=Process
+btn.chgUserInfo=Change information
+
+## Read
+btn.list = List
+btn.search = Search
+btn.view = View
+btn.back = Back
+btn.cancel = Cancel
+btn.reset = Reset
+btn.clear = Clear
+btn.exceldown = Excel Down
+btn.print = Print
+btn.help = Help
+btn.close = Close
+btn.check = Check
+btn.preview = Preview
+btn.previewlicense = Preview License
+btn.inquire=Inquiry
+btn.duplChk=Duplication check
+btn.modify=Modify
+btn.updtView=Update view
+btn.autoAppr=Automatic approval
+
+# Group
+#title.bas.btn.add=Add
+#title.bas.btn.delete=Delete
+#title.bas.btn.groupadd=Add Group
+#title.bas.btn.groupinadd=Add in Group
+#title.bas.btn.wasteadd=Add Waste
+btn.groupadd=Add Group
+btn.groupinadd=Add row in Group
+btn.wasteadd=Add Waste

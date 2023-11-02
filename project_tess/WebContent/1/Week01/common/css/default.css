@@ -1,0 +1,25 @@
+@charset "utf-8";
+/*
+초기화 style
+jian 
+히든 컨텐츠 리더기로 읽혀질 부분 다시 체크할것
+*/
+/*Default*/
+
+body{word-break:keep-all}
+body,p,h1,h2,h3,h4,h5,h6,ul,ol,li,dl,dt,dd,table,caption,legend,button,p,div,input,textarea,form,fieldset,table,th,td ,a{margin:0;padding:0}
+hr{display:none}
+button,img,fieldset,frameborder {border:0 none;}
+img {vertical-align:middle;}
+ul,ol {list-style-type:none}
+img, input, button, select, textarea {vertical-align:middle}
+#acc,hr,legend,.hide{position:absolute;top:0;left:0;width:0;height:0;font-size:0;line-height:0;overflow:hidden;visibility:hidden}
+caption{width:0;height:0;font-size:0;line-height:0;overflow:hidden;visibility:hidden;text-indent: -9999px;}
+ul, ol,dl, li  {list-style:none;}
+cite, address,address{font-style:normal}
+optgroup{font-family:inherit;font-size:inherit;font-weight:inherit;font-style:inherit;line-height:2em}
+abbr, acronym {cursor:help; border-bottom:1px dotted black}
+
+
+
+

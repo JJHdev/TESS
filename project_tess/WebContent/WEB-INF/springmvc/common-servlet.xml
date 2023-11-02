@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	">
+
+	<!--- The controllers are autodetected POJOs labeled with the @Controller annotation.  -->
+	<context:component-scan base-package="business">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+	</context:component-scan>
+
+
+	<!-- View resolver -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass">
+			<value>org.springframework.web.servlet.view.JstlView</value>
+		</property>
+		<property name="cache" value="false" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- XML Resolver -->
+	<bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+		<property name="order" value="1"/>
+		<property name="location" value="/WEB-INF/classes/config/ajax-views.xml"/>
+	</bean>
+
+	<bean id="beanNameViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver" >
+	   <property name="order"><value>0</value></property>
+    </bean>
+
+	<!-- Excel Template (beanNameViewResolver) -->
+	<bean id="excelTempView" class="commf.view.ExcelTempView" />
+
+	<!-- Excel (beanNameViewResolver) -->
+	<bean id="excelView" class="commf.view.ExcelView" />
+
+	<!-- Dext 업로드 사용으로 인해 제거 -->
+	
+	<!-- 
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	    <property name="maxUploadSize" value="419430400"/>
+		<property name="maxInMemorySize" value="100000000" />
+	</bean>
+ 	-->
+ 	
+ 	<bean id="servletContextAware" class="devpia.dextuploadnj.support.spring.DEXTUploadNJServletContextAwareBean"/>
+	
+	<bean id="environment" class="devpia.dextuploadnj.Environment">
+	      <property name="tempRepository" value="D:/APP_PROJECT/PROJECT_SUNDO14/upload/temp/"/>
+	      <property name="defaultRepository" value="D:/APP_PROJECT/PROJECT_SUNDO14/upload/temp/"/>
+	      <property name="maxFileSize" value="1073741824"/>
+	      <property name="maxTotalSize" value="2147483648"/>
+	      <property name="autoMakingDirectory" value="true"/>
+	      <property name="whiteExtensions" value="hwp, doc, docx, xls, xlsx, ppt, pptx, pdf, jpg, jpeg, png, gif, bmp, txt, zip, rar, gz"/>
+	      <property name="filterAction" value="Error"/>
+	      <property name="compact" value="false"/>
+	      <property name="charEncoding" value="UTF-8"/>
+		  <property name="licenseFilePath">
+			  <bean factory-bean="servletContextAware" factory-method="getRealPath">
+				  <!-- 웹 애플리케이션 루트/WEB-INF 디렉터리에 라이선스 파일이 있음을 설정합니다. -->
+				  <constructor-arg value="/WEB-INF/dextuploadnj.config"/>
+			  </bean>
+		  </property>
+	</bean>
+	
+	<!-- 파일 업로드 처리를 위해 DEXTUploadNJMultipartResolver를 선언합니다. -->
+	<bean id="multipartResolver" class="devpia.dextuploadnj.support.spring.DEXTUploadNJMultipartResolver">
+		<!-- Environment 빈 객체를 설정합니다. (환경설정) -->
+		<property name="environment" ref="environment"/>
+	</bean>	
+	
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    	<property name="defaultErrorView" value="error/errorPage"/>
+    	<property name="exceptionMappings">
+            <props>
+                <prop key="java.lang.Exception">error/errorPage</prop>
+                <prop key="DataAccessException">error/errorPage</prop>
+                <prop key="BusinessException">error/egovBizException</prop>
+				<prop key="EgovBizException">error/egovBizException</prop>
+            	<!--
+            	<prop key="org.springframework.dao.DataAccessException">cmmn/dataAccessFailure</prop>
+            	<prop key="org.springframework.transaction.TransactionException">cmmn/transactionFailure</prop>
+            	-->
+            </props>
+        </property>
+    </bean>
+
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource" p:basename="messages"/>
+
+</beans>

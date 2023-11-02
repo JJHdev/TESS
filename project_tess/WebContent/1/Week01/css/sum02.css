@@ -1,0 +1,13 @@
+@charset "utf-8";
+/*
+2013-05-16 jian
+공통사항은 common을 참조. 
+*/
+/*study*/
+#wrapper{background:url(../images/bg_sum02.png) no-repeat left top}
+#content{min-height:30px;padding:10px 0}
+h4 {padding-left:30px;} 
+p.navi_direc{margin-left:25px}
+p.direc{margin-left:25px}
+ul.sum02{padding:60px 0 0 70px}
+li.dot{padding-left:16px;background:url(../images/dot.gif) no-repeat 7px 10px; line-height:1.84em}

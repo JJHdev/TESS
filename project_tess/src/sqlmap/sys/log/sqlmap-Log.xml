@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Log">
+
+    <!--
+    ++++++++++++++++++++++++++++++++++++++
+        메뉴별 접속통계
+    ++++++++++++++++++++++++++++++++++++++
+    -->
+    <sql id="AccMenu-condition">
+        <isNotEmpty property="srchFromDate">
+            AND A.ACCHIST_DTTM <![CDATA[>=]]> TO_DATE(#srchFromDate#||' 00:00:00', 'yyyy-mm-dd hh24:mi:ss')
+        </isNotEmpty>
+        <isNotEmpty property="srchToDate">
+            AND A.ACCHIST_DTTM <![CDATA[<=]]> TO_DATE(#srchToDate#||' 23:59:59', 'yyyy-mm-dd hh24:mi:ss')
+        </isNotEmpty>
+        <isNotEmpty property="srchMenuNm">
+            AND B.MENU_NM LIKE '%'||#srchMenuNm#||'%'
+        </isNotEmpty>
+    </sql>
+
+    <select id="listLogAccMenu" resultClass="hashmap" parameterClass="map">
+        SELECT B.MENU_ID                                                      as "menuId",
+               B.MENU_NM                                                      as "menuNm",
+               COUNT(*)                                                       as "cnt",
+               COUNT(DISTINCT A.USER_ID)                                      as "userCnt",
+               COUNT(DISTINCT DECODE(NVL2(ACCHIST_TYPE,1,0), 1, USER_ID, '')) as "personUserCnt",
+               TO_CHAR(MAX(A.ACCHIST_DTTM), 'yyyy-mm-dd hh24:mi:ss')          as "lastDate",
+               ROUND(RATIO_TO_REPORT(COUNT(*)) OVER(PARTITION BY GROUPING_ID(B.MENU_ID)) * 100, 2) as "rate"
+        FROM   SYS_ACCHIST A,
+               SYS_MENU B,
+               SYS_PROG C
+        WHERE  A.PROG_URL   = C.PROG_PATTERN(+)
+        AND    B.MENU_ID    = C.MENU_ID
+        AND    A.USER_ID    NOT IN (SELECT USER_ID
+                                    FROM   TB_USER U, TB_USCM C
+                                    WHERE  U.USCM_NO = C.USCM_NO
+                                    AND    C.USCM_TYPE != 'U9')
+        <include refid="AccMenu-condition"/>
+        GROUP BY B.MENU_ID, B.MENU_NM
+    </select>
+    <select id="listLogAccMenuCount" parameterClass="map"  resultClass="int">
+        SELECT COUNT(*) FROM (
+            SELECT *
+            FROM   SYS_ACCHIST A,
+                   SYS_MENU B,
+                   SYS_PROG C
+            WHERE  A.PROG_URL   = C.PROG_PATTERN(+)
+            AND    B.MENU_ID    = C.MENU_ID
+            AND    A.USER_ID    NOT IN (SELECT USER_ID
+                                        FROM   TB_USER U, TB_USCM C
+                                        WHERE  U.USCM_NO = C.USCM_NO
+                                        AND    C.USCM_TYPE != 'U9')
+            <include refid="AccMenu-condition"/>
+            GROUP BY B.MENU_ID, B.MENU_NM
+        )
+    </select>
+
+    <!--
+    ++++++++++++++++++++++++++++++++++++++
+        사용자 접속통계
+    ++++++++++++++++++++++++++++++++++++++
+    -->
+    <sql id="AccUser-condition">
+        <isNotEmpty property="srchFromDate">
+            AND L.LOGIN_DTTM <![CDATA[>=]]> TO_DATE(#srchFromDate#||' 00:00:00', 'yyyy-mm-dd hh24:mi:ss')
+        </isNotEmpty>
+        <isNotEmpty property="srchToDate">
+            AND L.LOGIN_DTTM <![CDATA[<=]]> TO_DATE(#srchToDate#||' 23:59:59', 'yyyy-mm-dd hh24:mi:ss')
+        </isNotEmpty>
+        <isNotEmpty property="srchUserId">
+            AND L.USER_ID LIKE '%'||#srchUserId#||'%'
+        </isNotEmpty>
+        <isNotEmpty property="srchUscmType">
+            AND C.USCM_TYPE = #srchUscmType#
+        </isNotEmpty>
+        <isEmpty property="srchUscmType">
+        	AND C.USCM_TYPE  != 'U9'
+        </isEmpty>
+    </sql>
+
+    <select id="listLogAccUser" resultClass="hashmap" parameterClass="map">
+        SELECT FN_GET_CODENM('USCM_TYPE', MAX(C.USCM_TYPE))                 AS "userType",
+               L.USER_ID                                                    AS "userId",
+               U.USER_NM                                                    AS "userNm",
+               COUNT(*)                                                     AS "cnt",
+               TO_CHAR(MAX(L.LOGIN_DTTM), 'yyyy-mm-dd hh24:mi:ss')          AS "lastDate",
+               TO_CHAR(MAX(U.REGI_DATE), 'yyyy-mm-dd')                      AS "joinDate",
+               ROUND(RATIO_TO_REPORT(COUNT(*)) OVER(PARTITION BY GROUPING_ID(L.USER_ID)) * 100, 2) AS "rate"
+        FROM   SYS_LOGHIST L, TB_USER U, TB_USCM C
+        WHERE  L.USER_ID    = U.USER_ID
+        AND    U.USCM_NO    = C.USCM_NO(+)
+        <include refid="AccUser-condition"/>
+        GROUP BY L.USER_ID, U.USER_NM
+    </select>
+    <select id="listLogAccUserCount" parameterClass="map"  resultClass="int">
+        SELECT COUNT(*) FROM (
+            SELECT COUNT(*)
+            FROM   SYS_LOGHIST L, TB_USER U, TB_USCM C
+            WHERE  L.USER_ID    = U.USER_ID
+            AND    U.USCM_NO    = C.USCM_NO(+)
+            <include refid="AccUser-condition"/>
+            GROUP BY L.USER_ID, U.USER_NM
+        )
+    </select>
+
+</sqlMap>

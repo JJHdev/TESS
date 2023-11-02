@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="RoleProg">
+
+    <!--******************************   ROLE BY PROGRAM  ************************************-->
+	<!-- Role Target Program -->
+	<select id="listNotRoleByProg" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT   PROG_ID               	AS "progId"
+			   , PROG_NM             	AS "progNm"
+		FROM   SYS_PROG
+		WHERE  PROG_ID  NOT IN (SELECT DISTINCT PROG_ID
+								FROM   SYS_AUTHORITY
+								WHERE  ROLE_ID = #roleId#)
+		AND    TO_NUMBER(NVL(SECU_LVL,1)) > 0  <!-- 2014.12.19 ntarget 0이 아닌프로그램에 대해서 권한적용한다. -->
+        <isNotEmpty property="sidx">
+    		ORDER BY $sidx$ $sord$
+        </isNotEmpty>
+        <isEmpty property="sidx">
+            ORDER BY PROG_ID
+        </isEmpty>
+	</select>
+
+	<select id="listRoleByProg" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT   A.ROLE_ID              AS "roleId"
+		       , A.PROG_ID              AS "progId"
+			   , B.PROG_NM             	AS "progNm"
+		FROM   SYS_AUTHORITY A LEFT JOIN SYS_PROG B ON A.PROG_ID = B.PROG_ID
+		WHERE  A.ROLE_ID = #roleId#
+        ORDER BY A.PROG_ID
+	</select>
+
+	<insert id="regiRoleByProg" parameterClass="java.util.Map">
+		INSERT INTO SYS_AUTHORITY (
+			ROLE_ID,
+			PROG_ID,
+			REGI_ID,
+			REGI_DATE
+		) VALUES (
+			TRIM(#roleId#),
+			TRIM(#progId#),
+			#gsUserId#,
+			SYSDATE
+		)
+	</insert>
+
+	<delete id="deltRoleByProg" parameterClass="java.util.Map">
+		DELETE FROM SYS_AUTHORITY
+        WHERE  ROLE_ID = #roleId#
+        AND    PROG_ID = #progId#
+	</delete>
+
+    <!-- from Program Management-->
+	<delete id="deltRoleByProgFromProg" parameterClass="java.util.Map">
+		DELETE FROM SYS_AUTHORITY
+        <dynamic prepend="WHERE">
+            <isNotEmpty prepend="AND" property="roleId">
+                ROLE_ID = #roleId#
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="arrProgId">
+                <iterate property="arrProgId" open="(" close=")" conjunction="OR">
+                      PROG_ID  = #arrProgId[]#
+                </iterate>
+            </isNotEmpty>
+        </dynamic>
+	</delete>
+
+
+</sqlMap>

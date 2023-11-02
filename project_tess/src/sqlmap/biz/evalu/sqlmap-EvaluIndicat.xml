@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# @Description : 관리/운영 개발사업관리 sql
+# @author LCS
+# @version 1.0 2014/09/29
+# Used Table(주요) : TB_Evalu_BUSI     (관광사업정보)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-->
+<sqlMap namespace="EvaluIndicat">
+
+    <select id="listEvaluIndicatCodeTree" parameterClass="map"  resultClass="hashmap">
+        SELECT
+        	EVALU_INDICAT_CD		AS "code",
+        	UPPER_EVALU_INDICAT_CD	AS "parentCode",
+        	CODE_ORD	AS "codeOdr",
+        	EVALU_INDICAT_NM	as "codeNm",
+        	EVALU_TYPE	as "codeType",
+        	EVALU_INDICAT_USE_YN		as "useYn",
+        	REGI_ID                               AS "regiId",
+        	TO_CHAR(REGI_DATE, 'yyyy-mm-dd')      AS "regiDate",
+        	LEVEL - 1                             AS "level",
+        	UPPER_EVALU_INDICAT_CD     AS "parent",
+            'false'                               AS "expanded",
+            'true'                                AS "loaded"           	
+        FROM TB_EVALU_INDICAT A
+        WHERE (0=0)
+        <isNotEmpty property="srchEvaluStage">
+            AND (
+                EVALU_INDICAT_CD IN (
+                    SELECT EVALU_INDICAT_CD FROM TB_EVALU_INDICAT
+	                CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD             
+	                START WITH EVALU_INDICAT_CD = #srchEvaluStage# 
+                )
+                OR
+                EVALU_INDICAT_CD IN(
+                    SELECT EVALU_INDICAT_CD FROM TB_EVALU_INDICAT
+                    CONNECT BY PRIOR UPPER_EVALU_INDICAT_CD = EVALU_INDICAT_CD             
+                    START WITH EVALU_INDICAT_CD = #srchEvaluStage#            
+                )
+            )
+        </isNotEmpty>
+        <isNotEmpty property="srchEvaluIndicat">
+           AND  EVALU_INDICAT_CD IN(
+                    SELECT EVALU_INDICAT_CD FROM TB_EVALU_INDICAT
+                    CONNECT BY PRIOR UPPER_EVALU_INDICAT_CD = EVALU_INDICAT_CD             
+                    START WITH EVALU_INDICAT_CD IN ( SELECT EVALU_INDICAT_CD FROM TB_EVALU_INDICAT   WHERE UPPER_EVALU_INDICAT_CD =  #srchEvaluIndicat#)            
+                )
+        </isNotEmpty> 
+         CONNECT BY
+            PRIOR      EVALU_INDICAT_CD        = UPPER_EVALU_INDICAT_CD
+            START WITH UPPER_EVALU_INDICAT_CD = 'NONE' 
+         ORDER SIBLINGS BY  CODE_ORD       
+    </select>
+    
+    	<!-- Code Type : Duplication Flag -->
+    <select id="getCodeTypeCnt" resultClass="java.lang.Boolean" parameterClass="java.util.Map">
+		<!--
+		SELECT SIGN(COUNT(*))
+		FROM   SYS_CODE_TYPE
+		WHERE  CODE_TYPE = #codeType#
+		AND    CODE_ODE    = 0
+		-->
+		SELECT SIGN(COUNT(*))
+		FROM   TB_EVALU_INDICAT
+		WHERE  EVALU_INDICAT_CD = #parentCode#
+		AND    CODE_ORD = 0
+	</select>
+	
+		<!--CODE : Insert -->
+	<insert id="regiCode" parameterClass="java.util.Map">
+		INSERT INTO TB_EVALU_INDICAT (
+			UPPER_EVALU_INDICAT_CD,
+			EVALU_INDICAT_CD,
+			EVALU_INDICAT_NM,
+			CODE_ORD,
+			EVALU_INDICAT_USE_YN,
+			REGI_ID,
+			REGI_DATE
+		) VALUES (
+			#parentCode#,
+			#code#,
+			#codeNm#,
+			<isEmpty property="codeOdr">
+                <!-- [20140911 lcs] Tree view일 때 code 그룹을 등록할 때 '0'으로 전달됨 -->
+                <isEqual property="codeOdr" compareValue="0">
+                    $codeOdr$,
+                </isEqual>
+                <isNotEqual property="codeOdr" compareValue="0">
+				(SELECT NVL(MAX(CODE_ORD), 0) + 1
+				   FROM TB_EVALU_INDICAT
+				  WHERE UPPER_EVALU_INDICAT_CD = #parentCode#),
+                </isNotEqual>
+			</isEmpty>
+			<isNotEmpty property="codeOdr">
+				$codeOdr$,
+			</isNotEmpty>
+			#useYn#,
+			#gsUserId#,
+			SYSDATE
+		)
+	</insert>
+	
+		<!--CODE TYPE : Insert -->
+	<insert id="regiCodeType" parameterClass="java.util.Map">
+		<!--
+		INSERT INTO SYS_CODE_TYPE (
+			CODE_TYPE,
+			CODE_TYPE_NM,
+			USE_YN,
+			REGI_ID,
+			REGI_DATE
+		) VALUES (
+			#codeType#,
+			#codeTypeNm#,
+			#useYn#,
+			#gsUserId#,
+			SYSDATE
+		)
+		-->
+		INSERT INTO TB_EVALU_INDICAT (
+		    EVALU_INDICAT_CD,
+		    UPPER_EVALU_INDICAT_CD,
+		    EVALU_INDICAT_NM,
+		    CODE_ORD,
+		    EVALU_INDICAT_USE_YN,
+		    REGI_ID,
+		    REGI_DATE
+		) VALUES (
+			#parentCode#,
+			'NONE',
+			#parentCodeNm#,
+			0,
+			#useYn#,
+			#gsUserId#,
+			SYSDATE
+		)
+	</insert>
+	
+		<!--CODE TYPE : Update -->
+	<update id="updtCodeType" parameterClass="java.util.Map">
+		<!--
+		UPDATE SYS_CODE_TYPE
+		SET    CODE_TYPE_NM  = #codeTypeNm#,
+			   USE_YN        = #useYn#,
+			   UPDT_ID       = #gsUserId#,
+			   UPDT_DATE     = SYSDATE
+		WHERE  CODE_TYPE     = #codeType#
+		-->
+		UPDATE TB_EVALU_INDICAT
+		SET    EVALU_INDICAT_NM    = #parentCodeNm#,
+		       EVALU_INDICAT_USE_YN     = #useYn#,
+		       UPDT_ID    = #gsUserId#,
+			   UPDT_DATE  = SYSDATE,
+	    WHERE  CODE       = #parentCode#
+		AND    CODE_ODR   = 0
+	</update>
+		<!--CODE : Update -->
+	<update id="updtCode" parameterClass="java.util.Map">
+		UPDATE TB_EVALU_INDICAT
+		SET    EVALU_INDICAT_NM       = #codeNm#,
+			   CODE_ORD      = $codeOdr$,
+			   EVALU_INDICAT_USE_YN		 = #useYn#,
+			   UPDT_ID       = #gsUserId#,
+			   UPDT_DATE     = SYSDATE
+		WHERE  UPPER_EVALU_INDICAT_CD   = #parentCode#
+		AND    EVALU_INDICAT_CD          = #code#
+	</update>
+	
+	<!-- CODE TYPE : Delete -->
+	<delete id="deltCodeType" parameterClass="java.util.Map">
+		<!--
+		DELETE FROM SYS_CODE_TYPE
+		WHERE  CODE_TYPE  = #codeType#
+		-->
+		DELETE FROM TB_EVALU_INDICAT
+		WHERE  EVALU_INDICAT_CD     = #parentCode#
+		AND    CODE_ORD = 0
+	</delete>
+
+	<!-- CODE : Delete -->
+	<delete id="deltCode" parameterClass="java.util.Map">
+		DELETE FROM TB_EVALU_INDICAT
+		WHERE  UPPER_EVALU_INDICAT_CD  = #parentCode#
+        AND    CODE_ORD     > 0
+        <isNotEmpty property="arrCode">
+		    <iterate prepend="AND" property="arrCode" open="(" close=")" conjunction="OR">
+                  EVALU_INDICAT_CD  = #arrCode[]#
+            </iterate>
+        </isNotEmpty>
+        <!-- [20140912 LCS 추가] Tree view일 때 단일 삭제 기능 추가 -->
+        <isEmpty property="arrCode">
+            <isNotEmpty property="code">
+                AND EVALU_INDICAT_CD = #code#
+            </isNotEmpty>
+        </isEmpty>
+	</delete>
+	
+	    <!-- Code : Duplication Flag  -->
+    <select id="getCodeCnt" resultClass="java.lang.Boolean" parameterClass="java.util.Map">
+		SELECT SIGN(COUNT(*))
+		FROM   TB_EVALU_INDICAT
+		WHERE  UPPER_EVALU_INDICAT_CD = #parentCode#
+		AND    EVALU_INDICAT_CD        = #code#
+	</select>
+
+</sqlMap>

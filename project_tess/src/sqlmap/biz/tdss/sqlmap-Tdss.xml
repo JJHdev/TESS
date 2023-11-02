@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# @Description : 관리자 - 평가사업관리 sql
+# @author lsz
+# @version 1.0 2018/11/26
+# Used Table(주요) : TB_Evalu_BUSI     (관광사업정보)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-->
+<sqlMap namespace="TDSS">
+
+    <!-- ++++++++++++++++++++++++++++++++++++++
+          공통 컬럼.
+         ++++++++++++++++++++++++++++++++++++++ -->
+
+    <!--  -->
+    <sql id="TodeMgmt-columns">
+             A.TODE_BUSI_NO     as "todeBusiNo"
+            ,A.TODE_BUSI_NM     as "todeBusiNm"
+            ,A.USCM_NO          as "uscmNo"
+            ,A.REQ_USER_NM      as "reqUserNm"
+            ,A.REQ_DEPT_NM      as "reqDeptNm"
+            ,A.REQ_TEL_NO       as "reqTelNo"
+            ,A.REQ_EMAIL        as "reqEmail"
+            ,A.REQ_CITYAUTH_CD  as "reqCityauthCd"
+            ,A.REQ_DATE         as "reqDate"
+            <!-- ,FN_CONV_VDATEYMD(A.REQ_DATE)                        as "convReqDate" -->
+            ,A.BUSI_POST_NO     as "busiPostNo"
+            ,A.BUSI_ADDR1       as "busiAddr1"
+            ,A.BUSI_ADDR2       as "busiAddr2"
+            ,A.BUSI_ADDR3       as "busiAddr3"
+            ,A.BUSI_ADDR4       as "busiAddr4"
+            ,A.BUSI_ADDR5       as "busiAddr5"
+            ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "busiAddr12"
+            ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2 ||' '|| A.BUSI_ADDR3 ||' '|| A.BUSI_ADDR4 as "busiAddress1"
+            ,A.BUSI_STT_DATE    as "busiSttDate"
+            ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)                    as "convBusiSttDate"
+            ,A.BUSI_END_DATE    as "busiEndDate"
+            ,FN_CONV_VDATEYM(A.BUSI_END_DATE)                    as "convBusiEndDate"
+            ,CEIL(MONTHS_BETWEEN(FN_FIX_DATE(A.BUSI_END_DATE, 'YYYYMMDD', 'N'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') ))
+                                                                 as "devPeriod"
+            ,CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_END_DATE, 'YYYYMMDD', 'N') ))
+                                                                 as "mgtPeriod"
+            ,CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') ))
+                                                                 as "prcPeriod"
+            ,(CASE WHEN CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') )) IS NULL 
+                        OR CEIL(MONTHS_BETWEEN(FN_FIX_DATE(A.BUSI_END_DATE, 'YYYYMMDD', 'N'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') )) IS NULL
+                        THEN NULL
+                   WHEN CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') )) <![CDATA[<=]]> 0     THEN 0
+                   WHEN CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') )) <![CDATA[>=]]> CEIL(MONTHS_BETWEEN(FN_FIX_DATE(A.BUSI_END_DATE, 'YYYYMMDD', 'N'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') )) THEN 100
+                   ELSE ROUND(
+                            CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') ))/CEIL(MONTHS_BETWEEN(FN_FIX_DATE(A.BUSI_END_DATE, 'YYYYMMDD', 'N'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') ))*100
+                            ,2)
+                   END)         as "prcPeriodRate"
+            ,A.BUSI_DEV_ENTY    as "busiDevEnty"
+            ,A.BUSI_MGT_ENTY    as "busiMgtEnty"
+            ,A.BUSI_LEGL_BASS   as "busiLeglBass"
+            ,A.BUSI_PLAN_DATE   as "busiPlanDate"
+            ,FN_CONV_VDATEYM(A.BUSI_PLAN_DATE)                   as "convBusiPlanDate"
+            ,A.TOT_SITE_AREA    as "totSiteArea"
+            ,A.TOT_FCLT_AREA    as "totFcltArea"
+            ,A.GOV_DEPT_CD      as "govDeptCd"
+            ,FN_GET_CODENM('GOV_DEPT_CD', A.GOV_DEPT_CD)         as "govDeptCdNm"
+            ,A.BUSI_TYPE        as "busiType"
+            ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_TYPE)             as "busiTypeNm"
+            ,A.BUSI_CATE        as "busiCate"
+            ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_CATE)             as "busiCateNm"
+            ,A.BUSI_STAH_STAGE  as "busiStahStage"
+            ,FN_GET_CODENM('BUSI_STAH_STAGE', A.BUSI_STAH_STAGE) as "busiStahStageNm"
+            ,A.BUSI_NEED        as "busiNeed"
+            ,A.BUSI_STAH_BACK   as "busiStahBack"
+            ,A.BUSI_NOTE        as "busiNote"
+            ,A.PLAN_GOV_EXPS    as "planGovExps"
+            ,A.PLAN_CITY_EXPS   as "planCityExps"
+            ,A.PLAN_DO_EXPS     as "planDoExps"
+            ,A.PLAN_PRVT_EXPS   as "planPrvtExps"
+            ,A.PLAN_AREA_SUM_EXPS as "planAreaSumExps"				<!-- 지방비 합계 항목 신규 추가 2015.01.19 -->
+            ,NVL(A.PLAN_GOV_EXPS,0)+ <!--  NVL(A.PLAN_CITY_EXPS,0)+NVL(A.PLAN_DO_EXPS,0) --> NVL(A.PLAN_AREA_SUM_EXPS,0) +NVL(A.PLAN_PRVT_EXPS,0)
+                                                                 as "planSumExps"	<!-- 합계 방식 변경 (지방비 합계 값으로 변경) 2015.01.19 -->
+            ,A.TOT_SITE_UNIT	as "totSiteUnit"		
+            ,A.TOT_FCLT_UNIT   as "totFcltUnit"
+            ,A.BUSI_ISSU_PBLM   as "busiIssuPblm"
+            ,A.EFFE_POLI_EXPE   as "effePoliExpe"
+            ,A.EFFE_PROD_INDU   as "effeProdIndu"
+            ,A.EFFE_EMP_INDU    as "effeEmpIndu"
+            ,A.PFMS_CREATE      as "pfmsCreate"
+            ,A.OPEN_YN          as "openYn"
+            ,A.TODE_BUSI_FIGURE_TYPE    as "busiFigureType"
+            ,A.APPR_USER_ID     as "apprUserId"
+            ,(SELECT USER_NM
+                FROM VW_USER
+               WHERE USER_ID = A.APPR_USER_ID)                   as "apprUserNm"
+            ,A.APPR_DATE        as "apprDate"
+            <!-- ,FN_CONV_VDATEYMD(A.APPR_DATE)                       as "convApprDate" -->
+            ,A.APPR_STAT        as "apprStat"
+            ,A.REF_BUSI_NO      as "refBusiNo"
+            ,A.INPUT_RATE       as "inputRate"
+            ,A.REGI_ID          as "regiId"
+            ,A.REGI_DATE        as "regiDate"
+            ,A.UPDT_ID          as "updtId"
+            ,A.UPDT_DATE        as "updtDate"
+            ,A.REJT_REASON      as "rejtReason"
+    </sql>
+    
+    <!-- 기획평가사업  -->
+    <sql id="PlanEvaluMgmt-columns">
+	     A.PLANEVAL_BUSI_NO     	as "planEvalBusiNo"
+	    ,A.PLANEVAL_BUSI_NAME     	as "planEvalBusiName"
+	    ,A.BUSI_ADDR1       		as "busiAddr1"
+	    ,A.BUSI_ADDR2       		as "busiAddr2"
+	    ,A.BUSI_ADDR5       		as "busiAddr5"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   			as "busiAddr12"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2 ||' '|| A.BUSI_ADDR5 		as "busiAddress1"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   			as "cityauthNm"
+	    ,A.BUSI_STT_DATE    as "busiSttDate"
+	    ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)                    as "convBusiSttDate"
+	    ,A.BUSI_END_DATE    as "busiEndDate"
+	    ,FN_CONV_VDATEYM(A.BUSI_END_DATE)                    as "convBusiEndDate"
+	    ,A.BUSI_DEV_EVTY	   as "busiDevEnty"
+	    ,A.BUSI_TYPE        as "busiType"
+	    ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_TYPE)             as "busiTypeNm"
+	    ,A.BUSI_CATE        as "busiCate"
+	    ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_CATE)             as "busiCateNm"                                                                 
+	    ,A.PLAN_BUSI_EXPS    as "planBusiExps"
+	    ,A.REGI_ID          as "regiId"
+	    ,A.REGI_DATE        as "regiDate"
+	    ,A.UPDT_ID          as "updtId"
+	    ,A.UPDT_DATE        as "updtDate"
+    </sql>
+    
+    
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++
+          TB_TODE_BUSI     (관광사업정보) 작업
+         +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+    <!-- <select id="viewTodeMgmtMast" parameterClass="map"  resultClass="hashmap">
+        SELECT <include refid="TodeMgmt-columns"/>
+          FROM TREDSUSER.TB_TODE_BUSI A,
+               TREDSUSER.TB_USCM U
+         WHERE (0=0)
+           AND A.USCM_NO        = U.USCM_NO(+)
+           AND A.TODE_BUSI_NO   = #evaluBusiNo#
+    </select> -->
+    
+    <select id="viewTodeMgmtMast" parameterClass="map"  resultClass="hashmap">
+        SELECT <include refid="PlanEvaluMgmt-columns"/>
+          FROM TREDSUSER.TB_PLANEVAL_BUSI A
+         WHERE (0=0)
+           AND A.PLANEVAL_BUSI_NO   = #evaluBusiNo#
+    </select>
+    
+    <select id="listTodeFile" parameterClass="map"  resultClass="hashmap">
+        SELECT
+             A.TODE_FILE_NO  as "todeFileNo"
+            ,A.ROOT_NO       as "rootNo"
+            ,A.ROOT_SEQ      as "rootSeq"
+            ,A.DOCU_TYPE     as "docuType"
+            ,A.ATTH_TYPE     as "atthType"
+            ,A.FILE_ORG_NM   as "fileOrgNm"
+            ,A.FILE_SVR_NM   as "fileSvrNm"
+            ,A.FILE_PATH     as "filePath"
+            ,A.FILE_SIZE     as "fileSize"
+            ,A.ATTH_RMK      as "atthRmk"
+            ,A.REGI_ID       as "regiId"
+            ,A.REGI_DATE     as "regiDate"
+          FROM TREDSUSER.TB_TODE_BUSIFILE A
+         WHERE (0=0)
+           AND ROOT_NO   = #rootNo#
+           <isNotEmpty property="docuType">
+               AND DOCU_TYPE = #docuType#
+           </isNotEmpty>
+           <isNotEmpty property="rootSeq">
+               AND ROOT_SEQ  = #rootSeq#
+           </isNotEmpty>
+           <isNotEmpty property="atthType">
+               AND ATTH_TYPE = #atthType#
+           </isNotEmpty>
+           <isNotEmpty property="arrAtthType" prepend="AND">
+                   ATTH_TYPE IN
+                <iterate property="arrAtthType" conjunction="," open="(" close=")">
+                    #arrAtthType[]#
+                </iterate>
+           </isNotEmpty>
+         ORDER BY A.ATTH_TYPE, A.TODE_FILE_NO
+    </select>
+    
+    
+
+</sqlMap>

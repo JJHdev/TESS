@@ -1,0 +1,17 @@
+@charset "utf-8";
+/*
+2013-05-16 jian
+공통사항은 common을 참조. 
+*/
+/*study*/
+#wrapper{background:url(../images/bg_extra01.png) no-repeat left top;}
+#content{min-height:30px;padding:0px 0 0 0px;}
+	.extra01_box{
+		position:absolute;
+		top:130px;
+		left:180px;
+		width:630px;
+		line-height:20px;
+		}
+	.extra01_box li{padding-top:10px;}
+	.extra01_box p{text-indent:10px;}

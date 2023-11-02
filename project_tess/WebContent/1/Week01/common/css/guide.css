@@ -1,0 +1,48 @@
+﻿@charset "utf-8";
+
+/*layout*/
+body{background:url(../images/guide_bg.jpg) no-repeat left top;word-break:keep-all;word-wrap:break-word}
+h1{text-indent:-9999px;height:80px;overflow:hidden}
+ul.list {position:absolute;top:95px;left:613px}
+ul.list li{margin-bottom:4px}
+ul.list li a{display:block;height:19px;width:65px;padding:8px 0 8px 15px;text-align:center;background:url(../images/guide_taboff.gif) no-repeat}
+ul.list li a.on{background:url(../images/guide_tabon.gif) no-repeat}
+
+/* 보여질 컨텐트 */
+.contentView {margin:35px 0 0 50px;width:510px;height:380px;overflow-y:auto;overflow-x:hidden}
+dl{padding:0 10px}
+dt{padding:0 0 5px 5px;font:bold 12px/1.5 "돋움", dotum, Arial}
+dd{padding-left:14px;line-height:1.8em}
+dl.tool {margin-top:30px;padding-left:30px}
+dl.tool dt{padding:0;line-height:2em}
+dl.tool dd{padding:0 0 10px 20px}
+
+/*type_face*/
+body {font:12px/1.5 "돋움", Arial;color:#666;
+	scrollbar-face-color:#fff;
+	scrollbar-shadow-color:#eff0f4;
+	scrollbar-highlight-color:#fff;
+	scrollbar-3dlight-color:#eff0f4;
+	scrollbar-darkshadow-color:#eff0f4;
+	scrollbar-arrow-color:#666;
+	scrollbar-track-color: #eff0f4}
+li a:link,
+li a:visited,
+li a:hover,
+li a:active{font:12px/1.5 "돋움", dotum, Arial;color:#fff;text-decoration:none}
+ul.list li a {font-weight:bold;color:#fff}
+ul.list li a.on{color:#fff}
+p, ul{font-weight:bold}
+
+/*table*/
+table {font-size:12px }
+th {text-align:center; background:#666; padding:5px; color:#fff}
+td {text-align:center; padding:5px;background:#f3f3e9}
+.bg_gray {background:#ccc}
+.bg_purple {background:#DFD1E0;text-align:left;padding-left:10px}
+.bg_blur {background:#5B7EAA}
+.mt10 {margin-top:10px}
+strong, .strOrg {color:#fa5200}
+.text_left{text-align:left;padding-left:10px}
+
+.display_none{display:none;}

@@ -1,0 +1,499 @@
+﻿# TEMPLATE INFORMATION #
+title.tmp.hed.calendar=#. Calendar
+title.tmp.hed.formTag=#. Form Tag
+title.tmp.hed.button=#. Button
+title.tmp.hed.dataListPaging=#. Data List & Paging
+title.test= {0} is {1} .
+
+# COMMON INFORMATION #
+title.no=No
+title.id=ID
+title.name=Name
+title.check=Check
+title.title=Title
+title.content=Content
+title.date=Date
+title.status=Status
+title.manfNo=Manifest Code
+title.confirm=Confirm
+title.delete=Delete
+title.progress=Progress
+title.process=Process
+title.telNo=Telephone
+title.address=Address
+title.fax=Fax
+title.email=Email
+title.person=person
+
+title.wsteCd=Waste Code
+title.wsteNm=Waste Name
+title.wsteCdNm=Waste Code & Name
+title.wsteType=Waste Type
+title.wsteSrc=Source
+title.groupWsteNm=Group name
+
+title.compCd=Company Code
+title.compNm=Company Name
+title.compType=Company Type
+title.hwmc=HWM-ID
+title.ownerNm=Representative
+title.addr1Nm=Province/City
+title.addr2Nm=Township/District
+title.addr3Nm=Ward/Village
+title.addr4Nm=Company Address
+
+title.request=Request
+title.approval=Approval
+
+title.hd.wsteinfo=Inquire about waste information
+title.hd.compinfo=Inquire about company information
+title.hd.favoWsteCompinfo=Favorite waste and companies
+
+title.grid.dialog=That feature is not supported.
+title.grid.dialog.selectrow=Please select row
+
+title.com.srchLocCode=Search location code
+title.com.wsteInfo=Inquire about waste information
+title.com.findPwd=Find password
+title.com.email.info01=Your new password is as follows:
+title.com.email.info02=New password :
+title.com.email.outgoOnlyMail=This email is outgoing-only.
+title.com.email.contactCusMsg=If you have any discomfort when using the service, please contact customer service center
+
+title.com.footerTxt=Copyright(C) 2007-2014 kcti all rights reserved.
+
+title.omm.tempFaci=Temporary Facilities
+
+title.com.allowedFtype=\u203b Allowed fiile types :
+
+
+# BASIC INFORMATION #
+title.bas.comNo=Company No
+title.bas.step1=Step 1
+title.bas.step2=Step 2
+title.bas.step3=Step 3
+title.bas.step4=Step 4
+title.bas.step1Cont=Check Registration
+title.bas.step2Cont=Register Basic Information1
+title.bas.step3Cont=Register Basic Information2
+title.bas.step4Cont=Complete
+title.bas.enterHwmc=Enter Company registration number
+title.bas.idCardNum=(ID card number)
+title.bas.password=Password
+title.bas.cfrmPassword=Confirm password
+title.bas.userId=User-ID
+title.bas.userType=User Type
+
+title.bas.midtit.genInfo=1. General information
+title.bas.midtit.headquarter=1.1 Headquarter
+title.bas.midtit.faci=1.2 HW generating facility
+title.bas.midtit.transAgenci=1.2 HW transport agent
+title.bas.midtit.dspoFaci=1.3 HW treatment facility
+title.bas.midtit.prodData=2. Production Data for Each Facility
+title.bas.midtit.listMater=2.1 List of raw materials/chemicals
+title.bas.midtit.listProd=2.2 List of products
+title.bas.midtit.wsteData=3. Waste Data
+title.bas.midtit.listHazardWste=3.1 List of regularly generated HW
+title.bas.midtit.listNonHazardWste=3.2 List of regularly generated non-HW
+title.bas.midtit.listHazardWsteResidues=3.3 List of stockpiled HW (if any)
+title.bas.midtit.listHazardWsteSelfDspo=4. List of HW for onsite treatment (if any)
+title.bas.midtit.attach=5. Contents of registration application dossier
+title.bas.midtit.areaRegi=2. Operation areas to apply
+title.bas.midtit.listArea=List of selected areas
+title.bas.midtit.vehiRegi=3. List of specialized means or equipment ot apply
+title.bas.midtit.listHazardTransDspo=4. List of HW to apply for transport and treatment
+title.bas.midtit.listHwReuse=4a. List of HW registered to reuse directly (if be available)
+title.bas.midtit.inChanges=Input changes
+title.bas.midtit.inExistPass=Input existing password
+title.bas.midtit.inNewPass=Input new password
+title.bas.midtit.chgComment=# Change comment
+title.bas.midtit.selectFacility=# Select Facility
+title.bas.midtit.sevrInformation=# Servicer information
+title.bas.midtit.wsteInformation=# Waste information
+title.bas.midtit.listApplForSys=List of application for system use
+title.bas.midtit.listDbClickMessage=* Double-clicking a row in the list to display popup window about details
+title.bas.midtit.listApplChgInfo=List of application for change of basic information
+title.bas.midtit.reqStep4Msg1=To preview the application form, click the preview button.
+title.bas.midtit.reqStep4Msg2=To submit the application, click the complete button
+title.bas.midtit.reqStep4Msg21=To submit the application, click the automatic approval button
+title.bas.midtit.compResMsg1=Application is completed.
+title.bas.midtit.compResMsg2=After the administrator's applorval,
+title.bas.midtit.compResMsg3=That information will be sent to your email.
+title.bas.midtit.autoResMsg1=Application is automatically approved.
+title.bas.midtit.autoResMsg2=That information will be sent to your email.
+
+title.bas.inlab.sendTo=Send To
+title.bas.inlab.compNm=Name
+title.bas.inlab.compNmOfCond=Company name
+title.bas.inlab.addrNm4=Address
+title.bas.inlab.addrNm1=Province/City
+title.bas.inlab.addrNm2=Township/District
+title.bas.inlab.addrNm3=Ward/Village
+title.bas.inlab.phone=Telephone
+title.bas.inlab.fax=Fax
+title.bas.inlab.email=E-mail
+title.bas.inlab.acctNo=Bank Account number
+title.bas.inlab.bankNm=Bank
+title.bas.inlab.idNum=Civil ID number<br />(in case of individuual)
+title.bas.inlab.idNum1=Civil ID number
+title.bas.inlab.idNum2=(in ase of individuual)
+title.bas.inlab.issueDate=Date of issue
+title.bas.inlab.issuePlace=Place of issue
+title.bas.inlab.dateIssue=Date of issue
+title.bas.inlab.busiNo=Business registration<br /> number (if any)
+title.bas.inlab.hwmIdNum=HWM-ID number
+title.bas.inlab.hwmIdNumV=HWM-ID number(V)
+title.bas.inlab.hwmIdNumX=HWM-ID number(X)
+title.bas.inlab.hwmc=Hazardous Waste Management Code
+title.bas.inlab.validDate=Valid Date To
+title.bas.inlab.officerNm=Name of person
+title.bas.inlab.officerNm2=Officer name
+title.bas.inlab.genrSignNm=Person authorized <br />to sign of HW generator
+title.bas.inlab.plntType=Business Type
+title.bas.inlab.gpsCoor=GPS coordinate
+title.bas.inlab.gpsX=X :
+title.bas.inlab.gpsY=Y :
+title.bas.inlab.no=No.
+title.bas.inlab.select=Select
+title.bas.inlab.plntId=ID
+title.bas.inlab.plntNm=Name
+title.bas.inlab.plntNo=Facility
+title.bas.inlab.wsteNmMater=Raw material/chemical
+title.bas.inlab.wsteNmProd=Name of products
+title.bas.inlab.wsteCd=Waste code
+title.bas.inlab.wsteNm=Name of waste
+title.bas.inlab.gntp=Property
+title.bas.inlab.residusDate=Start Residue Date
+title.bas.inlab.dspoMethod=Disposal method
+title.bas.inlab.dspoLvl=Disposal Level
+title.bas.inlab.docuType=Document type
+title.bas.inlab.locCd=Area
+title.bas.inlab.provCd=Province
+title.bas.inlab.transWays=Disposal method
+title.bas.inlab.weight=Amount(kg/year)
+title.bas.inlab.transStad=Disposal Level
+title.bas.inlab.amt=Quantity
+title.bas.inlab.mngType=Usage Purpose
+title.bas.inlab.vehiNm=Name
+title.bas.inlab.vehiNo=Registration number
+title.bas.inlab.filePath=File path
+title.bas.inlab.equipType=Category
+title.bas.inlab.chgReqCont=Changes comment
+title.bas.inlab.apploval=Approval
+title.bas.inlab.rtnReason=Reason for return
+title.bas.inlab.reasonRej=Reason for reject
+title.bas.inlab.sevr1CompNo=(S1) Company Name
+title.bas.inlab.sevr1PlntNo=(S1) Facility
+title.bas.inlab.sevr2CompNo=(S2) Company Name
+title.bas.inlab.sevr2PlntNo=(S2) Facility
+title.bas.inlab.serv1=Servicer1
+title.bas.inlab.serv2=Servicer2
+title.bas.inlab.dspoWaycd=Disposal method
+title.bas.inlab.dspoWaycdPre=Pre
+title.bas.inlab.dspoWaycdMain=Main
+title.bas.inlab.dspoWaycdPost=Post
+title.bas.inlab.regiDate=Registration date
+title.bas.inlab.ownerNm=Representative
+title.bas.inlab.compType=Company type
+title.bas.inlab.date=Date
+title.bas.inlab.apprdate=Approval date
+title.bas.inlab.hwmch=HWM-ID
+title.bas.inlab.chgReqNm=Change Requestor
+title.bas.inlab.contChg=Content of change
+title.bas.inlab.chkSameHeader=Same with Headquarter
+title.bas.inlab.chgYn=Updated
+title.bas.email.info01=Your Login information is as follows:
+title.bas.email.info02=Your new ID :
+title.bas.email.info03=Your new password :
+title.bas.email.appr.subject=Your registration request has been approved.
+title.bas.email.rej.subject=Your registration request has been rejected.
+title.bas.email.handler=Handler :
+title.bas.email.procRes=Result :
+title.bas.email.rejReason=Reason :
+title.bas.email.resAppr=Approval
+title.bas.email.resRej=Reject
+title.bas.email.addRejMsg01=Please request again after modifying the contents.
+title.bas.email.addApprMsg01=From now on you can use the service.
+title.bas.email.chgAppr.subject=Your change request has been approved.
+title.bas.email.chgRej.subject=Your change request has been rejected.
+title.bas.email.addChgApprMsg01=Please check the changes.
+title.bas.email.addRejMsg01=Please request your change again.
+
+
+# USER INFORMATION #
+title.usr.midtit.listMgmt=List of user management
+title.usr.midtit.usrInfo=# User information
+
+title.usr.userId=User ID
+title.usr.password=Password
+title.usr.userNm=User name
+title.usr.cmptauthCd=Competent authorities
+title.usr.userType=User type
+title.usr.useStat=Conditions of company
+title.usr.enabled=Conditions of user
+title.usr.manfStat=Status
+title.usr.usrProp=User property
+title.usr.genrChek=Check
+title.usr.appr=Approval
+
+# LEDGER INFORMATION #
+title.led.tit.listGenr=Inquire about generator ledger
+title.led.tit.listTrns=Inquire about transporter ledger
+title.led.tit.listDspo=Inquire about disposer ledger
+title.led.midtit.listFrstAmt=List of registered first storage amount
+title.led.midtit.regiFrstAmt=Register the first storage amount
+title.led.midtit.listLedg=List of Ledger
+
+title.led.stogRegiDate=Storage date
+title.led.stogAmt=Storage amount (kg)
+title.led.wsteCdNm=Waste code/name
+title.led.rmk=Remark
+title.led.genr=Generator
+title.led.trns=Transporter
+title.led.dspo=Disposer
+title.led.date=Date
+title.led.genrAmt=Generated amount
+title.led.analGenrAmt=Annual generated amount
+title.led.dspoAmt=Disposal amount
+title.led.analDspoAmt=Annual disposal amount
+title.led.stogAmt=Storage amount
+title.led.collAmt=Collected amount
+title.led.analCollAmt=Annual collected amount
+title.led.trnsAmt=Transported amount
+title.led.analTrnsAmt=Annual transported amount
+title.led.csgnAmt=Consignment amount
+title.led.analCsgnAmt=Annual consignment amount
+
+# BBS INFORMATION #
+title.bbs.midtit.listBbs=List of BBS
+title.bbs.midtit.viewBbs=View of BBS
+title.bbs.midtit.attaFile=# Attached files
+title.bbs.midtit.listDbClickMessage=* Double-clicking a row in the list to display detail view
+
+title.bbs.bbsKind=Kind
+title.bbs.bbsSubject=Subject
+title.bbs.bbsUserNm=Writer name
+title.bbs.bbsViewCnt=View count
+title.bbs.regiDate=Registration date
+title.bbs.bbsStartDate=Start date
+title.bbs.bbsEndDate=End date
+title.bbs.bbsDesc=Description
+title.bbs.chkDel=Del
+
+
+# MANF INFORMATION #
+title.man.giveDate=Give Date
+title.man.manfGenr=Inquire/modify Manifest
+title.man.manfTrns=Servicer 1 write/modify Manifest
+title.man.manfDspo=Servicer 2 write/modify Manifest
+title.man.manfProgStat=Generator check progress of Manifest
+title.man.manfErrStat=Check/Modify error information of Manifest
+title.man.manfErrProc=Inquiry/Process error information of Manifest
+title.man.manfInfoCmpt=Inquire about Manifest information of jurisdiction company
+title.man.manfInfoCmptAuth=Authorize about Manifest information of jurisdiction company
+title.man.manfGenrErrStat=Details of Mismatch error information
+title.man.createManf=Create Manifest
+title.man.generator=Generator
+title.man.transporter=Transporter
+title.man.disposer=Disposer
+title.man.manfNo=Manifest code
+title.man.modify=Modification
+title.man.modifyAuth=Modification authority
+title.man.approval=Approval
+title.man.authorize=Authorize
+title.man.finish=Finish
+title.man.donrevea=DONRE/VEA
+title.man.TransferDate=Transfer Date
+title.man.TransferPerson=Transfer Person
+title.man.consignAmt=Consignment amount
+title.man.receivedDate=Received date
+title.man.receivedAmt=Received amount
+title.man.receivedPerson=Received person
+title.man.treatedConfirm=Treatment confirm
+title.man.treatedDate=Treated date
+title.man.treatedPerson=Treated person
+title.man.disposalDate=Disposal Date
+title.man.residualAmt=Residual Amount
+title.man.residuedAmt=Residued Amount
+title.man.confirmServ=Confirm by Servicer
+title.man.confirmCmpt=Confirm by DONRE/VEA
+title.man.confirm=Confirm
+title.man.atyErrcd=Error Code
+title.man.atyRmk=Error Content
+title.man.modifiDate=Modification date
+title.man.genrNm=Generator Name
+title.man.attachment=Attachment
+title.man.wsteDspoType=For Disposal / Export / Reuse
+title.man.rejecter=Rejecter
+title.man.reasonReject=Reason of reject
+title.man.sevr1=Servicer1
+title.man.sevr2=Servicer2
+title.man.weight=Amount(kg)
+title.man.importCnty=Importing country
+title.man.importBordGate=Importing border gate
+title.man.exportBordGate=Exporting border gate
+title.man.exportDate=Exporting date
+title.man.codeTrnsMeans=Code of transportation means
+title.man.signedDate=Signed Date
+title.man.offerNm=Officer Name
+title.man.fullNmReceiver1=7.1. Full name of receiver (representative of servicer 1)
+title.man.fullNmReceiver2=7.2. Full name of receiver (representative of servicer  2)<br />(harmful waste cycling agent)
+title.man.sevrNm=Servicer Name
+title.man.sevrName=Name of Servicer
+#title.man.manfDspoRelt=Register disposal result
+#title.man.manfDspoCanl=Cancel disposal result
+title.man.disposedAmt=Disposed amount
+title.man.disposedDate=Disposed date
+title.man.genrInfo=Generator information
+title.man.trnsInfo=Transporter information
+title.man.genrInfoOfWsteInfo=Generation information of  hazardous waste information
+title.man.sevr1Info=Servicer 1 information
+title.man.sevr2Info=Servicer 2 information (harmful waste cycling agent)
+title.man.exportInfo=Exporting information (if there is)
+title.man.confirmationOnWsteList=Confirmation on full receiving of harmful waste as listed at item 4
+title.man.dischargingSource=Discharging source agent confirms correct declaration of information listed at items  1-4 (or 5)
+title.man.harmfulWsteMangt=Harmful waste management agent confirms to complete safe treatment of harmful wastes under the method as listed at item 4 (or cycling agent confirms the correct purpose of harmful waste)
+title.man.totalAmt=Total amount
+title.man.manifestlist=List of registered Manifest
+title.man.resultReportList=List of submitted result report
+title.man.comment=Comment
+
+# RESULT INFORMATION #
+title.rlt.cmptauthReltCmptRept=Inquire about result report of jurisdiction DONRE
+title.rlt.compReltCmptRept=Inquire about result report of jurisdiction company
+title.rlt.reltGenrRept=Submit result report
+
+title.rlt.reltNo=Report code
+title.rlt.resultDate=Result Date
+title.rlt.createReltGenrRept=Generator submit result
+title.rlt.period=Report period
+title.rlt.submitDate=Submit date
+title.rlt.genrNm=Name of Generator
+title.rlt.addrGenrPlnt=Address of hazardous waste generating facilities
+title.rlt.donreNm=DONRE Name
+title.rlt.permitDay=Day of permit
+title.rlt.name=Name (if there is)
+title.rlt.tretMethod=Treatment method
+title.rlt.sevr1NmHwmc=Organization or individual receives HW
+title.rlt.note=Note
+title.rlt.basselCd=Bassel Code
+title.rlt.sevr1NmUnit=Transboundary movement unit
+title.rlt.sevr2NmUnit=Foreign treatment unit
+title.rlt.useMethod=Direct use method
+title.rlt.reuseOwner=Reuse owner
+title.rlt.amt=Amount
+title.rlt.year=Year
+title.rlt.tretReuseMethod=Treatment  or reuse method
+title.rlt.tretReuseUnit=Treatment or reuse unit
+title.rlt.sevrNm=Name of Servicer/Carrier
+title.rlt.sevrNmTretOwner=Name of Servicer/Treatment owner
+title.rlt.ownerWsteSource=Owner of Waste source
+title.rlt.methodCondiReuse=Method and condition of reuse
+title.rlt.reuseUnitNmAddr=Name and address of reuse unit
+title.rlt.total=Total
+title.rlt.hwmcSevr=Name of Servicer
+title.rlt.contNum=Contact number(Signature day)
+title.rlt.remainIssue=Remaining issues
+title.rlt.plntAddr=Facilities address
+title.rlt.to=To:
+title.rlt.genrConditionofHWMC=General condition of the implemented HWM activities
+title.rlt.genrCondiOfWsteGenr=General condition of hazardous waste generation
+title.rlt.genrCondiOfSevr=General condition of activities of HWM servicers, carriers, treatment owner in the region\u2019s area
+title.rlt.condiOflicense=Condition of licensing book of registration for waste source owner and hazard waste management servicer in the region\u2019s area
+title.rlt.confirmOfWsteManagement=Confirm that the transfers of hazardous waste management responsibility between waste source owner and HWM servicer have been implemented properly by and according to the contract
+title.rlt.investExam=Investigation, examination and violation handle
+title.rlt.otherIssues=Other issues
+title.rlt.conclusionsNcomment=Conclusions and Comment
+title.rlt.directorOfDonre=Director of DONRE (signed &amp; stamped)
+title.rlt.statisticsOfWsteGenr=Appendix 1. Statistics of waste generation and management in year
+title.rlt.statisticsOfWsteAccording=a. Statistics of Hazardous waste according to registered hazardous waste source owner
+title.rlt.statisticsOfWsteAccordingWsteManagement=b. Statistics of hazardous waste according to hazardous waste management owner, hazardous waste treatment(permitted by the DONRE)
+title.rlt.casesOfTransfer=c. Cases of transfer of hazardous waste management responsibility(stated in the hazardous waste manifest) of waste source owners and hazardous waste management owner that has not been implemented by or according to the contract
+title.rlt.statisticOfAllWsteSource=Appendix 2. Statistic of all of hazardous waste source owners in the jurisdiction who have been provided with Book of registration till the end of year
+title.rlt.statisticOfAllWsteSource3=Appendix 3. Statistic of all of hazardous waste source owners in the jurisdiction who have been provided with Book of registration till the end of year
+title.rlt.facilitiesWorkPlace=Facilities (Working Places) (if there are more than 1 facility (working place), they should be listed one by one)
+title.rlt.jointDealaration=Joint declaration
+title.rlt.genrCondiOfWsteGenrManagement=General condition of Hazardous Waste Generation and Management in the facility in the previous report\u2019s period
+title.rlt.planOfHWM=Plan of HWM in the coming report period (except owner of waste source has operation time under 01 year)
+title.rlt.genrRepresentative=Generator Representative (signed &amp; stamped)
+title.rlt.statisGenrWste=Appendix 1. Statistics on generated waste
+title.rlt.statisWste=a. Statistic of hazardous waste(including regular generating and unscheduled)
+title.rlt.statisExportedWste=a 1. Statistic of exported Hazardous Waste
+title.rlt.statisDirectReusedWste=a 2. Statistic of direct reused Hazardous Waste
+title.rlt.statisCommonWste=b. Statistic of common waste
+title.rlt.genrCondiHWMCservice=General condition of HWM service in the previous report period
+title.rlt.resultOfImplEnvironment=Result of the implementation of environment monitoring, operation monitoring and assessment of efficiency of hazardous waste treatment in the previous report period
+title.rlt.operationPlan=Operation plan in the coming report period
+title.rlt.statisticsOfWste=Appendix 1. Statistics of waste
+title.rlt.amountOfManageWste=a. Amount of managed hazardous waste
+title.rlt.infoOfWsteTrnsOwner=b. Information of hazardous waste source transfer owner
+title.rlt.infoOfHWMsevr=c. Information of HWM servicer or hazartdous waste servicer transfer hazardous waste to other hazardous waste servicer for treatment
+title.rlt.infoOfHWMsevrTreatOwner=d. Information of HWM servicer or hazardous waste treatment owner that receives hazardous waste from other HWM servicer for treatment
+title.rlt.infoOfTrnsWsteDirectReuse=d. Information of the transfer of hazardous waste for direct reuse(3 years before this report period)
+title.rlt.amountOfCommonWsteTrnsTreat=e. Amount of common waste transfer treated
+
+
+
+# ADMIN INFORMATION #
+title.adm.useFlag=Use
+title.adm.parentId=Parent Id
+title.adm.progId=Program Id
+title.adm.seq=Seq.
+title.adm.sort=Sort
+
+title.adm.code.title=Code Management
+title.adm.menu.title=Menu Management
+title.adm.prog.title=Program Management
+title.adm.roleProg.title=Role by Program Management
+
+title.adm.header.codeType=Code Type List
+title.adm.header.code=Code List
+title.adm.header.role=Role List
+title.adm.header.roleHierarchy=Role Hierarchy
+title.adm.header.menu=Menu List
+title.adm.header.prog=Program List
+title.adm.header.roleProg=Role by Program
+title.adm.header.roleMenu=Role by Menu
+title.adm.header.user=User List
+
+title.adm.code.schCdType=Code Type (Code or Name)
+title.adm.codeType=Code Type
+title.adm.codeTypeName=Code Type Name
+title.adm.code=Code
+title.adm.codeName=Code Name
+title.adm.addCol=Add Column{0}
+
+title.adm.schRole=Role
+title.adm.roleId=Role Id
+title.adm.roleName=Role Name
+title.adm.parentRole=Parent Role
+title.adm.childRole=Child Role
+
+title.adm.menu.parentMenu=Parent Menu
+title.adm.menuId=Menu Id
+title.adm.menuDesc=Menu Name
+title.adm.menuLevel=Group
+title.adm.tagtUrl=Target Url
+title.adm.popupYn=Popup Use
+
+title.adm.code.schProg=Program (Id, Name, Pattern)
+title.adm.progId=Program ID
+title.adm.progName=Program Name
+title.adm.progPattern=Program Pattern
+title.adm.progType=Type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Code">
+
+	<!-- Code Search -->
+	<sql id="ListCode-condition">
+	    WHERE CODE_ODR > 0
+        <isNotEmpty property="parentCode">
+            AND PARENT_CODE = #parentCode#
+        </isNotEmpty>
+        <isNotEmpty property="code">
+            AND CODE like '%'||#code#||'%'
+        </isNotEmpty>
+        <isNotEmpty property="codeNm">
+            AND CODE_NM like '%'|| #codeNm#||'%'
+        </isNotEmpty>
+	</sql>
+	<select id="listCode" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT
+			  PARENT_CODE               AS "parentCode"
+			, CODE                      AS "code"
+			, CODE_NM                   AS "codeNm"
+			, ADD_COL1                  AS "addCol1"
+			, ADD_COL2                  AS "addCol2"
+			, ADD_COL3                  AS "addCol3"
+			, ADD_COL4                  AS "addCol4"
+			, ADD_COL5                  AS "addCol5"
+			, CODE_ODR                	AS "codeOdr"
+			, USE_YN                  	AS "useYn"
+		FROM SYS_CODE
+		<include refid="ListCode-condition"/>
+		<isNotEmpty property="sidx">
+			ORDER BY $sidx$ $sord$
+		</isNotEmpty>
+		<isEmpty property="sidx">
+			ORDER BY PARENT_CODE, CODE_ODR
+		</isEmpty>
+	</select>
+	<select id="listCodeCount" resultClass="java.lang.Integer" parameterClass="java.util.Map">
+		SELECT  count(*)
+		FROM 	SYS_CODE
+		<include refid="ListCode-condition"/>
+	</select>
+
+	<!-- Code Type Search -->
+	<sql id="ListCodeType-condition">
+		WHERE  CODE_ODR = 0
+        <isNotEmpty property="parentCode">
+			 AND (CODE like '%'||#parentCode#||'%' OR CODE_NM like '%'||#parentCode#||'%')
+		</isNotEmpty>
+	</sql>
+	<select id="listCodeType" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+        <!--
+        SELECT
+               CODE_TYPE                 AS "codeType" ,
+               CODE_TYPE_NM              AS "codeTypeNm",
+               USE_YN                    AS "useYn"
+        FROM   SYS_CODE_TYPE
+        <dynamic prepend="WHERE">
+            <isNotEmpty property="codeType" prepend="AND">
+                (CODE_TYPE like '%'||#codeType#||'%' OR CODE_TYPE_NM like '%'||#codeType#||'%')
+            </isNotEmpty>
+        </dynamic>
+		<isNotEmpty property="sidx">
+			ORDER BY $sidx$ $sord$
+		</isNotEmpty>
+		<isEmpty property="sidx">
+			ORDER BY PROG_ID
+		</isEmpty>
+		-->
+		SELECT
+               CODE			AS "parentCode",
+               CODE_NM      AS "parentCodeNm",
+               USE_YN       AS "useYn"
+        FROM   SYS_CODE
+        <include refid="ListCodeType-condition"/>
+		<isNotEmpty property="sidx">
+			ORDER BY $sidx$ $sord$
+		</isNotEmpty>
+		<isEmpty property="sidx">
+			ORDER BY CODE
+		</isEmpty>
+	</select>
+	<select id="listCodeTypeCount" resultClass="java.lang.Integer" parameterClass="java.util.Map">
+		<!--
+		SELECT  count(*)
+		FROM   SYS_CODE_TYPE
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="codeType" prepend="AND">
+				 (CODE_TYPE like '%'||#codeType#||'%' OR CODE_TYPE_NM like '%'||#codeType#||'%')
+			</isNotEmpty>
+		</dynamic>
+		-->
+		SELECT  COUNT(*)
+		FROM   SYS_CODE
+		WHERE  CODE_ODR = 0
+		<include refid="ListCodeType-condition"/>
+	</select>
+
+	<!--CODE TYPE : Insert -->
+	<insert id="regiCodeType" parameterClass="java.util.Map">
+		<!--
+		INSERT INTO SYS_CODE_TYPE (
+			CODE_TYPE,
+			CODE_TYPE_NM,
+			USE_YN,
+			REGI_ID,
+			REGI_DATE
+		) VALUES (
+			#codeType#,
+			#codeTypeNm#,
+			#useYn#,
+			#gsUserId#,
+			SYSDATE
+		)
+		-->
+		INSERT INTO SYS_CODE (
+		    CODE,
+		    PARENT_CODE,
+		    CODE_NM,
+		    CODE_ODR,
+		    USE_YN,
+		    REGI_ID,
+		    REGI_DATE
+		) VALUES (
+			#parentCode#,
+			'NONE',
+			#parentCodeNm#,
+			0,
+			#useYn#,
+			#gsUserId#,
+			SYSDATE
+		)
+	</insert>
+	<!--CODE : Insert -->
+	<insert id="regiCode" parameterClass="java.util.Map">
+		INSERT INTO SYS_CODE (
+			PARENT_CODE,
+			CODE,
+			CODE_NM,
+			ADD_COL1,
+			ADD_COL2,
+			ADD_COL3,
+			ADD_COL4,
+			ADD_COL5,
+			CODE_ODR,
+			USE_YN,
+			REGI_ID,
+			REGI_DATE
+		) VALUES (
+			#parentCode#,
+			#code#,
+			#codeNm#,
+			#addCol1#,
+			#addCol2#,
+			#addCol3#,
+			#addCol4#,
+			#addCol5#,
+			<isEmpty property="codeOdr">
+                <!-- [20140911 lcs] Tree view일 때 code 그룹을 등록할 때 '0'으로 전달됨 -->
+                <isEqual property="codeOdr" compareValue="0">
+                    $codeOdr$,
+                </isEqual>
+                <isNotEqual property="codeOdr" compareValue="0">
+				(SELECT NVL(MAX(CODE_ODR), 0) + 1
+				   FROM SYS_CODE
+				  WHERE PARENT_CODE = #parentCode#),
+                </isNotEqual>
+			</isEmpty>
+			<isNotEmpty property="codeOdr">
+				$codeOdr$,
+			</isNotEmpty>
+			#useYn#,
+			#gsUserId#,
+			SYSDATE
+		)
+	</insert>
+
+	<!--CODE TYPE : Update -->
+	<update id="updtCodeType" parameterClass="java.util.Map">
+		<!--
+		UPDATE SYS_CODE_TYPE
+		SET    CODE_TYPE_NM  = #codeTypeNm#,
+			   USE_YN        = #useYn#,
+			   UPDT_ID       = #gsUserId#,
+			   UPDT_DATE     = SYSDATE
+		WHERE  CODE_TYPE     = #codeType#
+		-->
+		UPDATE SYS_CODE
+		SET    CODE_NM    = #parentCodeNm#,
+		       USE_YN     = #useYn#,
+		       UPDT_ID    = #gsUserId#,
+			   UPDT_DATE  = SYSDATE,
+	    WHERE  CODE       = #parentCode#
+		AND    CODE_ODR   = 0
+	</update>
+	<!--CODE : Update -->
+	<update id="updtCode" parameterClass="java.util.Map">
+		UPDATE SYS_CODE
+		SET    CODE_NM       = #codeNm#,
+               ADD_COL1      = #addCol1#,
+               ADD_COL2      = #addCol2#,
+               ADD_COL3      = #addCol3#,
+               ADD_COL4      = #addCol4#,
+               ADD_COL5      = #addCol5#,
+			   CODE_ODR      = $codeOdr$,
+			   USE_YN		 = #useYn#,
+			   UPDT_ID       = #gsUserId#,
+			   UPDT_DATE     = SYSDATE
+		WHERE  PARENT_CODE   = #parentCode#
+		AND    CODE          = #code#
+	</update>
+
+	<!-- CODE TYPE : Delete -->
+	<delete id="deltCodeType" parameterClass="java.util.Map">
+		<!--
+		DELETE FROM SYS_CODE_TYPE
+		WHERE  CODE_TYPE  = #codeType#
+		-->
+		DELETE FROM SYS_CODE
+		WHERE  CODE     = #parentCode#
+		AND    CODE_ODR = 0
+	</delete>
+
+	<!-- CODE : Delete -->
+	<delete id="deltCode" parameterClass="java.util.Map">
+		DELETE FROM SYS_CODE
+		WHERE  PARENT_CODE  = #parentCode#
+        AND    CODE_ODR     > 0
+        <isNotEmpty property="arrCode">
+		    <iterate prepend="AND" property="arrCode" open="(" close=")" conjunction="OR">
+                  CODE  = #arrCode[]#
+            </iterate>
+        </isNotEmpty>
+        <!-- [20140912 LCS 추가] Tree view일 때 단일 삭제 기능 추가 -->
+        <isEmpty property="arrCode">
+            <isNotEmpty property="code">
+                AND CODE = #code#
+            </isNotEmpty>
+        </isEmpty>
+	</delete>
+
+
+	<!-- Code Type : Duplication Flag -->
+    <select id="getCodeTypeCnt" resultClass="java.lang.Boolean" parameterClass="java.util.Map">
+		<!--
+		SELECT SIGN(COUNT(*))
+		FROM   SYS_CODE_TYPE
+		WHERE  CODE_TYPE = #codeType#
+		AND    CODE_ODE    = 0
+		-->
+		SELECT SIGN(COUNT(*))
+		FROM   SYS_CODE
+		WHERE  CODE = #parentCode#
+		AND    CODE_ODR = 0
+	</select>
+
+    <!-- Code : Duplication Flag  -->
+    <select id="getCodeCnt" resultClass="java.lang.Boolean" parameterClass="java.util.Map">
+		SELECT SIGN(COUNT(*))
+		FROM   SYS_CODE
+		WHERE  PARENT_CODE = #parentCode#
+		AND    CODE        = #code#
+	</select>
+
+    <!-- ******************* Tree grid type view ******************* -->
+    <select id="listCodeTree" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+        SELECT
+            CODE                                  AS "code",
+            PARENT_CODE                           AS "parentCode",
+            CODE_NM                               AS "codeNm",
+            ADD_COL1                              AS "addCol1",
+            ADD_COL2                              AS "addCol2",
+            ADD_COL3                              AS "addCol3",
+            ADD_COL4                              AS "addCol4",
+            ADD_COL5                              AS "addCol5",
+            CODE_ODR                              AS "codeOdr",
+            USE_YN                                AS "useYn",
+            REGI_ID                               AS "regiId",
+            TO_CHAR(REGI_DATE, 'yyyy-mm-dd')      AS "regiDate",
+            LEVEL - 1                             AS "level",
+            PARENT_CODE                           AS "parent",
+            'false'                               AS "expanded",
+            'true'                                AS "loaded",
+            CASE
+                WHEN MAX(level) OVER() = level THEN 'true'
+                ELSE 'false'
+            END                                   AS "isLeaf"
+        FROM
+            SYS_CODE
+        WHERE (0=0)
+        <isNotEmpty property="parentCode">
+            AND (
+                CODE IN (
+                    SELECT CODE FROM SYS_CODE
+                    WHERE CODE_ODR = 0
+                      AND PARENT_CODE = 'NONE'
+                      AND (CODE LIKE '%'||#parentCode#||'%'
+                           OR CODE_NM LIKE '%'||#parentCode#||'%'
+                          )
+                )
+                   OR PARENT_CODE IN (
+                    SELECT CODE FROM SYS_CODE
+                    WHERE CODE_ODR = 0
+                      AND PARENT_CODE = 'NONE'
+                      AND (CODE LIKE '%'||#parentCode#||'%'
+                           OR CODE_NM LIKE '%'||#parentCode#||'%')
+                )
+            )
+        </isNotEmpty>
+        CONNECT BY
+            PRIOR      CODE        = PARENT_CODE
+            START WITH PARENT_CODE = 'NONE'
+    </select>
+
+
+</sqlMap>

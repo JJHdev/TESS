@@ -1,0 +1,793 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# @Description : 관리자 - 평가환경설정 sql
+# @author lsz
+# @version 1.0 2018/11/27
+# Used Table(주요) : TB_EVALU_INDICAT  (평가지표)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-->
+<sqlMap namespace="MngComm">
+
+	<!-- 평가위원 목록 보기 -->
+    <!-- <select id="listEvaluMbrMgmt" parameterClass="map"  resultClass="hashmap">
+     	SELECT DETAIL.USER_ID as "userId"
+		       ,DETAIL.USER_NM as "userNm"
+		       ,DETAIL.CITYAUTH_CD as "cityauthCd"
+		       ,DETAIL.CITYAUTH_NM as "cityauthNm"
+		       ,FIELD.LIST_FIELD as "field"
+		       ,FIELD.LIST_FIELDNM as "fieldNm"
+		       ,DETAIL.LIST_DETAIL_FIELD as "detailField"
+		       ,DETAIL.LIST_DETAIL_FIELDNM as "detailFieldNm"
+		       ,DETAIL.ATTACH as "attach"
+		       ,DETAIL.OCCUPA as "occupa"
+		       ,DETAIL.OCCUPANM as "occupaNm"
+		       ,DETAIL.JOIN_DATE as "joinDate"
+		       ,DETAIL.EVALU_COMMIT_USER_YN as "useStat"
+		FROM
+        (
+	        SELECT
+	               I.USER_ID 
+	               ,I.USER_NM 
+	               ,I.CITYAUTH_CD
+	               ,(SELECT CITYAUTH_NM FROM TB_CITYAUTH T WHERE I.CITYAUTH_CD = T.CITYAUTH_CD) AS CITYAUTH_NM
+	               ,FL.LIST_DETAIL_FIELD
+	               ,FL.LIST_DETAIL_FIELDNM 
+	               ,I.ATTACH
+	               ,I.OCCUPA 
+	               ,(SELECT CODE_NM FROM SYS_CODE S WHERE I.OCCUPA=S.CODE) AS OCCUPANM
+	               ,I.JOIN_DATE
+	               ,I.EVALU_COMMIT_USER_YN 
+	        FROM TB_EVALU_COMMIT_INFO I LEFT JOIN 
+                             ( SELECT USER_ID
+                                       ,SUBSTR (SYS_CONNECT_BY_PATH (DETAIL_FIELD , ', '), 2) LIST_DETAIL_FIELD
+                                       ,SUBSTR (SYS_CONNECT_BY_PATH (DETAIL_FIELDNM , ', '), 2) LIST_DETAIL_FIELDNM
+                               FROM (SELECT       USER_ID
+                                                 ,F.DETAIL_FIELD
+                                                 ,(SELECT CODE_NM FROM SYS_CODE S WHERE (DETAIL_FIELD=CODE)) DETAIL_FIELDNM
+                                                 ,ROW_NUMBER () OVER (PARTITION BY USER_ID ORDER BY DETAIL_FIELD ) rn, COUNT (*) OVER (PARTITION BY USER_ID) cnt
+                                        FROM TB_EVALU_COMMIT_FIELD F
+                                        )
+                               WHERE rn = cnt
+                               START WITH rn = 1
+                               CONNECT BY PRIOR USER_ID=USER_ID AND rn = PRIOR rn + 1
+                              ) FL ON (I.USER_ID = FL.USER_ID)
+        ) DETAIL 
+        
+        LEFT OUTER JOIN 
+                        
+        (
+        SELECT
+               I.USER_ID 
+         
+               ,FL.LIST_FIELD
+               ,FL.LIST_FIELDNM 
+        FROM TB_EVALU_COMMIT_INFO I LEFT JOIN 
+                                ( SELECT USER_ID
+                                        ,SUBSTR (SYS_CONNECT_BY_PATH (FIELD , ', '), 2) LIST_FIELD
+                                        ,SUBSTR (SYS_CONNECT_BY_PATH (FIELDNM , ', '), 2) LIST_FIELDNM
+                                        FROM (SELECT A.FIELD
+                                                ,A.USER_ID
+                                                ,(SELECT CODE_NM FROM SYS_CODE S WHERE (A.FIELD=CODE)) FIELDNM
+                                                ,ROW_NUMBER () OVER (PARTITION BY A.USER_ID ORDER BY A.FIELD ) rn, COUNT (*) OVER (PARTITION BY A.USER_ID) cnt
+                                        FROM (SELECT DISTINCT(FIELD), USER_ID from TB_EVALU_COMMIT_FIELD) A
+                                        )
+                                        WHERE rn = cnt
+                                        START WITH rn = 1
+                                        CONNECT BY PRIOR USER_ID=USER_ID AND rn = PRIOR rn + 1
+                                 ) FL ON (I.USER_ID = FL.USER_ID)
+        ) FIELD                
+        
+        ON (DETAIL.USER_ID=FIELD.USER_ID)
+        
+ 		WHERE 1=1
+ 		<isNotEmpty property="srchOccupation">
+ 		AND DETAIL.OCCUPA = #srchOccupation#
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchFieldType">
+ 		AND FIELD.LIST_FIELD LIKE '%'||#srchFieldType#||'%'
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchFieldDetail">
+ 		AND DETAIL.LIST_DETAIL_FIELD LIKE '%'||#srchFieldDetail#||'%'
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchAttach">
+ 		AND DETAIL.ATTACH LIKE '%'||#srchAttach#||'%'
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchDateBegin">
+ 		AND DETAIL.JOIN_DATE <![CDATA[>=]]> #srchDateBegin# 
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchDateEnd">
+ 		AND DETAIL.JOIN_DATE <![CDATA[<=]]> #srchDateEnd#
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchCommit">
+ 		AND (DETAIL.USER_NM LIKE '%'||#srchCommit#||'%' or UPPER(DETAIL.USER_ID) LIKE UPPER('%'||#srchCommit#||'%'))
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchUserId">
+ 		AND UPPER(DETAIL.USER_ID) LIKE UPPER('%'||#srchUserId#||'%')
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchCommit">
+ 		AND (DETAIL.USER_NM LIKE '%'||#srchCommit#||'%' or DETAIL.ATTACH LIKE '%'||#srchCommit#||'%' or DETAIL.LIST_FIELD LIKE '%'||#srchFieldType#||'%' or DETAIL.LIST_DETAIL_FIELD LIKE '%'||#srchFieldDetail#||'%')
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchTelno">
+ 		
+ 		</isNotEmpty>
+    </select>   -->
+    
+    <select id="listEvaluMbrMgmt" parameterClass="map"  resultClass="hashmap">
+     	SELECT DETAIL.USER_ID as "userId"
+		       ,DETAIL.USER_NM as "userNm"
+		       ,FIELD.LIST_FIELD as "field"
+		       ,FIELD.LIST_FIELDNM as "fieldNm"
+		       ,DETAIL.LIST_DETAIL_FIELD as "detailField"
+		       ,DETAIL.LIST_DETAIL_FIELDNM as "detailFieldNm"
+		       ,DETAIL.JOIN_DATE as "joinDate"
+		       ,DETAIL.CELL_NO as "cellNo"
+		       ,DETAIL.USE_STAT as "useStat"
+		       ,EVALU.EVALU_COUNT as "evaluCount"
+		       ,TO_CHAR(DETAIL.REGI_DATE, 'YYYY-MM-DD') as "regiDate"
+		FROM
+	        (
+		        SELECT
+		               I.USER_ID 
+		               ,I.USER_NM 
+		               ,FL.LIST_DETAIL_FIELD
+		               ,FL.LIST_DETAIL_FIELDNM 
+		               ,I.JOIN_DATE
+		               ,I.CELL_NO
+		               ,I.USE_STAT
+		               ,I.REGI_DATE
+		        FROM (
+		        		select a.USER_ID, a.USER_NM, a.JOIN_DATE, a.CELL_NO, a.USE_STAT, a.REGI_DATE 
+		        		from TREDSUSER.TB_USER a, TREDSUSER.TB_USCM b 
+		        		where a.USCM_NO = b.USCM_NO and b.USCM_TYPE = 'U11'
+		        	  ) I LEFT JOIN 
+	                 ( 
+	                 	SELECT USER_ID
+	                           ,SUBSTR (SYS_CONNECT_BY_PATH (DETAIL_FIELD , ', '), 2) LIST_DETAIL_FIELD
+	                           ,SUBSTR (SYS_CONNECT_BY_PATH (DETAIL_FIELDNM , ', '), 2) LIST_DETAIL_FIELDNM
+	                    FROM (
+	                    		SELECT	USER_ID
+	                                    ,F.DETAIL_FIELD
+	                                    ,(SELECT CODE_NM FROM SYS_CODE S WHERE (DETAIL_FIELD=CODE)) DETAIL_FIELDNM
+	                                    ,ROW_NUMBER () OVER (PARTITION BY USER_ID ORDER BY DETAIL_FIELD ) rn, COUNT (*) OVER (PARTITION BY USER_ID) cnt
+	                          	FROM TB_EVALU_COMMIT_FIELD F
+	                         )
+	                    WHERE rn = cnt
+	                    START WITH rn = 1
+	                    CONNECT BY PRIOR USER_ID=USER_ID AND rn = PRIOR rn + 1
+	                 ) FL 
+	                 ON (I.USER_ID = FL.USER_ID)
+	        ) DETAIL LEFT OUTER JOIN 
+        	(
+		        SELECT
+		               I.USER_ID 
+		         
+		               ,FL.LIST_FIELD
+		               ,FL.LIST_FIELDNM 
+		        FROM (select a.USER_ID, a.USER_NM, a.JOIN_DATE from TREDSUSER.TB_USER a, TREDSUSER.TB_USCM b where a.USCM_NO = b.USCM_NO and b.USCM_TYPE = 'U11') I LEFT JOIN 
+		                                ( SELECT USER_ID
+		                                        ,SUBSTR (SYS_CONNECT_BY_PATH (FIELD , ', '), 2) LIST_FIELD
+		                                        ,SUBSTR (SYS_CONNECT_BY_PATH (FIELDNM , ', '), 2) LIST_FIELDNM
+		                                        FROM (SELECT A.FIELD
+		                                                ,A.USER_ID
+		                                                ,(SELECT CODE_NM FROM SYS_CODE S WHERE (A.FIELD=CODE)) FIELDNM
+		                                                ,ROW_NUMBER () OVER (PARTITION BY A.USER_ID ORDER BY A.FIELD ) rn, COUNT (*) OVER (PARTITION BY A.USER_ID) cnt
+		                                        FROM (SELECT DISTINCT(FIELD), USER_ID from TB_EVALU_COMMIT_FIELD) A
+		                                        )
+		                                        WHERE rn = cnt
+		                                        START WITH rn = 1
+		                                        CONNECT BY PRIOR USER_ID=USER_ID AND rn = PRIOR rn + 1
+		                                 ) FL ON (I.USER_ID = FL.USER_ID)
+			) FIELD ON (DETAIL.USER_ID=FIELD.USER_ID) LEFT OUTER JOIN
+			(
+				SELECT
+						USER_ID,
+						count(*) as "EVALU_COUNT"
+				FROM
+						TB_EVALU_DESTI_BUSI_COMMIT
+				WHERE
+						USE_YN = 'Y'
+				GROUP BY
+						USER_ID
+			) EVALU ON (DETAIL.USER_ID = EVALU.USER_ID)
+ 		WHERE 1=1
+ 			AND EVALU.EVALU_COUNT is not null
+ 		<isNotEmpty property="srchUserId">
+ 			AND UPPER(DETAIL.USER_ID) LIKE UPPER('%'||#srchUserId#||'%')
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchCommit">
+ 			AND (DETAIL.USER_NM LIKE '%'||#srchCommit#||'%' or DETAIL.ATTACH LIKE '%'||#srchCommit#||'%' or DETAIL.LIST_FIELD LIKE '%'||#srchFieldType#||'%' or DETAIL.LIST_DETAIL_FIELD LIKE '%'||#srchFieldDetail#||'%')
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchUserNm">
+ 			AND UPPER(DETAIL.USER_Nm) LIKE UPPER('%'||#srchUserNm#||'%')
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchTelno">
+ 		
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchField">
+	 		AND	(
+	 			DETAIL.USER_ID IN (
+		                            SELECT cf.USER_ID 
+		                              FROM TB_EVALU_COMMIT_FIELD cf, SYS_CODE sc 
+		                              WHERE cf.FIELD = sc.CODE
+		                              AND UPPER(sc.CODE_NM) LIKE UPPER('%'||#srchField#||'%')
+		                         ) OR
+		        DETAIL.USER_ID IN (
+		                              SELECT cf.USER_ID 
+		                              FROM TB_EVALU_COMMIT_FIELD cf, SYS_CODE sc 
+		                              WHERE cf.DETAIL_FIELD = sc.CODE
+		                              AND UPPER(sc.CODE_NM) LIKE UPPER('%'||#srchField#||'%')
+		                         )
+	 		)
+ 		</isNotEmpty>
+		ORDER BY DETAIL.USE_STAT, DETAIL.USER_NM
+    </select>
+    
+    <select id="listEvaluMbrMgmtCount" parameterClass="map"  resultClass="int">
+    	SELECT COUNT(*)
+	    FROM
+        (
+	        SELECT
+	               I.USER_ID 
+	               ,I.USER_NM 
+	               ,FL.LIST_DETAIL_FIELD
+	               ,FL.LIST_DETAIL_FIELDNM 
+	               ,I.JOIN_DATE
+	        FROM (select a.USER_ID, a.USER_NM, a.JOIN_DATE from TREDSUSER.TB_USER a, TREDSUSER.TB_USCM b where a.USCM_NO = b.USCM_NO and b.USCM_TYPE = 'U11') I LEFT JOIN 
+                             ( SELECT USER_ID
+                                       ,SUBSTR (SYS_CONNECT_BY_PATH (DETAIL_FIELD , ', '), 2) LIST_DETAIL_FIELD
+                                       ,SUBSTR (SYS_CONNECT_BY_PATH (DETAIL_FIELDNM , ', '), 2) LIST_DETAIL_FIELDNM
+                               FROM (SELECT       USER_ID
+                                                 ,F.DETAIL_FIELD
+                                                 ,(SELECT CODE_NM FROM SYS_CODE S WHERE (DETAIL_FIELD=CODE)) DETAIL_FIELDNM
+                                                 ,ROW_NUMBER () OVER (PARTITION BY USER_ID ORDER BY DETAIL_FIELD ) rn, COUNT (*) OVER (PARTITION BY USER_ID) cnt
+                                        FROM TB_EVALU_COMMIT_FIELD F
+                                        )
+                               WHERE rn = cnt
+                               START WITH rn = 1
+                               CONNECT BY PRIOR USER_ID=USER_ID AND rn = PRIOR rn + 1
+                              ) FL ON (I.USER_ID = FL.USER_ID)
+        ) DETAIL 
+        
+        LEFT OUTER JOIN 
+                        
+        (
+        SELECT
+               I.USER_ID 
+         
+               ,FL.LIST_FIELD
+               ,FL.LIST_FIELDNM 
+        FROM (select a.USER_ID, a.USER_NM, a.JOIN_DATE from TREDSUSER.TB_USER a, TREDSUSER.TB_USCM b where a.USCM_NO = b.USCM_NO and b.USCM_TYPE = 'U11') I LEFT JOIN 
+                                ( SELECT USER_ID
+                                        ,SUBSTR (SYS_CONNECT_BY_PATH (FIELD , ', '), 2) LIST_FIELD
+                                        ,SUBSTR (SYS_CONNECT_BY_PATH (FIELDNM , ', '), 2) LIST_FIELDNM
+                                        FROM (SELECT A.FIELD
+                                                ,A.USER_ID
+                                                ,(SELECT CODE_NM FROM SYS_CODE S WHERE (A.FIELD=CODE)) FIELDNM
+                                                ,ROW_NUMBER () OVER (PARTITION BY A.USER_ID ORDER BY A.FIELD ) rn, COUNT (*) OVER (PARTITION BY A.USER_ID) cnt
+                                        FROM (SELECT DISTINCT(FIELD), USER_ID from TB_EVALU_COMMIT_FIELD) A
+                                        )
+                                        WHERE rn = cnt
+                                        START WITH rn = 1
+                                        CONNECT BY PRIOR USER_ID=USER_ID AND rn = PRIOR rn + 1
+                                 ) FL ON (I.USER_ID = FL.USER_ID)
+        ) FIELD ON (DETAIL.USER_ID=FIELD.USER_ID) LEFT OUTER JOIN
+        
+		(
+				SELECT
+						USER_ID,
+						count(*) as "EVALU_COUNT"
+				FROM
+						TB_EVALU_DESTI_BUSI_COMMIT
+				WHERE
+						USE_YN = 'Y'
+				GROUP BY
+						USER_ID
+		) EVALU ON (DETAIL.USER_ID = EVALU.USER_ID)
+        
+ 		WHERE 1=1
+ 			AND EVALU.EVALU_COUNT is not null
+ 		<!-- <isNotEmpty property="srchOccupation">
+ 		AND DETAIL.OCCUPA = #srchOccupation#
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchFieldType">
+ 		AND FIELD.LIST_FIELD LIKE '%'||#srchFieldType#||'%'
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchFieldDetail">
+ 		AND DETAIL.LIST_DETAIL_FIELD LIKE '%'||#srchFieldDetail#||'%'
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchAttach">
+ 		AND DETAIL.ATTACH LIKE '%'||#srchAttach#||'%'
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchDateBegin">
+ 		AND DETAIL.JOIN_DATE <![CDATA[>=]]> #srchDateBegin# 
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchDateEnd">
+ 		AND DETAIL.JOIN_DATE <![CDATA[<=]]> #srchDateEnd#
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchCommit">
+ 		AND (DETAIL.USER_NM LIKE '%'||#srchCommit#||'%' or UPPER(DETAIL.USER_ID) LIKE UPPER('%'||#srchCommit#||'%'))
+ 		</isNotEmpty> -->
+ 		<isNotEmpty property="srchUserId">
+ 		AND UPPER(DETAIL.USER_ID) LIKE UPPER('%'||#srchUserId#||'%')
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchCommit">
+ 		AND (DETAIL.USER_NM LIKE '%'||#srchCommit#||'%' or DETAIL.ATTACH LIKE '%'||#srchCommit#||'%' or DETAIL.LIST_FIELD LIKE '%'||#srchFieldType#||'%' or DETAIL.LIST_DETAIL_FIELD LIKE '%'||#srchFieldDetail#||'%')
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchUserNm">
+ 		AND UPPER(DETAIL.USER_Nm) LIKE UPPER('%'||#srchUserNm#||'%')
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchTelno">
+ 		
+ 		</isNotEmpty>
+ 		<isNotEmpty property="srchField">
+ 		AND	(
+ 			DETAIL.USER_ID IN (
+	                            SELECT cf.USER_ID 
+	                              FROM TB_EVALU_COMMIT_FIELD cf, SYS_CODE sc 
+	                              WHERE cf.FIELD = sc.CODE
+	                              AND UPPER(sc.CODE_NM) LIKE UPPER('%'||#srchField#||'%')
+	                         ) OR
+	        DETAIL.USER_ID IN (
+	                              SELECT cf.USER_ID 
+	                              FROM TB_EVALU_COMMIT_FIELD cf, SYS_CODE sc 
+	                              WHERE cf.DETAIL_FIELD = sc.CODE
+	                              AND UPPER(sc.CODE_NM) LIKE UPPER('%'||#srchField#||'%')
+	                         )
+ 		)
+ 		</isNotEmpty>
+    </select>
+   
+	<!-- 수정/보기 화면 정보  -->    
+    <!-- <select id="getEvaluCommitInfo" parameterClass="map"  resultClass="hashmap">
+		  SELECT  BAS.USER_NM 	as "userNm",
+		        BAS.USER_ID		as "userId", 
+		        BAS.PASSWD      as "passwd",
+		        BAS.EMAIL			as "email",
+		        BAS.EMAIL1			as "email1",
+		        BAS.EMAIL2			as "email2",
+		        BAS.TEL1		as "telphoneNo1",
+		        BAS.TEL2		as "telphoneNo2",
+		        BAS.TEL3		as "telphoneNo3",
+		        BAS.CELL1		as "cellphoneNo1",
+		        BAS.CELL2		as "cellphoneNo2",
+		        BAS.CELL3		as "cellphoneNo3",
+		        BAS.ATTACH		as "attach",
+		        BAS.OCCUPA		as "occupa",
+		        BAS.POST_NO as "roadPostNo", 
+		        BAS.ADDR1		as "roadAddr1",
+		        BAS.ADDR2		as "roadAddr2",
+		        BAS.ADDR3		as "roadAddr3",
+		        BAS.ADDR4		as "roadAddr4",
+		        BAS.ADDR5		as "roadAddr5",
+		        BAS.ADDR1 ||' '|| ADDR2 ||' '|| ADDR3                   as "roadAddress1",
+		        FIELD.LIST_FIELD as "fieldDetail"		
+		FROM 
+				(
+			        SELECT
+						USER_NM 
+						,USER_ID	
+						,PASSWD  
+						,EMAIL as email   
+						,NVL(SUBSTR( EMAIL, 0, INSTR(EMAIL,'@')-1 ) , ' ')  AS email1
+        				,SUBSTR ( EMAIL, 1 + INSTR (EMAIL, '@')) as email2
+						,NVL(SUBSTR(TEL_NO, 0, INSTR(TEL_NO,'-')-1), ' ') AS tel1
+						,NVL(SUBSTR(SUBSTR(TEL_NO, INSTR(TEL_NO,'-')+1), 0, INSTR(SUBSTR(TEL_NO, INSTR(TEL_NO,'-')+1),'-')-1), ' ') AS tel2
+						,NVL(SUBSTR(SUBSTR(TEL_NO,INSTR(TEL_NO,'-')+1),INSTR(SUBSTR(TEL_NO,INSTR(TEL_NO,'-')+1),'-')+1),' ') AS tel3
+						,NVL(SUBSTR(CELL_NO, 0, INSTR(CELL_NO,'-')-1), ' ') AS cell1
+						,NVL(SUBSTR(SUBSTR(CELL_NO, INSTR(CELL_NO,'-')+1), 0, INSTR(SUBSTR(CELL_NO, INSTR(CELL_NO,'-')+1),'-')-1), ' ') AS cell2
+						,NVL(SUBSTR(SUBSTR(CELL_NO,INSTR(CELL_NO,'-')+1),INSTR(SUBSTR(CELL_NO,INSTR(CELL_NO,'-')+1),'-')+1),' ') AS cell3
+						,ATTACH		
+						,OCCUPA	
+						,POST_NO
+						,ADDR1	
+						,ADDR2	
+						,ADDR3	
+						,ADDR4	
+						,ADDR5	
+						,ADDR1 ||' '|| ADDR2      	
+			          FROM TB_EVALU_COMMIT_INFO 
+				) BAS      
+				   
+          LEFT OUTER JOIN 
+          
+	          (
+	          SELECT USER_ID
+	           		   ,SUBSTR (SYS_CONNECT_BY_PATH (DETAIL_FIELD , ','), 2) LIST_FIELD
+	          FROM (SELECT A.DETAIL_FIELD
+	                   		    ,A.USER_ID
+			                    ,(SELECT CODE_NM FROM SYS_CODE S WHERE (A.DETAIL_FIELD=CODE)) DETAIL_FIELDNM
+			                    ,ROW_NUMBER () OVER (PARTITION BY A.USER_ID ORDER BY A.DETAIL_FIELD ) rn, COUNT (*) OVER (PARTITION BY A.USER_ID) cnt
+	            	   FROM (SELECT DETAIL_FIELD, USER_ID from TB_EVALU_COMMIT_FIELD) A
+	           		  )
+	          WHERE rn = cnt
+	          START WITH rn = 1
+	          CONNECT BY PRIOR USER_ID=USER_ID AND rn = PRIOR rn + 1
+	       	 ) FIELD
+      ON (FIELD.USER_ID =  BAS.USER_ID) 
+      WHERE 1=1
+      AND BAS.USER_ID = #evaluUserId#
+	</select> -->
+	
+	<select id="getEvaluCommitInfo" parameterClass="map"  resultClass="hashmap">
+		  SELECT  BAS.USER_NM 	as "userNm",
+		        BAS.USER_ID		as "userId", 
+		        BAS.PASSWD      as "passwd",
+		        BAS.EMAIL			as "email",
+		        BAS.EMAIL1			as "email1",
+		        BAS.EMAIL2			as "email2",
+		        BAS.TEL1		as "telphoneNo1",
+		        BAS.TEL2		as "telphoneNo2",
+		        BAS.TEL3		as "telphoneNo3",
+		        BAS.CELL1		as "cellphoneNo1",
+		        BAS.CELL2		as "cellphoneNo2",
+		        BAS.CELL3		as "cellphoneNo3",
+		        BAS.DEPT_CD		as "deptCd",
+		        BAS.DEPT_NM		as "deptNm",
+		        BAS.OCCU_NM		as "occuNm",
+		        BAS.POST_NO as "roadPostNo", 
+		        BAS.ADDR1		as "roadAddr1",
+		        BAS.ADDR2		as "roadAddr2",
+		        BAS.ADDR3		as "roadAddr3",
+		        BAS.ADDR4		as "roadAddr4",
+		        BAS.ADDR5		as "roadAddr5",
+		        BAS.ADDR1 ||' '|| ADDR2 ||' '|| ADDR3                   as "roadAddress1",
+		        FIELD.LIST_FIELD as "fieldDetail"		
+		FROM 
+				(
+			        SELECT
+						tr.USER_NM
+						,tr.USER_ID	
+						,tr.PASSWD  
+						,tr.EMAIL as email   
+						,NVL(SUBSTR( tr.EMAIL, 0, INSTR(tr.EMAIL,'@')-1 ) , ' ')  AS email1
+        				,SUBSTR ( tr.EMAIL, 1 + INSTR (tr.EMAIL, '@')) as email2
+						,NVL(SUBSTR(tr.TEL_NO, 0, INSTR(tr.TEL_NO,'-')-1), ' ') AS tel1
+						,NVL(SUBSTR(SUBSTR(tr.TEL_NO, INSTR(tr.TEL_NO,'-')+1), 0, INSTR(SUBSTR(tr.TEL_NO, INSTR(tr.TEL_NO,'-')+1),'-')-1), ' ') AS tel2
+						,NVL(SUBSTR(SUBSTR(tr.TEL_NO, INSTR(tr.TEL_NO,'-')+1),INSTR(SUBSTR(tr.TEL_NO,INSTR(tr.TEL_NO,'-')+1),'-')+1),' ') AS tel3
+						,NVL(SUBSTR(tr.CELL_NO, 0, INSTR(tr.CELL_NO,'-')-1), ' ') AS cell1
+						,NVL(SUBSTR(SUBSTR(tr.CELL_NO, INSTR(tr.CELL_NO,'-')+1), 0, INSTR(SUBSTR(tr.CELL_NO, INSTR(tr.CELL_NO,'-')+1),'-')-1), ' ') AS cell2
+						,NVL(SUBSTR(SUBSTR(tr.CELL_NO, INSTR(tr.CELL_NO,'-')+1),INSTR(SUBSTR(tr.CELL_NO,INSTR(tr.CELL_NO,'-')+1),'-')+1),' ') AS cell3
+						,tr.DEPT_CD
+						,tr.DEPT_NM
+						,tr.OCCU_NM
+						,tm.POST_NO
+						,tm.ADDR1	
+						,tm.ADDR2	
+						,tm.ADDR3	
+						,tm.ADDR4	
+						,tm.ADDR5	
+						,tm.ADDR1 ||' '|| tm.ADDR2
+			          FROM TREDSUSER.TB_USER tr, TREDSUSER.TB_USCM tm 
+			          where tr.USCM_NO = tm.USCM_NO  
+				) BAS      
+				   
+          LEFT OUTER JOIN 
+          
+	          (
+	          SELECT USER_ID
+	           		   ,SUBSTR (SYS_CONNECT_BY_PATH (DETAIL_FIELD , ','), 2) LIST_FIELD
+	          FROM (SELECT A.DETAIL_FIELD
+	                   		    ,A.USER_ID
+			                    ,(SELECT CODE_NM FROM SYS_CODE S WHERE (A.DETAIL_FIELD=CODE)) DETAIL_FIELDNM
+			                    ,ROW_NUMBER () OVER (PARTITION BY A.USER_ID ORDER BY A.DETAIL_FIELD ) rn, COUNT (*) OVER (PARTITION BY A.USER_ID) cnt
+	            	   FROM (SELECT DETAIL_FIELD, USER_ID from TB_EVALU_COMMIT_FIELD) A
+	           		  )
+	          WHERE rn = cnt
+	          START WITH rn = 1
+	          CONNECT BY PRIOR USER_ID=USER_ID AND rn = PRIOR rn + 1
+	       	 ) FIELD
+      ON (FIELD.USER_ID =  BAS.USER_ID) 
+      WHERE 1=1
+      AND BAS.USER_ID = #evaluUserId#
+	</select>
+	
+    
+	<!-- 사용자 ID 중복 검사 -->
+	<select id="viewMembCheckDuplUserId" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+    SELECT COUNT(*)
+    FROM
+    (
+    SELECT DISTINCT(USER_ID)
+    FROM
+        (
+            
+            SELECT 
+            	USER_ID
+             FROM 
+             	TB_USER
+            
+            UNION 
+            
+            SELECT 
+                USER_ID 
+            FROM TB_EVALU_COMMIT_INFO   
+        )    
+    WHERE USER_ID= #userId#
+    )
+    </select>
+    
+    <!-- 위원 등록 -->
+    <insert id="regiCommitMemb" parameterClass="map" >
+     INSERT INTO TB_EVALU_COMMIT_INFO 
+    	(
+	    	USER_ID 
+	    	,USER_NM
+	    	,PASSWD
+	    	,EMAIL
+	    	<isNotEmpty property="telphoneNo">
+	    	,TEL_NO
+	    	</isNotEmpty>
+	    	<isNotEmpty property="cellphoneNo">
+	    	,CELL_NO
+	    	</isNotEmpty>
+	    	,ATTACH
+	    	,OCCUPA
+	    	<isNotEmpty property="roadPostNo">
+	    	,POST_NO
+	    	</isNotEmpty>
+	    	<isNotEmpty property="roadAddr1">
+	    	,ADDR1
+	    	</isNotEmpty>
+	    	<isNotEmpty property="roadAddr2">
+	    	,ADDR2
+	    	,CITYAUTH_CD
+	    	</isNotEmpty>
+	    	<isNotEmpty property="roadAddr3">
+	    	,ADDR3
+	    	</isNotEmpty>
+	    	<isNotEmpty property="roadAddr4">
+	    	,ADDR4
+	    	</isNotEmpty>
+	    	<isNotEmpty property="roadAddr5">
+	    	,ADDR5
+	    	</isNotEmpty>
+	    	,JOIN_DATE
+	    	,EVALU_COMMIT_USER_YN
+	    	,REGI_ID
+	    	,REGI_DATE
+    	)
+    	VALUES 
+    	(
+    		#userId#
+	    	,#userNm#
+	    	,#passwd#
+	    	,#email#
+	    	<isNotEmpty property="telphoneNo">
+	    	,#telphoneNo#
+	    	</isNotEmpty>
+	    	<isNotEmpty property="cellphoneNo">
+	    	,#cellphoneNo#
+	    	</isNotEmpty>
+	    	,#attach#
+	    	,#occupa#
+	    	<isNotEmpty property="roadPostNo">
+	    	,#roadPostNo#
+	    	</isNotEmpty>
+	    	<isNotEmpty property="roadAddr1">
+	    	,#roadAddr1#
+	    	</isNotEmpty>
+	    	<isNotEmpty property="roadAddr2">
+	    	,#roadAddr2#
+	    	,(SELECT CITYAUTH_CD FROM TB_CITYAUTH WHERE CITYAUTH_NM = #roadAddr2#)
+	    	</isNotEmpty>
+	    	<isNotEmpty property="roadAddr3">
+	    	,#roadAddr3#
+	    	</isNotEmpty>
+	    	<isNotEmpty property="roadAddr4">
+	    	,#roadAddr4#
+	    	</isNotEmpty>
+	    	<isNotEmpty property="roadAddr5">
+	    	,#roadAddr5#
+	    	</isNotEmpty>
+	    	,to_date(sysdate)
+	    	,#useYn#
+	    	,'admin'
+	    	,to_date(sysdate)
+	    )
+	</insert>
+	
+	<!-- 위원 분야(체크박스 선택값) 등록 -->
+	<!-- <insert id="regiCommitField" parameterClass="map" >
+    INSERT INTO TB_EVALU_COMMIT_FIELD 
+    (
+    	USER_ID
+    	,FIELD
+    	,DETAIL_FIELD
+    	,REGI_ID
+    	,REGI_DATE
+    )
+	SELECT 	USER_ID
+		    ,FIELD
+		    ,DETAIL_FIELD
+		    ,REGI_ID
+		    ,REGI_DATE
+	FROM
+	(
+	WITH FIRST AS
+	    (
+	        SELECT #fieldList# PARAM_FIELD FROM DUAL
+	    )
+	    
+	        SELECT USER_ID
+	        		 ,FIELD
+	        		 ,DETAIL_FIELD
+	        		 ,'admin' as regi_id
+	        		 ,(SELECT to_date(sysdate) as regi_date 
+	        		  FROM dual) as regi_date
+	        FROM
+	        (
+	            (
+	            SELECT #userId# as user_id,
+	                    (SELECT PARENT_CODE 
+	                    FROM SYS_CODE 
+	                    WHERE PARAM_FIELD=CODE) as field,
+	                    PARAM_FIELD as detail_field 
+	            FROM
+	                (
+	                SELECT TRIM(REGEXP_SUBSTR(PARAM_FIELD, '[^,]+', 1, LEVEL)) AS param_field
+	                    FROM FIRST
+	                CONNECT BY INSTR(PARAM_FIELD, ',', 1, LEVEL - 1) > 0    
+	                )
+	            )
+	        )
+	)
+	</insert> -->
+	
+	<insert id="regiCommitField" parameterClass="map" >
+    	INSERT INTO TB_EVALU_COMMIT_FIELD 
+    	(
+	    	USER_ID
+	    	,FIELD
+	    	,DETAIL_FIELD
+	    	,REGI_ID
+	    	,REGI_DATE
+	    	<isNotEmpty property="detailField">
+	    	,DETAIL_SUB_FIELD
+	    	</isNotEmpty>
+	    ) VALUES (
+	    	#userId#
+	    	,#parentCode#
+	    	,#code#
+	    	,'admin'
+	    	,sysdate
+	    	<isNotEmpty property="detailField">
+	    	,#detailField#
+	    	</isNotEmpty>
+	    )
+    </insert>
+
+    <select id="listEvaluMbrBusi" parameterClass="map"  resultClass="hashmap">
+     SELECT BUSIINFO.USER_ID as "userId"
+		      ,BUSIINFO.USER_NM as "userNm"
+		      ,BUSIINFO.BUSI_NO as "evaluBusiNo"
+		      ,BUSIINFO.BUSI_NM as "evaluBusiNm"
+		      ,BUSIINFO.BUSI_ADDR1 as "addr1"
+		      ,BUSIINFO.BUSI_ADDR2 as "cityauthNm"
+		      ,BUSIINFO.BUSI_ADDR3 as "addr3"
+		      ,BUSIINFO.BUSI_ADDR4 as "addr4"
+		      ,BUSIINFO.BUSI_ADDR5 as "addr5"
+		      ,BUSIINFO.ST_DATE as "stDate"
+		      ,BUSIINFO.END_DATE as "endDate"
+		      ,BUSIINFO.BUSI_CATE as "busiCate"
+		      ,BUSIINFO.COMMIT_STAGE as "evaluStage"
+		      ,(SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT WHERE EVALU_INDICAT_CD=BUSIINFO.COMMIT_STAGE) AS "evaluStageNm" 
+		      ,BS.FINAL_EVALU_FND as "convFinalEvaluFnd"
+		      ,DECODE(BS.FINAL_EVALU_FND, 'P', '적합', 'C', '조건부적합', 'F', '부적합') as "convEvaluFndValue1"
+		      ,TO_CHAR(BS.EVALU_DATE) as "convEvaluDate"
+	  FROM      
+				    (
+				    SELECT COMINFO.USER_ID
+				          ,COMINFO.USER_NM
+				          ,COMINFO.BUSI_NO
+				          ,BI.EVALU_BUSI_NM AS BUSI_NM
+				          ,BI.BUSI_ADDR1
+				          ,BI.BUSI_ADDR2
+				          ,BI.BUSI_ADDR3
+				          ,BI.BUSI_ADDR4
+				          ,BI.BUSI_ADDR5
+				          ,COMINFO.COMMIT_STAGE 
+				          ,BUSI_STT_DATE AS ST_DATE
+				          ,BUSI_END_DATE AS END_DATE
+				          ,BUSI_CATE
+				        FROM     
+				        (
+				        SELECT CI.USER_ID 
+				               ,CI.USER_NM
+				               ,BC.EVALU_BUSI_NO AS BUSI_NO
+				               ,BC.EVALU_STAGE as COMMIT_STAGE
+				        FROM TB_EVALU_COMMIT_INFO CI LEFT OUTER JOIN  TB_EVALU_DESTI_BUSI_COMMIT BC ON (CI.USER_ID=BC.USER_ID)
+				        ) COMINFO LEFT OUTER JOIN TB_EVALU_DESTI_BUSI_INFO BI ON (COMINFO.BUSI_NO=BI.EVALU_BUSI_NO)
+				    ) BUSIINFO LEFT OUTER JOIN TB_EVALU_DESTI_BUSI_STAGE BS ON (BUSIINFO.BUSI_NO=BS.EVALU_BUSI_NO) 
+				WHERE USER_ID = #evaluUserId#
+				AND FINAL_EVALU_FND is not null
+				ORDER BY USER_ID
+    </select>
+    
+    <select id="listEvaluMbrBusiCount" parameterClass="map"  resultClass="int">
+      SELECT COUNT(*)
+				FROM      
+				    (
+				    SELECT COMINFO.USER_ID
+				          ,COMINFO.USER_NM
+				          ,COMINFO.BUSI_NO
+				          ,BI.EVALU_BUSI_NM AS BUSI_NM
+				          ,BI.BUSI_ADDR1
+				          ,BI.BUSI_ADDR2
+				          ,BI.BUSI_ADDR3
+				          ,BI.BUSI_ADDR4
+				          ,BI.BUSI_ADDR5
+				          ,COMINFO.COMMIT_STAGE 
+				          ,BUSI_STT_DATE AS ST_DATE
+				          ,BUSI_END_DATE AS END_DATE
+				          ,BUSI_CATE
+				        FROM     
+				        (
+				        SELECT CI.USER_ID 
+				               ,CI.USER_NM
+				               ,BC.EVALU_BUSI_NO AS BUSI_NO
+				               ,BC.EVALU_STAGE as COMMIT_STAGE
+				        FROM TB_EVALU_COMMIT_INFO CI LEFT OUTER JOIN  TB_EVALU_DESTI_BUSI_COMMIT BC ON (CI.USER_ID=BC.USER_ID)
+				        ) COMINFO LEFT OUTER JOIN TB_EVALU_DESTI_BUSI_INFO BI ON (COMINFO.BUSI_NO=BI.EVALU_BUSI_NO)
+				    ) BUSIINFO LEFT OUTER JOIN TB_EVALU_DESTI_BUSI_STAGE BS ON (BUSIINFO.BUSI_NO=BS.EVALU_BUSI_NO) 
+				WHERE USER_ID = #evaluUserId#
+				AND FINAL_EVALU_FND is not null
+				ORDER BY USER_ID
+    </select>
+	
+
+    
+	<!-- 위원 정보 수정 등록 -->
+	<update id="updateCommitMemb" parameterClass="map" >
+		UPDATE TB_EVALU_COMMIT_INFO SET 
+		 USER_NM = #userNm#
+		 ,PASSWD = #passwd#
+		 ,EMAIL = #email#
+		 ,TEL_NO = #cellphoneNo#
+		 ,ATTACH= #attach#
+		 ,OCCUPA = #occupa#
+		 ,POST_NO = #roadPostNo#
+		 ,ADDR1 = #roadAddr1#
+		 ,ADDR2 = #roadAddr2#
+		 ,CITYAUTH_CD = (SELECT CITYAUTH_CD FROM TB_CITYAUTH WHERE CITYAUTH_NM = #roadAddr2#)
+		 ,ADDR3 = #roadAddr3#
+		 ,ADDR4 = #roadAddr4#
+		 ,ADDR5 = #roadAddr5#
+		 ,UPDT_ID = 'admin'
+		 ,UPDT_DATE= to_date(sysdate)
+		 WHERE USER_ID = #userId#
+	</update>
+	
+	<delete id="deleteCommitField" parameterClass="map" >
+		DELETE FROM TB_EVALU_COMMIT_FIELD
+		WHERE USER_ID = #userId#
+	</delete>
+	
+	<!-- 평가위원 세부분야 조회 -->
+	<select id="listCommitDetailField" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT a.PARENT_CODE           	AS "parentCode",
+			   a.CODE                   AS "code",
+			   a.CODE_NM                AS "codeNm",
+			   a.ADD_COL1               AS "addCol1",
+			   a.ADD_COL2               AS "addCol2",
+			   a.ADD_COL3               AS "addCol3",
+			   a.ADD_COL4               AS "addCol4",
+			   a.ADD_COL5               AS "addCol5",
+			   a.USE_YN               	AS "useYn",
+			   (SELECT count(*) FROM TB_EVALU_COMMIT_FIELD WHERE DETAIL_FIELD = a.code and user_id = #evaluUserId#) as FIELD_CHECK,
+			   (SELECT DETAIL_SUB_FIELD FROM TB_EVALU_COMMIT_FIELD WHERE DETAIL_FIELD = a.code and user_id = #evaluUserId#) as DETAIL_SUB_FIELD
+		FROM   SYS_CODE a
+		WHERE  (0=0)
+		AND    a.USE_YN 	  = 'Y'
+		AND	   a.PARENT_CODE  = #parentCode#
+	</select>
+	
+	<!-- 평가위원 승인처리 -->
+	<update id="updateCommUseStat" parameterClass="map">
+		UPDATE 	TREDSUSER.TB_USER
+		SET		USE_STAT = #useStat#
+		WHERE	USER_ID = #userId#
+	</update>
+
+</sqlMap>

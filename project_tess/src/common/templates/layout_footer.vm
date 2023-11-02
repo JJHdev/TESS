@@ -1,0 +1,132 @@
+#set ($urlTerms				= "/info/viewAccessTerms.do?tab=agreebox_01div")			<!-- 이용약관 -->
+#set ($urlPerInfo			= "/info/viewAccessTerms.do?tab=agreebox_02div")			<!-- 개인정보처리방침 -->
+#set ($urlEmail				= "/info/viewAccessTerms.do?tab=agreebox_03div")			<!-- 이메일무단수집거부 -->
+
+#if($type == 'normal')
+	
+	<!-- ******************************** //내용 ****************************** -->
+	
+		</div><!--/#container-->
+	</div><!-- /#section-->
+	
+	<!-- ******************************** 푸터 ****************************** -->	
+	<footer>
+	    <div class="container">
+	        <div class="row">
+	            <div class="col-md-6" id="footer-logos">
+	                <img src="/img/logo_footer_mcst.png" alt="문화체육관광부" title="문화체육관광부">
+	                <img src="/img/logo_footer_kcti.png" alt="한국문화관광연구원" title="한국문화관광연구원">
+	                <img src="/img/logo_footer_tdss.png" alt="TDSS관광개발지원시스템" title="TDSS관광개발지원시스템">
+	            </div>
+	            <div class="col-md-6" id="footer-policy">
+	                <ul>
+	                    <li><a href="#" title="이용약관">이용약관</a></li>
+	                    <li><a href="#" title="개인정보처리방침">개인정보처리방침</a></li>
+	                    <li><a href="#" title="이메일무단수집거부">이메일무단수집거부</a></li>
+	                </ul>
+	                <div class="family-sites">
+	                    <select name="family" id="family" title="관련사이트">
+	                        <option>관련사이트</option>
+	                        <option>대한민국 정부24</option>
+	                        <option>문화체육관광부</option>
+	                        <option>한국문화관광연구원</option>
+	                        <option>관광개발지원시스템</option>
+	                    </select>
+	                </div>
+	            </div>
+	        </div> <!-- /row -->
+	        <hr>
+	        <div class="row">
+	            <div class="col-md-6" id="footer-copyright">
+	                <p title="기관정보">
+	                    주관 : 문화체육관광부 운영 : 한국문화관광연구원 서울특별시 강서구 금낭화로 154<br>
+	                    전화 : 1577-4880 팩스 : 1577-4880 문의메일 : tdss@kcti.re.kr
+	                </p>
+	                <h6>Copyright(C) 2007-2016 kcti all rights reserved.</h6>
+	            </div>
+	            <div class="col-md-6" id="footer-cert">
+##	                <img src="/img/cert_01.png" alt="공공누리" title="공공누리">
+##	                <img src="/img/cert_02.png" alt="저작권" title="저작권">
+##	                <img src="/img/cert_03.png" alt="굿콘텐츠서비스" title="굿콘텐츠서비스">
+	                <img src="/img/cert_04.png" alt="데이터인증" title="데이터인증">
+	            </div>
+	        </div> <!-- /row -->
+	    </div>
+	</footer>
+	
+	<script language="javascript"  type="text/javascript" src="/jquery/bootstrap.min.js"></script>
+	<script language="javascript"  type="text/javascript" src="/jquery/classie.js"></script>
+	<script language="javascript"  type="text/javascript" src="/jquery/cbpAnimatedHeader.js"></script>
+	
+#end		
+		
+			
+#if($type == 'main')
+
+	<!-- ******************************** //메인내용 ****************************** -->
+	
+		</div><!--/#container-->
+	</div><!-- /#section-->
+	
+	<!-- ****************************************** 푸터 **************************************-->
+	
+	<footer>
+	    <div class="container">
+	        <div class="row">
+	            <div class="col-md-6" id="footer-logos">
+	                <img src="/img/logo_footer_mcst.png" alt="문화체육관광부" title="문화체육관광부">
+	                <img src="/img/logo_footer_kcti.png" alt="한국문화관광연구원" title="한국문화관광연구원">
+	                <img src="/img/logo_footer_tdss.png" alt="TDSS관광개발지원시스템" title="TDSS관광개발지원시스템">
+	            </div>
+	            <div class="col-md-6" id="footer-policy">
+	                <ul>
+	                    <li><a href="#" title="이용약관">이용약관</a></li>
+	                    <li><a href="#" title="개인정보처리방침">개인정보처리방침</a></li>
+	                    <li><a href="#" title="이메일무단수집거부">이메일무단수집거부</a></li>
+	                </ul>
+	                <div class="family-sites">
+	                    <select name="family" id="family" title="관련사이트">
+	                        <option>관련사이트</option>
+	                        <option>대한민국 정부24</option>
+	                        <option>문화체육관광부</option>
+	                        <option>한국문화관광연구원</option>
+	                        <option>관광개발지원시스템</option>
+	                    </select>
+	                </div>
+	            </div>
+	        </div> <!-- /row -->
+	        <hr>
+	        <div class="row">
+	            <div class="col-md-6" id="footer-copyright">
+	                <p>
+	                    주관 : 문화체육관광부 운영 : 한국문화관광연구원 서울특별시 강서구 금낭화로 154<br>
+	                    전화 : 1577-4880(대표번호) 팩스 : 1577-4880 문의메일 : tdss@kcti.re.kr
+	                </p>
+	                <h6>Copyright(C) 2007-2016 kcti all rights reserved.</h6>
+	            </div>
+	            <div class="col-md-6" id="footer-cert">
+	                <img src="/img/cert_04.png" alt="데이터인증" title="데이터인증">
+	            </div>
+	        </div> <!-- /row -->
+	    </div>
+	</footer>
+
+	<!-- ****************************************** //푸터 **************************************-->
+	
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-submenu.js"></script>
+	<script src="/js/classie.js"></script>
+	<script src="/js/cbpAnimatedHeader.js"></script>
+	<!-- side menu -->
+	<script src="/js/jquery.nb2sb.js"></script>
+	<!-- datetimepicker -->
+	<script src="/js/jquery-ui.js"></script>
+	<!-- slick -->
+	<script src="/js/slick.min.js"></script>
+	<!-- common -->
+	<script src="/js/commonJs.js"></script>
+
+#end

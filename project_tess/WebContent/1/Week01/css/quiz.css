@@ -1,0 +1,215 @@
+﻿@charset "utf-8";
+/*
+2013-05-16 jian
+공통사항은 common을 참조. 
+*/
+
+/*quiz*/
+.quiz_bg {background:url(../images/bg_quiz.png) no-repeat;}
+div.quiz{padding: 0 0 35px;}
+
+
+h6 {padding:35px 10px 0 31px;float:left}
+p.q{padding:45px 0 12px 0px;float:left;width:740px;color:#543b18;border-bottom:1px dotted #8d6450;line-height:1.6em}
+p.q2, div.q{padding:45px 0 5px 0;float:left;width:750px;color:#543b18;border-bottom:1px dotted #8d6450;line-height:1.6em}
+p.direc{margin-left:25px; line-height:14px}
+.intro_h6{padding:5px 10px 0 0;}
+.quizarea{position:absolute; top:80px; left:100px;}
+
+
+
+
+/*사전퀴즈 넘버링*/
+div.quiz_num{position:absolute; top:30px; left:760px;overflow:hidden;}
+.quiz_num ul{width:240px; float:right;}
+.quiz_num li{float:left;}
+
+.quiz_num li>a{display:block; text-decoration:none; width:33px; height:33px; }
+a.quiz_num01 {background:url(../images/q_num1.png) no-repeat left top;text-indent:-999px;overflow:hidden}
+a.quiz_num02 {background:url(../images/q_num2.png) no-repeat left top;text-indent:-999px;overflow:hidden}
+a.quiz_num03 {background:url(../images/q_num3.png) no-repeat left top;text-indent:-999px;overflow:hidden}
+a.quiz_num04 {background:url(../images/q_num4.png) no-repeat left top;text-indent:-999px;overflow:hidden}
+a.quiz_num05 {background:url(../images/q_num5.png) no-repeat left top;text-indent:-999px;overflow:hidden}
+a.quiz_num06 {background:url(../images/q_num6.png) no-repeat left top;text-indent:-999px;overflow:hidden}
+a.quiz_num07 {background:url(../images/q_num7.png) no-repeat left top;text-indent:-999px;overflow:hidden}
+a.over.quiz_num01, a.quiz_num01.on{background-position: 0 -33px;}
+a.over.quiz_num02, a.quiz_num02.on{background-position: 0 -33px;}
+a.over.quiz_num03, a.quiz_num03.on{background-position: 0 -33px;}
+a.over.quiz_num04, a.quiz_num04.on{background-position: 0 -33px;}
+a.over.quiz_num05, a.quiz_num05.on{background-position: 0 -33px;}
+a.over.quiz_num06, a.quiz_num06.on{background-position: 0 -33px;}
+a.over.quiz_num07, a.quiz_num07.on{background-position: 0 -33px;}
+
+
+
+
+
+
+form{clear:both;width:780px;position:relative;}
+form label{cursor:pointer;padding-left:9px}
+ol{padding:20px 0 12px 30px;width:780}
+ol li{padding-left:9px;line-height:2em;}
+ol.q2 li{width:700px;}
+
+
+
+
+
+
+
+
+
+
+
+/*퀴즈1때문에 레이아웃 조정*/
+
+.btn_quiz{position:absolute; top:140px; left:370px;}
+.line_quiz{position:absolute; top:210px; left:370px;}
+.box_answer{clear:both;width:770px; height:150px;text-align:center;vertical-align:middle; line-height:20px; margin-top:10px;}
+
+
+
+
+
+
+.correct{display:none} 
+dl.correct{padding:20px 30px 0 180px;background:url(../images/quiz_box3.png) no-repeat 10px top;height:120px;text-align:left;color:#2d2420; line-height:20px;}/*padding:22px 0 0 
+
+265px;background:url(../images/quiz_box2.png) no-repeat left top;*/
+
+dl.correct dd li{float:none;width:500px;overflow-x:hidden; overflow-y:auto;}
+dl.correct span{font-weight:bold;height:18px; width:10px;}/*float해제 필요*/
+
+.mt10{margin-top:10px; line-height:20px;}
+
+#answer{display:none} 
+ .tt{margin:0 240px 0 150px}
+ .inputRadio{display:none}
+ 
+ 
+ 
+ 
+
+
+/*객관식*/
+li label{display:block;padding-left:25px; line-height:2.1em;}
+.under_dash{border-bottom:1px dashed #c3c3bf}
+.n1{background:url(../img/ch_bu_01.gif) no-repeat left 4px}
+.n1.select{background-image:url(../img/ch_bu_01_v.gif)}
+.n2{background:url(../img/ch_bu_02.gif) no-repeat left 4px}
+.n2.select{background-image:url(../img/ch_bu_02_v.gif)}
+.n3{background:url(../img/ch_bu_03.gif) no-repeat left 4px}
+.n3.select{background-image:url(../img/ch_bu_03_v.gif)}
+.n4{background:url(../img/ch_bu_04.gif) no-repeat left 4px}
+.n4.select{background-image:url(../img/ch_bu_04_v.gif)}
+.crt{position: absolute;}
+
+
+
+
+
+
+/*연습문제3*/
+.text{height:73px;margin:10px 0 0 0;width:727px;border:1px solid #ccc;}
+.inputRadio{opacity:0}
+	ul.list_q3 li{float:left;}
+.check_o{display:block;margin:0 155px 0 262px;padding:0;width:76px;height:76px;background:url(../img/btn_radio_1.gif) no-repeat left top;font-size:0}
+.check_o.select{background:#ccffcc url(../img/btn_radio_1_v.gif) no-repeat left top}
+.check_x{display:block;padding:0;width:76px;height:76px;background:url(../img/btn_radio_2.gif) no-repeat left top;font-size:0}
+.check_x.select{background:url(../img/btn_radio_2_v.gif) no-repeat left top}
+/*문제 설명*/
+.q .exp{border:1px solid #d4d5bd;background:#f5f5ec;padding:6px 16px;width:733px;float:left;margin-top:8px}
+.tpd26{padding-top:26px}
+
+
+
+
+
+
+
+
+
+/*연습문제4*/
+ol.list_q4 {padding-top:14px;}
+ol.list_q4>li {height:30px;}
+ol.list_q4 p{width:600px;float:left}
+ol.list_q4 ul{}
+ol.list_q4 ul li{float:left;}
+.check_o_small {float:left;margin-left:22px;padding:0;width:26px;height:26px;background:url(../img/btn_1.png) no-repeat left top;font-size:0}
+.check_o_small.select{background:url(../img/btn_1_v.png) no-repeat left top;}
+.check_x_small {float:left;margin-left:22px;padding:0;width:26px;height:26px;background:url(../img/btn_2.png) no-repeat left top;font-size:0}
+.check_x_small.select{background:url(../img/btn_2_v.png) no-repeat left top;}
+
+
+
+dd.movie {position:absolute;top:80px;left:center;border:5px solid #e7e1d5;padding:10px;background:#fff}
+
+/*연습문제 단답형 주관식*/
+ol.list_q5 li {height:35px;padding:0}
+ol.list_q5 li label{width:780px;padding:0;}
+ol.list_q5 li input{float:right}
+.inputText{width:213px;border:1px solid #c8d3d2;padding:6px 2px;background:#e6eeed;}  
+.dot{padding-left:10px;background:url(../images/dot.gif) no-repeat 0px 6px; line-height:1.4em}
+
+
+
+
+
+
+
+/*사전퀴즈*/
+div.all_quiz{width:880px; height:450px;overflow:hidden;}
+div.all_quiz ul{width:9000px;}
+div.all_quiz li{float:left;}
+.roll_p{padding-left:30px;}
+.roll_pp{padding-left:60px;}
+
+
+div.q {padding:7px 0 9px 7px; float:left; width:670px; color:#543b18; border-bottom:1px dotted #8d6450; line-height:1.6em; font-weight:bold}
+
+
+
+
+
+
+/*연습문제 드래그*/
+
+div.q_drag {padding:7px 0 9px 7px;float:left; width:780px; color:#543b18; line-height:1.6em; font-weight:bold}
+.q_drag ul>li{border-bottom:1px dashed #999; padding:20px 0 20px 0; width:500px;}
+.q_drag ul li div div{display:inline-block; *display:inline;*zoom:1; vertical-align: middle; height:24px;border:2px solid #900; background-color:#c1998b; color:#fff ;letter-spacing:-2px; text-align:center}/* 빈칸 */
+
+
+.q_drag ul li ol li{border:1px solid #c5c5c5; margin-right:20px; line-height:20px; margin-left:15px; text-align:center; padding:0; background-color:#FFF ; cursor:pointer}/*기본컬러*/
+.q_drag ul li ol li.dragvalue_true{color:#0F0; background-color:#306}/*정답일때*/
+.q_drag ul li ol li.on{ color:#069; background-color:#930}/*드래그중일때*/
+
+.drag01 div.box01{ width:130px; }
+.drag01 ol li{height:24px ; width:130px;}
+
+.drag02 div.box01{ width:110px; }.box02{width:110px}
+.drag02 ol li{height:24px ; width:110px;}
+
+.drag03 div.box01{ width:110px; }
+.drag03 ol li{height:24px ; width:130px;}
+
+
+.tooltip {position:absolute;top: 4px;left: 15px;font-size: 12px;color:red;background: #f3f3f3;border: 1px solid #ddd;padding: 1px 4px} /*말풍선*/
+
+
+
+/* 연습문제 드래그_해설 */
+.dropResult{
+	position:absolute;
+	top:360px;
+	left:220px;
+	width:400px;
+	height:120px;
+	clear:both;
+	display:none;
+	border:1px solid #e7e1d5;
+	background:url(../images/quiz_box3.png) #fff no-repeat 10px top;
+	padding:30px 10px 10px 200px;
+	color:#2d2420;
+	line-height:20px;
+}
+.dropResult>strong{ font-weight:bold; color:#ff5434;}

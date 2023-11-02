@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="RoleMenu">
+
+    <!--******************************   ROLE BY MENU  ************************************-->
+	<!-- Role Target Menu -->
+	<select id="listNotRoleByMenu" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT   MENU_ID               	AS "menuId"
+			   , MENU_NM             	AS "menuNm"
+		FROM   SYS_MENU
+		WHERE  MENU_ID  NOT IN (SELECT DISTINCT MENU_ID
+								FROM   SYS_ROLE_MENU
+								WHERE  ROLE_ID = #roleId#)
+        <isNotEmpty property="sidx">
+    		ORDER BY $sidx$ $sord$
+        </isNotEmpty>
+        <isEmpty property="sidx">
+            ORDER BY MENU_LEVEL, MENU_ODR
+        </isEmpty>
+	</select>
+
+	<select id="listRoleByMenu" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT   A.ROLE_ID              AS "roleId"
+		       , A.MENU_ID              AS "menuId"
+			   , B.MENU_NM             	AS "menuNm"
+		FROM   SYS_ROLE_MENU A LEFT JOIN SYS_MENU B ON A.MENU_ID = B.MENU_ID
+		WHERE    A.ROLE_ID = #roleId#
+		ORDER BY A.MENU_ID
+	</select>
+
+	<insert id="regiRoleByMenu" parameterClass="java.util.Map">
+		INSERT INTO SYS_ROLE_MENU (
+			ROLE_ID,
+			MENU_ID,
+			REGI_ID,
+			REGI_DATE
+		) VALUES (
+			TRIM(#roleId#),
+			TRIM(#menuId#),
+			#gsUserId#,
+			SYSDATE
+		)
+	</insert>
+
+	<delete id="deltRoleByMenu" parameterClass="java.util.Map">
+		DELETE FROM SYS_ROLE_MENU
+		WHERE  MENU_ID = #menuId#
+		AND    ROLE_ID = #roleId#
+	</delete>
+
+    <!-- from Menu Management-->
+	<delete id="deltRoleByMenuFromMenu" parameterClass="java.util.Map">
+		DELETE FROM SYS_ROLE_MENU
+        <dynamic prepend="WHERE">
+            <isNotEmpty prepend="AND" property="roleId">
+                ROLE_ID = #roleId#
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="arrMenuId">
+                <iterate property="arrMenuId" open="(" close=")" conjunction="OR">
+                      MENU_ID  = #arrMenuId[]#
+                </iterate>
+            </isNotEmpty>
+        </dynamic>
+	</delete>
+</sqlMap>

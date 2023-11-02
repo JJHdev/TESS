@@ -1,0 +1,6 @@
+<!--▼팝업-->
+<div class="popup_wrap">
+	<div class="popup_top">
+		<div class="popup_logo"><img src="${contextPath}/images/popup/logo.png" alt="로고" /></div>
+		<div class="popup_name">$!{title}</div>
+	</div>

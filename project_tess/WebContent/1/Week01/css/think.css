@@ -1,0 +1,56 @@
+@charset "utf-8";
+/*
+2013-05-16 jian
+공통사항은 common을 참조. 
+*/
+/*study*/
+
+
+.think_bg {background:url(../images/bg_think.png) no-repeat;}
+.think02_bg {background:url(../images/bg_think02.png) no-repeat;}
+p.direc{margin-left:25px}
+h4 {padding-left:30px;} 
+p.navi_direc{margin-left:25px}
+	.study{padding-top:6px;height:518px;width:100%;}
+p.tdir{padding:44px 0 0 48px; color:#FFF}
+p.tbox{ width:783px; height:28px; padding:13px 0px 0px 20px; background-color:#ebe9de;border:1px solid #e1ddca}
+
+
+.quiz {
+	width:820px;
+	margin:30px 10px 10px 80px;
+	padding:10px 20px 10px 0px;	
+	color:#333;
+
+}
+
+.quiz02 {
+	width:820px;
+	margin:25px 10px 10px 90px;
+	padding:10px 20px 10px 0px;	
+	color:#333;
+}
+
+.quiz_box01 {
+	 margin:7px 0 0 0; float:left;
+}
+
+.orangetitle01{
+   margin:3px 0 0 0;
+   padding:2px 0 0 22px; font-size:12px;
+   height:20px;
+   background: url(../images/w_ico.gif) no-repeat  0 3px;
+}
+
+/*테이블*/
+dl.discn {padding:70px 0 0 110px;width:800px}
+dl.discn.sum{}
+dl.discn dt{float:left;height:80px;padding-right:18px}
+dl.discn.sum dt{height:250px}
+dl.discn dd{float:left;width:740px;padding:5px 0 0 15px;line-height:1.8em}
+			dd strong{font-weight:bold;color:#a1702b}
+dl.discn.dot dd{background:url(../images/dot.gif) no-repeat 5px center}
+table{border:1px solid #f0e6d3;width:100%;background:#e5d6b5}
+th, td{border:1px solid #fdfbf8;border-top:none;border-left:none;padding:4px 6px;line-height:1.6em}
+td{background:#f6f4e7;padding:6px 10px}
+th.last, td.last{border-right:none}

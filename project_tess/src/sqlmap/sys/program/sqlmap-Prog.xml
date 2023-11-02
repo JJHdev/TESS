@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Prog">
+
+	<!-- Program Information-->
+	<select id="getProgInfo" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+        SELECT
+               PROG_ID                      AS "progId",
+               PROG_NM                     	AS "progNm",
+               PROG_PATTERN             	AS "progPattern",
+               PROG_TYPE                  	AS "progType",
+               MENU_ID                  	AS "menuId",
+
+               NVL( (SELECT MENU_NM
+	                 FROM   SYS_MENU
+	                 WHERE 	MENU_ID = A.MENU_ID), PROG_NM)  AS "titleName",
+
+	           <!-- PROG_NM						AS "titleName",  -->
+
+               PROG_ODR                		AS "progOdr",
+               REGEXP_SUBSTR(B.MENU_ID_PATH, '[^,]+', 1, 1) AS "firstMenuId",
+               REGEXP_SUBSTR(B.MENU_ID_PATH, '[^,]+', 1, 2) AS "secondMenuId",
+	           B.MENU_PATH					AS "menuPath",
+	           B.URL_PATH					AS "urlPath",
+	           LPAD((SELECT MENU_LVL FROM SYS_MENU WHERE MENU_ID = A.MENU_ID AND ROWNUM = 1), 2, '0') AS "menuIcon"
+        FROM
+        	   (
+        	   		SELECT *
+        	   		FROM   SYS_PROG
+			        WHERE  PROG_PATTERN like #url#||'%'
+			        AND    PROG_TYPE = 'url'
+					AND    ROWNUM = 1
+        	    ) A,
+        	   (
+        	   		SELECT  SUBSTR(MAX(SYS_CONNECT_BY_PATH(TRIM(MENU_ID), ',')), 2) menu_id_path,
+        	   				SUBSTR(MAX(SYS_CONNECT_BY_PATH(TRIM(MENU_NM), ',')), 2) menu_path,
+        	   		        SUBSTR(MAX(SYS_CONNECT_BY_PATH(TRIM(TAGT_URL), ',')), 2) url_path
+					FROM   (
+					    SELECT ROWNUM num, MENU_ID, MENU_NM, TAGT_URL
+					    FROM (
+					        SELECT MENU_ID, MENU_NM, TAGT_URL
+					        FROM   SYS_MENU A
+					        CONNECT BY PRIOR PARENT_MENU_ID = MENU_ID
+					        START WITH MENU_ID = (SELECT DISTINCT MENU_ID
+					                              FROM   SYS_PROG
+					                              WHERE  PROG_PATTERN like #url#||'%')
+					        ORDER BY ROWNUM DESC
+					    )
+					)
+					START WITH num = 1
+					CONNECT BY PRIOR num = num - 1
+        	   ) B
+         WHERE ROWNUM = 1
+    </select>
+
+	<!-- Program Search -->
+	<select id="listProg" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT    PROG_ID                               AS "progId"
+			   	, PROG_NM                             	AS "progNm"
+				, PROG_PATTERN                          AS "progPattern"
+				, PROG_TYPE                             AS "progType"
+				, SECU_LVL								AS "secuLvl"
+				, (SELECT MENU_NM
+				   FROM   SYS_MENU
+				   WHERE  MENU_ID = A.MENU_ID)          AS "menuId"
+				, PROG_ODR                            	AS "progOdr"
+				, REGI_ID                               AS "regiId"
+				, TO_CHAR(NVL(UPDT_DATE, REGI_DATE), 'yyyy-mm-dd')       AS "regiDate"
+		FROM   SYS_PROG A
+		<dynamic prepend="WHERE">
+			<isNotEmpty prepend="AND" property="progNm">
+				(PROG_ID like '%'||#progNm#||'%' OR PROG_NM like '%'||#progNm#||'%' OR PROG_PATTERN like '%'||#progNm#||'%')
+			</isNotEmpty>
+		</dynamic>
+		<isNotEmpty property="sidx">
+			ORDER BY $sidx$ $sord$
+		</isNotEmpty>
+		<isEmpty property="sidx">
+			ORDER BY PROG_ID
+		</isEmpty>
+	</select>
+
+	<select id="getProgCnt" resultClass="java.lang.Boolean" parameterClass="java.util.Map">
+		SELECT SIGN(COUNT(*))
+		FROM   SYS_PROG
+		WHERE  PROG_ID = #progId#
+	</select>
+
+	<!--Program INSERT -->
+	<insert id="regiProg" parameterClass="java.util.Map">
+		INSERT INTO SYS_PROG (
+			PROG_ID,
+			PROG_NM,
+			PROG_PATTERN,
+			PROG_TYPE,
+			MENU_ID,
+			SECU_LVL,
+			PROG_ODR,
+			REGI_ID,
+			REGI_DATE
+		) VALUES (
+			#progId#,
+			#progNm#,
+			#progPattern#,
+			'url',
+			#menuId#,
+			NVL(#secuLvl#,'1'),
+			$progOdr$,
+			#gsUserId#,
+			SYSDATE
+		)
+	</insert>
+
+	<!-- Program UPDATE -->
+	<update id="updtProg" parameterClass="java.util.Map">
+		UPDATE SYS_PROG
+		SET    PROG_NM     		= #progNm#,
+			   PROG_PATTERN  	= #progPattern#,
+			   MENU_ID		  	= #menuId#,
+			   SECU_LVL			= NVL(#secuLvl#,'1'),
+			   PROG_ODR    		= $progOdr$,
+			   UPDT_ID       	= #gsUserId#,
+			   UPDT_DATE     	= SYSDATE
+		WHERE  PROG_ID   		= #progId#
+	</update>
+
+	<!-- Program DELETE -->
+	<delete id="deltProg" parameterClass="java.util.Map">
+		DELETE FROM SYS_PROG
+        <dynamic prepend="WHERE">
+            <iterate prepend="AND" property="arrProgId" open="(" close=")" conjunction="OR">
+                  PROG_ID  = #arrProgId[]#
+            </iterate>
+        </dynamic>
+	</delete>
+
+</sqlMap>

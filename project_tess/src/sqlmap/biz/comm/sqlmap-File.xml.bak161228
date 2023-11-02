@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="File">
+
+    <!-- ####################################### -->
+    <!-- 일반상황                                 -->
+    <!-- ####################################### -->
+
+    <!-- 파일 리스트 조회 -->
+    <select id="listFile" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		SELECT
+			 FILE_NO             AS "fileNo"
+		   , ROOT_NO             AS "rootNo"
+		   , DOCU_TYPE           AS "docuType"
+		   , ATTH_TYPE           AS "atthType"
+		   , FILE_ORG_NM         AS "fileOrgNm"
+		   , FILE_SVR_NM         AS "fileSvrNm"
+		   , FILE_PATH           AS "filePath"
+		   , FILE_SIZE           AS "fileSize"
+		   , ATTH_RMK            AS "atthRmk"
+		   , DEL_YN              AS "delYn"
+		   , REGI_ID             AS "regiId"
+		   , REGI_DATE           AS "regiDate"
+		FROM
+			TB_ATTHFILE
+		WHERE
+			  ROOT_NO   = #rootNo#
+        <isNotEmpty property="docuType" prepend="AND">
+              DOCU_TYPE = #docuType#
+        </isNotEmpty>
+          AND DEL_YN    = 'N'
+    </select>
+
+    <select id="viewFile" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		SELECT
+			 FILE_NO             AS "fileNo"
+		   , ROOT_NO             AS "rootNo"
+		   , DOCU_TYPE           AS "docuType"
+		   , ATTH_TYPE           AS "atthType"
+		   , FILE_ORG_NM         AS "fileOrgNm"
+		   , FILE_SVR_NM         AS "fileSvrNm"
+		   , FILE_PATH           AS "filePath"
+		   , FILE_SIZE           AS "fileSize"
+		   , ATTH_RMK            AS "atthRmk"
+		   , DEL_YN              AS "delYn"
+		   , REGI_ID             AS "regiId"
+		   , REGI_DATE           AS "regiDate"
+		FROM
+			TB_ATTHFILE
+		WHERE
+           FILE_NO = #fileNo#
+    </select>
+
+	<!-- 삭제 파일 검색 -->
+    <select id="listDelFile" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+    	SELECT
+        	  FILE_NO             AS "fileNo"
+        	, ROOT_NO             AS "rootNo"
+        	, DOCU_TYPE           AS "docuType"
+        	, ATTH_TYPE           AS "atthType"
+        	, FILE_ORG_NM         AS "fileOrgNm"
+        	, FILE_SVR_NM         AS "fileSvrNm"
+        	, FILE_PATH           AS "filePath"
+    	FROM
+    		TB_ATTHFILE
+    	WHERE
+    		DEL_YN = 'N'
+            <isNotEmpty property="arrFileNo" prepend="AND">
+                   FILE_NO IN
+                <iterate property="arrFileNo" conjunction="," open="(" close=")">
+                    #arrFileNo[]#
+                </iterate>
+            </isNotEmpty>
+            <isNotEmpty property="rootNo" prepend="AND">
+                ROOT_NO = #rootNo#
+            </isNotEmpty>
+    </select>
+
+    <!-- FILE 등록 -->
+    <statement id="insertFile" parameterClass="java.util.HashMap">
+        INSERT INTO TB_ATTHFILE (
+             FILE_NO
+            ,ROOT_NO
+            ,DOCU_TYPE
+            ,FILE_ORG_NM
+            ,FILE_SVR_NM
+            ,FILE_SIZE
+            ,FILE_PATH
+            ,ATTH_RMK
+            ,REGI_ID
+            ,REGI_DATE
+        )
+        VALUES
+        (
+             (
+               SELECT NVL(MAX(FILE_NO), 0) + 1
+               FROM   TB_ATTHFILE
+             )
+            ,#rootNo#
+            ,#docuType#
+            ,#fileOrgNm#
+            ,#fileSvrNm#
+            ,#fileSize#
+            ,#filePath#
+            ,#atthRmk#
+            ,#regiId#
+            ,SYSDATE
+        )
+    </statement>
+
+    <!-- FILE 삭제 -->
+    <statement id="deleteFile" parameterClass="java.util.HashMap">
+        UPDATE
+			TB_ATTHFILE
+		SET
+			DEL_YN = 'Y',
+			UPDT_ID = #updtId#,
+			UPDT_DATE = sysdate
+        WHERE
+        	DEL_YN = 'N' AND
+        	FILE_NO  = #fileNo#
+    </statement>
+
+    <!-- FILE 삭제(전체) -->
+    <statement id="deleteAllFiles" parameterClass="java.util.HashMap">
+        UPDATE
+			TB_ATTHFILE
+		SET
+			DEL_YN = 'Y',			
+			UPDT_ID = #updtId#,
+			UPDT_DATE = sysdate
+        WHERE
+        	DEL_YN = 'N' AND
+        	root_no  = #rootNo#
+    </statement>
+    
+    <!-- FILE 삭제(전체) -->
+    <statement id="deltPopFiles" parameterClass="java.util.HashMap">
+        DELETE
+        FROM
+			TB_ATTHFILE
+        WHERE
+        	DEL_YN = 'N' AND
+        	FILE_NO  = #fileNo#
+    </statement>
+
+    <!-- Max FILE No 가저오기 -->
+    <statement id="getMaxFileNo" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+        SELECT MAX(FILE_NO) FROM TB_ATTHFILE 
+    </statement>
+
+
+</sqlMap>

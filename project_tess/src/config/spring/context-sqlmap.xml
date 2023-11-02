@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<!-- SqlMap setup for iBATIS Database Layer -->
+	<!--<bean id="sqlMapClient" class="commf.dao.ibatis.sqlmap.RefreshableSqlMapClientFactoryBean"> spring-orm-2.5.6.jar 필요함.-->
+	<!-- web sqlmap  -->	
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation" value="classpath:config/sqlMapConfig.xml" />
+		<property name="mappingLocations" value="classpath:sqlmap/**/sqlmap-*.xml"/>
+		<property name="dataSource" ref="dataSource" />
+		<!--<property name="checkInterval" value="1000"/> spring3 에서는 안됨. -->
+	</bean>
+	
+	<!-- gis sqlmap  -->
+	<bean id="sqlMapClient-gis" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation" value="classpath:config/sqlMapConfig.xml" />
+		<property name="mappingLocations" value="classpath:sqlmap/**/sqlmap-*.xml"/>
+		<property name="dataSource" ref="dataSource-gis" />
+		<!--<property name="checkInterval" value="1000"/> spring3 에서는 안됨. -->
+	</bean>
+
+</beans>
+

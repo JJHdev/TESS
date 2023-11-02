@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Comm">
+
+	<typeAlias alias="ComboDomain" type="business.biz.comm.domain.ComboDomain" />
+
+    <select id="listComboCode" parameterClass="java.util.Map" resultClass="ComboDomain">
+    	SELECT  a.CODE                 		AS "comboValue",
+				a.CODE_NM                	AS "comboText"
+		FROM   	SYS_CODE a
+		WHERE 	(0=0)
+		AND     a.USE_YN = 'Y'
+		<isNotEmpty property="codeNm">
+			AND a.CODE      = #code#
+		</isNotEmpty>
+        <isNotEmpty property="searchNotIn">
+            <iterate prepend="AND" property="searchNotIn" open=" a.CODE NOT IN ( " conjunction="," close=")">
+                #searchNotIn[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty property="level">
+            AND level = #level#
+        </isNotEmpty>
+		<isEmpty property="startParentCode">
+            AND    a.PARENT_CODE  = #parentCode#
+            ORDER BY a.CODE_ODR, a.CODE
+        </isEmpty>
+        <isNotEmpty property="startParentCode">
+            <isNotEmpty property="level">
+                AND level = #level#
+            </isNotEmpty>
+            CONNECT BY PRIOR      CODE = PARENT_CODE
+            START WITH PARENT_CODE = #startParentCode#
+            ORDER SIBLINGS BY CODE, CODE_ODR
+        </isNotEmpty>
+    </select>
+
+	<!-- Code List -->
+	<select id="listCode" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT a.PARENT_CODE           	AS "parentCode",
+			   a.CODE                   AS "code",
+			   a.CODE_NM                AS "codeNm",
+			   a.ADD_COL1               AS "addCol1",
+			   a.ADD_COL2               AS "addCol2",
+			   a.ADD_COL3               AS "addCol3",
+			   a.ADD_COL4               AS "addCol4",
+			   a.ADD_COL5               AS "addCol5",
+			   a.USE_YN               	AS "useYn"
+		FROM   SYS_CODE a
+		WHERE  (0=0)
+		AND    a.USE_YN 	  = 'Y'
+		<isNotEmpty property="searchNm">
+			AND a.CODE_NM      like  '%'||#searchNm#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="codeNm">
+			AND a.CODE      = #code#
+		</isNotEmpty>
+		<isNotEmpty property="addCol01">
+			AND a.ADD_COL1 = #addCol01#
+		</isNotEmpty>
+		<isNotEmpty property="addCol02">
+			AND a.ADD_COL2 = #addCol02#
+		</isNotEmpty>
+		<isNotEmpty property="addCol03">
+			AND a.ADD_COL3 = #addCol03#
+		</isNotEmpty>
+		<isNotEmpty property="addCol04">
+			AND a.ADD_COL4 = #addCol04#
+		</isNotEmpty>
+		<isNotEmpty property="addCol05">
+			AND a.ADD_COL5 = #addCol05#
+		</isNotEmpty>
+        <isNotEmpty property="searchNotIn">
+            <iterate prepend="AND" property="searchNotIn" open=" a.CODE NOT IN ( " conjunction="," close=")">
+                #searchNotIn[]#
+            </iterate>
+        </isNotEmpty>
+        <isEmpty property="startParentCode">
+            AND    a.PARENT_CODE  = #parentCode#
+            ORDER BY a.CODE_ODR, a.CODE
+        </isEmpty>
+        <isNotEmpty property="startParentCode">
+            <isNotEmpty property="level">
+                AND level = #level#
+            </isNotEmpty>
+            CONNECT BY PRIOR      CODE = PARENT_CODE
+            START WITH PARENT_CODE = #startParentCode#
+            ORDER SIBLINGS BY CODE, CODE_ODR
+        </isNotEmpty>
+	</select>
+
+    <!-- CITY_AUTH COMBO LIST -->
+    <select id="listComboCityAuth" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+        SELECT 
+        	    a.PARENT_CITYAUTH_CD AS "parentCode",
+                a.CITYAUTH_CD        AS "code",
+                a.CITYAUTH_NM        AS "codeNm"
+        FROM
+        	    TB_CITYAUTH a
+        WHERE 
+        		a.PARENT_CITYAUTH_CD  = #parentCode#
+        ORDER BY
+                a.PARENT_CITYAUTH_CD,
+                a.CITYAUTH_CD
+    </select>
+    
+   <!-- Code List -->
+	<select id="listEvaluCode" resultClass="hashmap" parameterClass="java.util.Map" remapResults="true">
+		SELECT
+	        aa.*
+		FROM
+		(
+		SELECT		
+		<isNotEmpty property="startParentCode">
+			   LEVEL								AS "lvl",
+		</isNotEmpty>	  
+		 	   a.EVALU_INDICAT_CD           	AS "code",
+			   a.UPPER_EVALU_INDICAT_CD                   AS "parentCode",
+			   a.EVALU_INDICAT_NM                AS "codeNm",
+			   (SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT b WHERE A.UPPER_EVALU_INDICAT_CD = b.EVALU_INDICAT_CD) AS "parentCodeNm",
+			   a.CODE_ORD               AS "codeOrd",
+			   a.EVALU_TYPE               AS "evaluType",
+			   a.EVALU_INDICAT_USE_YN               	AS "useYn"
+		FROM   TB_EVALU_INDICAT a
+		WHERE  (0=0)
+		AND    a.EVALU_INDICAT_USE_YN 	  = 'Y'
+		<isNotEmpty property="searchNm">
+			AND a.EVALU_INDICAT_CD      like  '%'||#searchNm#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="codeNm">
+			AND a.EVALU_INDICAT_CD      = #code#
+		</isNotEmpty>
+        <isNotEmpty property="searchNotIn">
+            <iterate prepend="AND" property="searchNotIn" open=" EVALU_INDICAT_CD NOT IN ( " conjunction="," close=")">
+                #searchNotIn[]#
+            </iterate>
+        </isNotEmpty>
+        <isEmpty property="startParentCode">
+            AND    a.UPPER_EVALU_INDICAT_CD  = #parentCode#
+            ORDER BY a.CODE_ORD
+        </isEmpty>
+        <isNotEmpty property="startParentCode">
+			<isEqual property="evaluGubun" compareValue="PREV">
+				AND LEVEL != 4
+			</isEqual>
+            <isNotEmpty property="level">
+                AND level = #level#
+            </isNotEmpty>
+            CONNECT BY PRIOR      EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD
+            START WITH EVALU_INDICAT_CD = #startParentCode#
+            <isNotEqual property="startParentCode" compareValue="EVALU_DPTH" >
+	            OR EVALU_INDICAT_CD = 'EVALU_FINL' OR EVALU_INDICAT_CD =  'EVALU_INPT'
+            </isNotEqual>	 
+            ORDER SIBLINGS BY CODE_ORD
+        </isNotEmpty>
+        ) aa		
+	</select>
+	
+	<select id="listSelEvaluCode" resultClass="hashmap" parameterClass="java.util.Map" remapResults="true">
+	SELECT
+        ROWNUM as "rn",
+        EVALU_INDICAT_CD  as "code",
+        UPPER_EVALU_INDICAT_CD as "parentCode",
+        EVALU_INDICAT_NM as "codeNm",
+        EVALU_TYPE as "codeType",
+        EVALU_BUSI_NO  as "evaluBusiNo",
+        EVALU_STAGE  as "evaluStage",
+        NVL2(NEXT_EVALU_CODE, NEXT_EVALU_CODE, 'AS30') as "nextEvaluCode" 
+	FROM	
+	(
+         SELECT
+            A.EVALU_INDICAT_CD,
+            A.UPPER_EVALU_INDICAT_CD,
+            A.EVALU_INDICAT_NM,
+            A.EVALU_TYPE,
+            B.EVALU_BUSI_NO,
+            B.EVALU_STAGE,
+            LEAD(A.EVALU_INDICAT_CD) OVER (ORDER BY ROWNUM) as "NEXT_EVALU_CODE"
+          FROM   
+         (
+             SELECT * FROM TB_EVALU_INDICAT WHERE 1 = 1
+             <isEqual property="evaluGubun" compareValue="AFTER">
+				AND LEVEL != 4
+			</isEqual>
+             <isNotEmpty property="level">
+             	AND LEVEL = #level#
+             </isNotEmpty>
+             START WITH EVALU_INDICAT_CD  = #evaluStage#
+             CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD
+         )A LEFT OUTER JOIN
+         (
+             SELECT 
+                 * 
+             FROM 
+                 TB_EVALU_DESTI_BUSI_INDICAT
+             WHERE
+             	EVALU_BUSI_NO = #evaluBusiNo# AND
+             	EVALU_STAGE = #evaluStage#    
+         )B
+         ON A.EVALU_INDICAT_CD = B.EVALU_INDICAT_CD
+         WHERE
+             EVALU_STAGE IS NOT NULL 
+     )
+     WHERE
+     	1 = 1
+     <isEmpty property="evaluDetailCode">
+     		AND UPPER_EVALU_INDICAT_CD = #upperEvaluDetailCode# AND ROWNUM = 1
+     </isEmpty>  
+     <isNotEmpty property="evaluDetailCode">
+     		AND EVALU_INDICAT_CD = #evaluDetailCode#
+     </isNotEmpty> 
+	</select>
+	
+	   <!-- Code List -->
+	<select id="listSelEvaluEtcCode" resultClass="hashmap" parameterClass="java.util.Map" remapResults="true">
+		SELECT
+			AA.*,
+			(SELECT UPPER_EVALU_INDICAT_CD FROM TB_EVALU_INDICAT b WHERE AA."parentCode" = b.EVALU_INDICAT_CD) AS "grandCode",
+			(SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT WHERE EVALU_INDICAT_CD = (SELECT UPPER_EVALU_INDICAT_CD FROM TB_EVALU_INDICAT b WHERE AA."parentCode" = b.EVALU_INDICAT_CD)) AS "grandCodeNm" 
+		FROM	
+		(
+	         SELECT
+		 	    A.EVALU_INDICAT_CD           	AS "code",
+			    A.UPPER_EVALU_INDICAT_CD                   AS "parentCode",
+			    A.EVALU_INDICAT_NM                AS "codeNm",
+			    (SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT b WHERE A.UPPER_EVALU_INDICAT_CD = b.EVALU_INDICAT_CD) AS "parentCodeNm",
+			    A.CODE_ORD               AS "codeOrd",
+			    A.EVALU_TYPE               AS "evaluType",
+			    A.EVALU_INDICAT_USE_YN               	AS "useYn"	            
+	          FROM   
+	         (
+	             SELECT * FROM TB_EVALU_INDICAT WHERE 1 = 1
+	             <isEqual property="evaluGubun" compareValue="AFTER">
+	             	AND LEVEL != 3
+	             </isEqual>
+		         <isNotEmpty property="level">
+	             	AND LEVEL = #level#
+	             </isNotEmpty>
+	             START WITH EVALU_INDICAT_CD  = #parentCode#
+	             CONNECT BY PRIOR EVALU_INDICAT_CD = UPPER_EVALU_INDICAT_CD
+	         )A LEFT OUTER JOIN
+	         (
+	             SELECT 
+	                 * 
+	             FROM 
+	                 TB_EVALU_DESTI_BUSI_INDICAT
+	             WHERE
+	             	EVALU_BUSI_NO = #evaluBusiNo# AND
+	             	EVALU_STAGE = #evaluStage#    
+	         )B
+	         ON A.EVALU_INDICAT_CD = B.EVALU_INDICAT_CD
+	         WHERE
+	             EVALU_STAGE IS NOT NULL 
+	     ) AA
+	     WHERE
+	     	1 = 1
+	</select>
+	
+	<!-- 평가지표별 배점항목 조회 -->
+	<select id="listEvaluItemSpanCode" resultClass="hashmap" parameterClass="java.util.Map">
+	
+		SELECT
+			EVALU_ITEM_CD AS "evaluItemCd"
+			,GROUP_CD AS "groupCd"
+			,(SELECT EVALU_INDICAT_NM FROM TB_EVALU_INDICAT B WHERE B.EVALU_INDICAT_CD = A.GROUP_CD) AS "groupCdNm"
+			,EVALU_ITEM_NM AS "evaluItemNm"
+			,COLSPAN_SIZE AS "colspanSize"
+		FROM
+			TB_EVALU_ITEM_SPAN A
+		WHERE
+			USE_YN = 'Y'
+			AND GROUP_CD = #code#
+		ORDER BY CODE_ORD
+	
+	</select>
+
+</sqlMap>

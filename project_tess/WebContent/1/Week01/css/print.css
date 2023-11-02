@@ -1,0 +1,23 @@
+@charset "utf-8";
+/*jian*/
+body{font-size:12px; font-family:굴림,Seoul,arial,helvetica; text-decoration:none; color:#000000; line-height:1.8em}
+h2,h3 {color: #333333;font-size: 13px;font-family: '굴림';line-height:180%;font-variant: small-caps;letter-spacing: -0.05em}
+.styletxt_main05 {font-family: '굴림';font-size: 9pt;line-height: 120%;color: #646ae8; font-weight: normal;letter-spacing: -0.05em}
+#sDiv1, #sDiv2, #sDiv3, #sDiv4, #sDiv5{display:none}
+
+.wrapper{width:750px}
+h1 {height:132px;background: url(../img/print_t.gif) no-repeat left top;text-indent:-9999px}
+h2 {background: url(../img/print_dot.gif) repeat-x left top;height:30px;padding-top:10px}
+h3 {background: url(../img/print_dot.gif) repeat-x left bottom;height:30px}
+.cont {padding:10px 0}
+table{width:100%}
+th{background:#ffddbb}
+th, td{border:1px solid #ccc;padding:8px 10px;line-height:1.6em}
+td.empty {line-height:0;border-collapse:collapse;border:none}
+.style21 {color: #333333;font-size: 13px;padding-left:20px}
+.footer {background: url(../img/print_b.gif) no-repeat left top;height:21px}
+button{border:2px solid red;visibility:hidden}
+.layer_p{display:none}
+ol{width:780px;}
+.nu{list-style:decimal;font-weight:normal}
+.sum dd strong{color:#ee360b}

@@ -1,0 +1,871 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# @Description : 관리자 - 평가사업관리 sql
+# @author lsz
+# @version 1.0 2018/11/26
+# Used Table(주요) : TB_Evalu_BUSI     (관광사업정보)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-->
+<sqlMap namespace="MngEvalu">
+
+    <!-- ++++++++++++++++++++++++++++++++++++++
+          공통 컬럼.
+         ++++++++++++++++++++++++++++++++++++++ -->
+
+    <!--  -->
+    <sql id="EvaluMgmt-columns">
+	     A.EVALU_BUSI_NO     as "evaluBusiNo"
+	    ,A.EVALU_BUSI_NM     as "evaluBusiNm"
+	    ,A.USCM_NO          as "usmcNo"
+	    ,A.BUSI_POST_NO     as "busiPostNo"
+	    ,A.BUSI_ADDR1       as "busiAddr1"
+	    ,A.BUSI_ADDR2       as "busiAddr2"
+	    ,A.BUSI_ADDR3       as "busiAddr3"
+	    ,A.BUSI_ADDR4       as "busiAddr4"
+	    ,A.BUSI_ADDR5       as "busiAddr5"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "busiAddr12"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2 ||' '|| A.BUSI_ADDR3 ||' '|| A.BUSI_ADDR4 as "busiAddress1"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "cityauthNm"
+	    ,A.BUSI_STT_DATE    as "busiSttDate"
+	    ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)                    as "convBusiSttDate"
+	    ,A.BUSI_END_DATE    as "busiEndDate"
+	    ,FN_CONV_VDATEYM(A.BUSI_END_DATE)                    as "convBusiEndDate"
+	    ,A.BUSI_DEV_ENTY	   as "busiDevEnty"
+	    ,A.BUSI_PLAN_DATE   as "busiPlanDate"
+	    ,FN_CONV_VDATEYM(A.BUSI_PLAN_DATE)                    as "convBusiPlanDate"
+	    ,A.BUSI_TYPE        as "busiType"
+	    ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_TYPE)             as "busiTypeNm"
+	    ,A.BUSI_CATE        as "busiCate"
+	    ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_CATE)             as "busiCateNm"                                                                 
+	    ,A.TOT_SITE_AREA    as "totSiteArea"
+	    ,A.TOT_SITE_AREA || NVL2(A.TOT_SITE_AREA, TOT_SITE_UNIT, '')   as "totSiteAreaUnit"
+	    ,A.TOT_SITE_UNIT    as "totSiteUnit"
+	    ,A.TOT_BUSI_EXPS    as "totBusiExps"
+	    ,A.REGI_ID          as "regiId"
+	    ,A.REGI_DATE        as "regiDate"
+	    ,A.UPDT_ID          as "updtId"
+	    ,A.UPDT_DATE        as "updtDate"
+    </sql>
+    
+    <sql id="TodeMgmt-columns">
+             A.TODE_BUSI_NO     as "todeBusiNo"
+            ,A.TODE_BUSI_NM     as "todeBusiNm"
+            ,A.USCM_NO          as "uscmNo"
+            ,A.REQ_USER_NM      as "reqUserNm"
+            ,A.REQ_DEPT_NM      as "reqDeptNm"
+            ,A.REQ_TEL_NO       as "reqTelNo"
+            ,A.REQ_EMAIL        as "reqEmail"
+            ,A.REQ_CITYAUTH_CD  as "reqCityauthCd"
+            ,A.REQ_DATE         as "reqDate"
+            ,FN_CONV_VDATEYM(A.REQ_DATE)                        as "convReqDate"
+            ,A.BUSI_POST_NO     as "busiPostNo"
+            ,A.BUSI_ADDR1       as "busiAddr1"
+            ,A.BUSI_ADDR2       as "busiAddr2"
+            ,A.BUSI_ADDR3       as "busiAddr3"
+            ,A.BUSI_ADDR4       as "busiAddr4"
+            ,A.BUSI_ADDR5       as "busiAddr5"
+            ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   as "busiAddr12"
+            ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2 ||' '|| A.BUSI_ADDR3 ||' '|| A.BUSI_ADDR4 as "busiAddress1"
+            ,A.BUSI_STT_DATE    as "busiSttDate"
+            ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)                    as "convBusiSttDate"
+            ,A.BUSI_END_DATE    as "busiEndDate"
+            ,FN_CONV_VDATEYM(A.BUSI_END_DATE)                    as "convBusiEndDate"
+            ,CEIL(MONTHS_BETWEEN(FN_FIX_DATE(A.BUSI_END_DATE, 'YYYYMMDD', 'N'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') ))
+                                                                 as "devPeriod"
+            ,CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_END_DATE, 'YYYYMMDD', 'N') ))
+                                                                 as "mgtPeriod"
+            ,CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') ))
+                                                                 as "prcPeriod"
+            ,(CASE WHEN CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') )) IS NULL 
+                        OR CEIL(MONTHS_BETWEEN(FN_FIX_DATE(A.BUSI_END_DATE, 'YYYYMMDD', 'N'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') )) IS NULL
+                        THEN NULL
+                   WHEN CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') )) <![CDATA[<=]]> 0     THEN 0
+                   WHEN CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') )) <![CDATA[>=]]> CEIL(MONTHS_BETWEEN(FN_FIX_DATE(A.BUSI_END_DATE, 'YYYYMMDD', 'N'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') )) THEN 100
+                   ELSE ROUND(
+                            CEIL(MONTHS_BETWEEN(TO_CHAR(SYSDATE, 'YYYYMMDD'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') ))/CEIL(MONTHS_BETWEEN(FN_FIX_DATE(A.BUSI_END_DATE, 'YYYYMMDD', 'N'), FN_FIX_DATE(A.BUSI_STT_DATE, 'YYYYMMDD', 'Y') ))*100
+                            ,2)
+                   END)         as "prcPeriodRate"
+            ,A.BUSI_DEV_ENTY    as "busiDevEnty"
+            ,A.BUSI_MGT_ENTY    as "busiMgtEnty"
+            ,A.BUSI_LEGL_BASS   as "busiLeglBass"
+            ,A.BUSI_PLAN_DATE   as "busiPlanDate"
+            ,FN_CONV_VDATEYM(A.BUSI_PLAN_DATE)                   as "convBusiPlanDate"
+            ,A.TOT_SITE_AREA    as "totSiteArea"
+            ,A.TOT_FCLT_AREA    as "totFcltArea"
+            ,A.GOV_DEPT_CD      as "govDeptCd"
+            ,FN_GET_CODENM('GOV_DEPT_CD', A.GOV_DEPT_CD)         as "govDeptCdNm"
+            ,A.BUSI_TYPE        as "busiType"
+            ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_TYPE)             as "busiTypeNm"
+            ,A.BUSI_CATE        as "busiCate"
+            ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_CATE)             as "busiCateNm"
+            ,A.BUSI_STAH_STAGE  as "busiStahStage"
+            ,FN_GET_CODENM('BUSI_STAH_STAGE', A.BUSI_STAH_STAGE) as "busiStahStageNm"
+            ,A.BUSI_NEED        as "busiNeed"
+            ,A.BUSI_STAH_BACK   as "busiStahBack"
+            ,A.BUSI_NOTE        as "busiNote"
+            ,A.PLAN_GOV_EXPS    as "planGovExps"
+            ,A.PLAN_CITY_EXPS   as "planCityExps"
+            ,A.PLAN_DO_EXPS     as "planDoExps"
+            ,A.PLAN_PRVT_EXPS   as "planPrvtExps"
+            ,A.PLAN_AREA_SUM_EXPS as "planAreaSumExps"				<!-- 지방비 합계 항목 신규 추가 2015.01.19 -->
+            ,NVL(A.PLAN_GOV_EXPS,0)+ <!--  NVL(A.PLAN_CITY_EXPS,0)+NVL(A.PLAN_DO_EXPS,0) --> NVL(A.PLAN_AREA_SUM_EXPS,0) +NVL(A.PLAN_PRVT_EXPS,0)
+                                                                 as "planSumExps"	<!-- 합계 방식 변경 (지방비 합계 값으로 변경) 2015.01.19 -->
+			,NVL(A.PLAN_GOV_EXPS,0)+NVL(A.PLAN_CITY_EXPS,0)+NVL(A.PLAN_DO_EXPS,0)+NVL(A.PLAN_PRVT_EXPS,0) as "planTotalExps"
+            ,A.TOT_SITE_UNIT	as "totSiteUnit"		
+            ,A.TOT_FCLT_UNIT   as "totFcltUnit"
+            ,A.BUSI_ISSU_PBLM   as "busiIssuPblm"
+            ,A.EFFE_POLI_EXPE   as "effePoliExpe"
+            ,A.EFFE_PROD_INDU   as "effeProdIndu"
+            ,A.EFFE_EMP_INDU    as "effeEmpIndu"
+            ,A.PFMS_CREATE      as "pfmsCreate"
+            ,A.OPEN_YN          as "openYn"
+            ,A.TODE_BUSI_FIGURE_TYPE    as "busiFigureType"
+            ,A.APPR_USER_ID     as "apprUserId"
+            ,(SELECT USER_NM
+                FROM VW_USER
+               WHERE USER_ID = A.APPR_USER_ID)                   as "apprUserNm"
+            ,A.APPR_DATE        as "apprDate"
+            ,FN_CONV_VDATEYM(A.APPR_DATE)                       as "convApprDate"
+            ,A.APPR_STAT        as "apprStat"
+            ,FN_GET_CODENM('APPR_STAT', A.APPR_STAT)             as "apprStatNm"
+            ,A.REF_BUSI_NO      as "refBusiNo"
+            ,A.INPUT_RATE       as "inputRate"
+            ,A.REGI_ID          as "regiId"
+            ,A.REGI_DATE        as "regiDate"
+            ,A.UPDT_ID          as "updtId"
+            ,A.UPDT_DATE        as "updtDate"
+            ,A.REJT_REASON      as "rejtReason"
+            ,(SELECT MAX(ROLE_ID) FROM VW_USER
+               WHERE USCM_NO = A.USCM_NO )                       as "roleId"
+    </sql>
+    
+    <!-- 기획평가사업  -->
+    <sql id="PlanEvaluMgmt-columns">
+	     A.PLANEVAL_BUSI_NO     	as "planEvalBusiNo"
+	    ,A.PLANEVAL_BUSI_NAME     	as "planEvalBusiName"
+	    ,A.BUSI_ADDR1       		as "busiAddr1"
+	    ,A.BUSI_ADDR2       		as "busiAddr2"
+	    ,A.BUSI_ADDR5       		as "busiAddr5"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   			as "busiAddr12"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2 ||' '|| A.BUSI_ADDR5 		as "busiAddress1"
+	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   			as "cityauthNm"
+	    ,A.BUSI_STT_DATE    as "busiSttDate"
+	    ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)                    as "convBusiSttDate"
+	    ,A.BUSI_END_DATE    as "busiEndDate"
+	    ,FN_CONV_VDATEYM(A.BUSI_END_DATE)                    as "convBusiEndDate"
+	    ,A.BUSI_DEV_EVTY	   as "busiDevEnty"
+	    ,A.BUSI_TYPE        as "busiType"
+	    ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_TYPE)             as "busiTypeNm"
+	    ,A.BUSI_CATE        as "busiCate"
+	    ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_CATE)             as "busiCateNm"                                                                 
+	    ,A.PLAN_BUSI_EXPS    as "planBusiExps"
+	    ,A.REGI_ID          as "regiId"
+	    ,A.REGI_DATE        as "regiDate"
+	    ,A.UPDT_ID          as "updtId"
+	    ,A.UPDT_DATE        as "updtDate"
+    </sql>
+    
+    <!-- ++++++++++++++++++++++++++++++++++++++
+          검색 관련
+         ++++++++++++++++++++++++++++++++++++++ -->
+         
+    <sql id="EvaluMgmt-condition">
+        <!-- 지역 -->
+        <isNotEmpty property="srchBusiAddr1">
+	        AND A.BUSI_ADDR1     = (SELECT CITYAUTH_NM
+	                                FROM   TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr1#)
+        </isNotEmpty>
+        <isNotEmpty property="srchBusiAddr2">
+	        AND A.BUSI_ADDR2     = (SELECT CITYAUTH_NM
+	                                FROM   TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr2#)
+     	</isNotEmpty>
+		<!-- 사업코드 -->
+		<isNotEmpty property="srchBusiCode">
+			AND A.EVALU_BUSI_NO LIKE '%'||#srchBusiCode#||'%'
+		</isNotEmpty>
+        <!-- 사업구분 -->
+        <isNotEmpty property="srchBusiType">
+            AND A.BUSI_TYPE = #srchBusiType#
+        </isNotEmpty>
+        <!-- 사업유형 -->
+        <isNotEmpty property="srchBusiCate">
+            AND A.BUSI_CATE = #srchBusiCate#
+        </isNotEmpty>
+        <!-- 평가단계 -->
+        <isNotEmpty property="srchBusiStage">
+            AND B.EVALU_STAGE = #srchBusiStage#
+        </isNotEmpty>
+        <!-- 시작연도 -->
+        <isNotEmpty property="srchBusiSttDate">
+            AND TO_DATE(A.BUSI_STT_DATE, 'YYYYMMDD') >= #srchBusiSttDate# || '0101'
+        </isNotEmpty>
+		<!-- 종료연도 -->
+		<isNotEmpty property="srchBusiEndDate">
+			AND #srchBusiEndDate# >= TO_DATE(A.BUSI_END_DATE, 'YYYYMMDD') || '1231'
+		</isNotEmpty>
+        <!-- 사업명 -->
+        <isNotEmpty property="srchEvaluBusiNm">
+            AND A.Evalu_BUSI_NM LIKE '%'||#srchEvaluBusiNm#||'%'
+        </isNotEmpty>
+        <!-- 평가결과 -->
+        <isNotEmpty property="srchFinalEvaluFnd">
+            AND B.FINAL_EVALU_FND = #srchFinalEvaluFnd#
+        </isNotEmpty>
+        <!-- 시설면적 -->
+        <isNotEmpty property="srchBusiArea">
+            AND A.TOT_SITE_AREA <![CDATA[>=]]> #srchBusiArea# 
+        </isNotEmpty>
+        <!-- 사업금액 -->
+        <isNotEmpty property="srchBusiExps">
+            AND A.TOT_BUSI_EXPS <![CDATA[>=]]> #srchBusiExps#
+        </isNotEmpty>
+        <!-- 17년도 사업만 -->
+        <isNotEmpty property="busi2017">
+<!--             AND A.EVALU_BUSI_NO LIKE '%'||#busi2017#||'%' 테스트 DB는 cent_2017, 실제디비는 evalu_cent-->
+            AND B.EVALU_BEFO_TRGT is null
+        </isNotEmpty>
+    </sql>
+    
+    <sql id="TodeMgmt-condition">
+        <!-- 지역 -->
+        <isNotEmpty property="srchBusiAddr1">
+	        AND A.BUSI_ADDR1     = (SELECT CITYAUTH_NM
+	                                FROM   TREDSUSER.TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr1#)
+        </isNotEmpty>
+        <isNotEmpty property="srchBusiAddr2">
+        	<isEqual property="srchBusiAddr2" compareValue="MAIN">
+        		AND A.BUSI_ADDR2 is null
+        	</isEqual>
+        	<isNotEqual property="srchBusiAddr2" compareValue="MAIN">
+		        AND A.BUSI_ADDR2     = (SELECT CITYAUTH_NM
+	                                FROM   TREDSUSER.TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr2#)
+        	</isNotEqual>
+     	</isNotEmpty>
+     	<!-- 사업코드 -->
+		<isNotEmpty property="srchBusiCode">
+			AND A.TODE_BUSI_NO LIKE '%'||#srchBusiCode#||'%'
+		</isNotEmpty>
+        <!-- 사업구분 -->
+        <isNotEmpty property="srchBusiType">
+            AND A.BUSI_TYPE = #srchBusiType#
+        </isNotEmpty>
+        <!-- 사업유형 -->
+        <isNotEmpty property="srchBusiCate">
+            AND A.BUSI_CATE = #srchBusiCate#
+        </isNotEmpty>
+        <!-- 사업명 -->
+        <!-- <isNotEmpty property="srchTodeBusiNm">
+            AND A.TODE_BUSI_NM LIKE '%'||#srchTodeBusiNm#||'%'
+        </isNotEmpty> -->
+        
+        <!-- 사업명 -->
+        <isNotEmpty property="srchTodeBusiNm">
+            <!-- AND ( A.TODE_BUSI_NM LIKE '%'||#srchTodeBusiNm#||'%' OR  REPLACE(A.TODE_BUSI_NM,' ','') LIKE '%'||#srchTodeBusiNm#||'%' ) -->
+            AND ( A.TODE_BUSI_NM LIKE '%'||#srchTodeBusiNm#||'%' OR  REPLACE(A.TODE_BUSI_NM,' ','') LIKE '%'||#srchTodeBusiNm#||'%'
+			OR  A.TODE_BUSI_NM LIKE '%'||REPLACE(#srchTodeBusiNm#,' ','')||'%' 
+			OR  REPLACE(A.TODE_BUSI_NM,' ','') LIKE '%'||REPLACE(#srchTodeBusiNm#,' ','')||'%' )
+        </isNotEmpty>
+        
+        <!-- 시작연도 -->
+        <isNotEmpty property="srchBusiSttDate">
+            AND #srchBusiSttDate# &lt;= SUBSTR(A.BUSI_STT_DATE, 0, 4)
+        </isNotEmpty>
+		<!-- 종료연도 -->
+		<isNotEmpty property="srchBusiEndDate">
+			AND #srchBusiEndDate# &gt;= SUBSTR(A.BUSI_END_DATE, 0, 4)  
+		</isNotEmpty>
+        
+        <isNotEmpty property="srchApprStat">
+            AND A.APPR_STAT = #srchApprStat#
+        </isNotEmpty>
+        <!-- 연도 -->
+        <!-- <isNotEmpty property="srchBusiExpsYear">
+        	AND SUBSTR(BUSI_STT_DATE, 0, 4) = #srchBusiExpsYear#
+        	AND SUBSTR(BUSI_STT_DATE, 0, 4) &lt;= #srchBusiExpsYear#
+	        AND SUBSTR(BUSI_END_DATE, 0, 4) &gt;= #srchBusiExpsYear#
+	        AND A.TODE_BUSI_NO IN (SELECT DISTINCT TODE_BUSI_NO FROM TB_TODE_BUSIEXPS WHERE BUSI_EXPS_YEAR = #srchBusiExpsYear#)
+        </isNotEmpty> -->
+        <!-- 관리자가 지자체 사업과 동일 하게 보기위함 -->
+        <isNotEmpty property="uscmNo">
+            AND A.USCM_NO = #uscmNo#
+        </isNotEmpty>
+        <!-- 조회 메뉴일 때 -->
+        <isEqual property="menuFg" compareValue="menuSrch">
+            AND A.APPR_STAT = 'AS90'
+            AND A.OPEN_YN = 'Y'
+        </isEqual>
+        <!-- 조회 메뉴가 아닐 때(관리메뉴) 권한별 조회 조건 설정. -->
+        <isNotEqual property="menuFg" compareValue="menuSrch">
+        
+            <!-- ================================ -->
+            <!-- 로그인 권한별로 리스트 대상 제한 -->
+            <!-- ================================ -->
+            <!-- 로그인된 사용자 -->
+            <isNotEmpty property="gsRoleId">
+                <!-- 시군구 사용자일 때 : 자신의 data만 -->
+                <isEqual property="gsRoleId" compareValue="ROLE_SIGG">
+                    AND U.USCM_NO = #gsUscmNo#
+                </isEqual>
+                <!-- 시도 사용자일 때 : 자기지역 산하 시군구의 data 만(임시저장/보완은 제외) -->
+                <isEqual property="gsRoleId" compareValue="ROLE_SIDO">
+                    AND U.CITYAUTH_CD LIKE SUBSTR(#gsCityauthCd#, 1,2)||'%'
+                    AND ( A.APPR_STAT NOT IN ('AS00', 'AS80')
+                          OR ( A.APPR_STAT IN ('AS00', 'AS80')
+                               AND U.USCM_NO = #gsUscmNo#
+                             )
+                        )
+                </isEqual>
+                <!-- 문체부일 때 : '임시저장'을 제외한 모든것 -->
+                <isEqual property="gsRoleId" compareValue="ROLE_AUTH_E1">
+                    AND A.APPR_STAT NOT IN ('AS00')
+                </isEqual>
+                <!-- 문광연일 때 : 승인완료된 모든 것 -->
+                <isEqual property="gsRoleId" compareValue="ROLE_AUTH_E2">
+                    AND A.APPR_STAT = 'AS90'
+                    AND A.OPEN_YN = 'Y'
+                </isEqual>
+                <!-- 일반사용자일 때 : 승인완료된 모든 것 -->
+                <isEqual property="gsRoleId" compareValue="ROLE_USER">
+                    AND A.APPR_STAT = 'AS90'
+                    AND A.OPEN_YN = 'Y'
+                </isEqual>
+                <!-- 민간투자자일 때 : 승인완료된 모든 것 -->
+                <isEqual property="gsRoleId" compareValue="ROLE_COMP">
+                    AND A.APPR_STAT = 'AS90'
+                    AND A.OPEN_YN = 'Y'
+                </isEqual>
+                <!-- 그 외 (관리자)는 전체  -->
+            </isNotEmpty>
+            <!-- 로그인되지 않은 사용자 : 승인완료된 모든 것 -->
+            <isEmpty property="gsRoleId">
+                AND A.APPR_STAT = 'AS90'
+                AND A.OPEN_YN = 'Y'
+            </isEmpty>
+            
+        </isNotEqual>
+        
+    </sql>
+    
+    <!-- 기획평가사업 -->
+    <sql id="PlanEvaluMgmt-condition">
+    	<!-- 지역 -->
+        <isNotEmpty property="srchBusiAddr1">
+	        AND A.BUSI_ADDR1     = (SELECT CITYAUTH_NM
+	                                FROM   TREDSUSER.TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr1#)
+        </isNotEmpty>
+        <isNotEmpty property="srchBusiAddr2">
+        	<isEqual property="srchBusiAddr2" compareValue="MAIN">
+        		AND A.BUSI_ADDR2 is null
+        	</isEqual>
+        	<isNotEqual property="srchBusiAddr2" compareValue="MAIN">
+		        AND A.BUSI_ADDR2     = (SELECT CITYAUTH_NM
+	                                FROM   TREDSUSER.TB_CITYAUTH
+	                                WHERE  CITYAUTH_CD = #srchBusiAddr2#)
+        	</isNotEqual>
+     	</isNotEmpty>
+     	<!-- 사업명 -->
+        <isNotEmpty property="srchTodeBusiNm">
+            <!-- AND ( A.TODE_BUSI_NM LIKE '%'||#srchTodeBusiNm#||'%' OR  REPLACE(A.TODE_BUSI_NM,' ','') LIKE '%'||#srchTodeBusiNm#||'%' ) -->
+            AND ( A.PLANEVAL_BUSI_NAME LIKE '%'||#srchTodeBusiNm#||'%' OR  REPLACE(A.PLANEVAL_BUSI_NAME,' ','') LIKE '%'||#srchTodeBusiNm#||'%'
+			OR  A.PLANEVAL_BUSI_NAME LIKE '%'||REPLACE(#srchTodeBusiNm#,' ','')||'%' 
+			OR  REPLACE(A.PLANEVAL_BUSI_NAME,' ','') LIKE '%'||REPLACE(#srchTodeBusiNm#,' ','')||'%' )
+        </isNotEmpty>
+        
+        <!-- 시작연도 -->
+        <isNotEmpty property="srchBusiSttDate">
+            AND #srchBusiSttDate# &lt;= SUBSTR(A.BUSI_STT_DATE, 0, 4)
+        </isNotEmpty>
+		<!-- 종료연도 -->
+		<isNotEmpty property="srchBusiEndDate">
+			AND #srchBusiEndDate# &gt;= SUBSTR(A.BUSI_END_DATE, 0, 4)  
+		</isNotEmpty>
+		<!-- 사업구분 -->
+        <isNotEmpty property="srchBusiType">
+            AND A.BUSI_TYPE = #srchBusiType#
+        </isNotEmpty>
+        <!-- 사업유형 -->
+        <isNotEmpty property="srchBusiCate">
+            AND A.BUSI_CATE = #srchBusiCate#
+        </isNotEmpty>
+        <!-- 사업코드 -->
+		<isNotEmpty property="srchBusiCode">
+			AND A.PLANEVAL_BUSI_NO LIKE '%'||#srchBusiCode#||'%'
+		</isNotEmpty>
+    </sql>
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++
+          TB_Evalu_BUSI     (관광사업정보) 작업
+         +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<select id="listEvaluBusiMgmt" parameterClass="map"  resultClass="hashmap">
+        SELECT
+				<include refid="PlanEvaluMgmt-columns"/>
+				 ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)||'~'||FN_CONV_VDATEYM(A.BUSI_END_DATE)
+                                                                 as "convBusiPeriod"
+        FROM TREDSUSER.TB_PLANEVAL_BUSI A
+        WHERE (0=0)
+        	<include refid="PlanEvaluMgmt-condition"/>
+        <!-- ORDER BY A.TODE_BUSI_NM -->
+    </select>
+    
+    <select id="listEvaluBusiMgmtCount" parameterClass="map"  resultClass="int">
+    	SELECT count(*)
+    	FROM TREDSUSER.TB_PLANEVAL_BUSI A
+    	WHERE (0=0)
+        	<include refid="PlanEvaluMgmt-condition"/>
+    </select>
+    
+    
+    <!-- 평가사업 상세 정보 -->
+    <!-- <select id="viewEvaluBusiInfo" parameterClass="map"  resultClass="hashmap">
+    	SELECT
+    			<include refid="TodeMgmt-columns"/>
+    	FROM TREDSUSER.TB_TODE_BUSI A
+    	WHERE A.TODE_BUSI_NO = #evaluBusiNo#
+    </select> -->
+    
+    <!-- <select id="viewEvaluBusiInfo" parameterClass="map"  resultClass="hashmap">
+    	WITH TODE as (
+		    SELECT 	<include refid="TodeMgmt-columns"/>
+		    		,A.TODE_BUSI_NO
+		    FROM 	TREDSUSER.TB_TODE_BUSI A
+		    WHERE 	A.TODE_BUSI_NO = #evaluBusiNo#
+		), EV as (
+		    SELECT 	ROWNUM as RNUM, EVALU_BUSI_NO, EVALU_GUBUN, EVALU_STAGE, REGI_DATE, EVALU_STAGE_NM
+		    FROM 	(
+		    			SELECT 	a.EVALU_BUSI_NO,
+		    					a.EVALU_STAGE,
+		    					a.EVALU_GUBUN,
+		    					a.REGI_DATE,
+		    					(select EVALU_INDICAT_NM from TB_EVALU_INDICAT where EVALU_INDICAT_CD = a.EVALU_STAGE) as EVALU_STAGE_NM
+		    			FROM 	TB_EVALU_DESTI_BUSI_STAGE a 
+		    			WHERE 	a.EVALU_FINAL_YN = 'N' ORDER BY a.REGI_DATE desc
+		    		)
+		    WHERE 	EVALU_BUSI_NO = #evaluBusiNo#
+		    AND 	ROWNUM = 1
+		)
+		SELECT 	TODE.*, EV.EVALU_GUBUN, EV.EVALU_STAGE, EV.REGI_DATE, EV.EVALU_STAGE_NM
+		FROM 	TODE LEFT OUTER JOIN EV ON TODE.TODE_BUSI_NO = EV.EVALU_BUSI_NO
+    </select> -->
+    
+    <select id="viewEvaluBusiInfo" parameterClass="map"  resultClass="hashmap">
+    	WITH TODE as (
+		    SELECT 	<include refid="PlanEvaluMgmt-columns"/>
+		    		,A.PLANEVAL_BUSI_NO
+		    FROM 	TREDSUSER.TB_PLANEVAL_BUSI A
+		    WHERE 	A.PLANEVAL_BUSI_NO = #evaluBusiNo#
+		), EV as (
+		    SELECT 	ROWNUM as RNUM, EVALU_BUSI_NO, EVALU_GUBUN, EVALU_STAGE, REGI_DATE, EVALU_STAGE_NM
+		    FROM 	(
+		    			SELECT 	a.EVALU_BUSI_NO,
+		    					a.EVALU_STAGE,
+		    					a.EVALU_GUBUN,
+		    					a.REGI_DATE,
+		    					(select EVALU_INDICAT_NM from TB_EVALU_INDICAT where EVALU_INDICAT_CD = a.EVALU_STAGE) as EVALU_STAGE_NM
+		    			FROM 	TB_EVALU_DESTI_BUSI_STAGE a 
+		    			WHERE 	a.EVALU_FINAL_YN = 'N' ORDER BY a.REGI_DATE desc
+		    		)
+		    WHERE 	EVALU_BUSI_NO = #evaluBusiNo#
+		    AND 	ROWNUM = 1
+		)
+		SELECT 	TODE.*, EV.EVALU_GUBUN, EV.EVALU_STAGE, EV.REGI_DATE, EV.EVALU_STAGE_NM
+		FROM 	TODE LEFT OUTER JOIN EV ON TODE.PLANEVAL_BUSI_NO = EV.EVALU_BUSI_NO
+    </select>
+    
+    <!-- 평가이력 조회 -->
+    <select id="listEvaluBusiHist" parameterClass="map"  resultClass="hashmap">
+        SELECT 
+        		EVALU_BUSI_NO,
+		        EVALU_STAGE,
+		        (select EVALU_INDICAT_NM from TB_EVALU_INDICAT where EVALU_INDICAT_CD = A.EVALU_STAGE) as EVALU_STAGE_NM,
+		        EVALU_GUBUN,
+		        EVALU_PLAN_YN,
+		        EVALU_GUIDE_YN,
+		        EVALU_FINAL_YN,
+		        REGI_DATE,
+		        (select count(*) 
+		        from TB_EVALU_DESTI_BUSI_COMMIT 
+		        where EVALU_BUSI_NO = A.EVALU_BUSI_NO
+		        and EVALU_STAGE = A.EVALU_STAGE
+		        and EVALU_GUBUN = A.EVALU_GUBUN
+		        and AGREE_YN = 'Y') as AGREE_COUNT
+        FROM TB_EVALU_DESTI_BUSI_STAGE A
+        WHERE (0=0)
+        AND	EVALU_BUSI_NO = #evaluBusiNo#
+        ORDER BY REGI_DATE desc
+    </select>
+    
+    <!-- 평가사업 등록 -->
+    <insert id="regiEvaluBusiStage" parameterClass="map">
+    	INSERT INTO TB_EVALU_DESTI_BUSI_STAGE
+    	(
+    		EVALU_BUSI_NO,
+	        EVALU_STAGE,
+	        EVALU_GUBUN,
+	        EVALU_PLAN_YN,
+	        EVALU_GUIDE_YN,
+	        EVALU_FINAL_YN,
+	        REGI_ID,
+	        REGI_DATE
+    	) VALUES (
+    		#evaluBusiNo#,
+    		#evaluStage#,
+    		#evaluGubun#,
+    		'N',
+    		'N',
+    		'N',
+    		'admin',
+    		sysdate
+    	)
+    </insert>
+    
+    <!-- 평가단계 중복 체크 -->
+    <select id="checkEvaluStage" parameterClass="map"  resultClass="int">
+    	SELECT	count(*) 
+	    FROM	TB_EVALU_DESTI_BUSI_STAGE 
+	    WHERE 	EVALU_BUSI_NO = #evaluBusiNo# 
+	    AND 	EVALU_STAGE = #evaluStage#
+	    AND  	EVALU_GUBUN = #evaluGubun#
+    </select>
+    
+    <!-- 평가단계 삭제 -->
+    <delete id="deltEvaluStage" parameterClass="java.util.Map">
+		DELETE FROM TB_EVALU_DESTI_BUSI_STAGE
+		WHERE	EVALU_BUSI_NO = #evaluBusiNo#
+		AND 	EVALU_STAGE = #evaluStage#
+		AND 	EVALU_GUBUN = #evaluGubun#
+	</delete>
+    
+    <!-- 평가 정보 조회 -->
+    <!-- <select id="viewEvaluStageInfo" parameterClass="map"  resultClass="hashmap">
+    	SELECT
+    			B.TODE_BUSI_NM,
+		        A.EVALU_BUSI_NO,
+		        A.EVALU_STAGE,
+		        (select EVALU_INDICAT_NM from TB_EVALU_INDICAT where EVALU_INDICAT_CD = A.EVALU_STAGE) as EVALU_STAGE_NM,
+		        A.EVALU_GUBUN,
+		        A.EVALU_GUIDE_YN,
+		        A.EVALU_PLAN_YN,
+		        A.FINAL_EVALU_IPM_NOTE,
+		        A.FINAL_EVALU_FND,
+		        A.FINAL_EVALU_FND_NOTE,
+				B.BUSI_ADDR1 ||' '|| B.BUSI_ADDR2 ||' '|| B.BUSI_ADDR3 ||' '|| B.BUSI_ADDR4 as "busiAddress1"
+		FROM 	TB_EVALU_DESTI_BUSI_STAGE A, TREDSUSER.TB_TODE_BUSI B
+		WHERE	A.EVALU_BUSI_NO = B.TODE_BUSI_NO
+		AND	 	A.EVALU_BUSI_NO = #evaluBusiNo# 
+		AND 	A.EVALU_STAGE = #evaluStage#
+		AND		A.EVALU_GUBUN = #evaluGubun#
+    </select> -->
+    
+    <select id="viewEvaluStageInfo" parameterClass="map"  resultClass="hashmap">
+    	SELECT
+    			B.PLANEVAL_BUSI_NAME,
+		        A.EVALU_BUSI_NO,
+		        A.EVALU_STAGE,
+		        (select EVALU_INDICAT_NM from TB_EVALU_INDICAT where EVALU_INDICAT_CD = A.EVALU_STAGE) as EVALU_STAGE_NM,
+		        A.EVALU_GUBUN,
+		        A.EVALU_GUIDE_YN,
+		        A.EVALU_PLAN_YN,
+		        A.FINAL_EVALU_IPM_NOTE,
+		        A.FINAL_EVALU_FND,
+		        A.FINAL_EVALU_FND_NOTE,
+				B.BUSI_ADDR1 ||' '|| B.BUSI_ADDR2 ||' '|| B.BUSI_ADDR5 as "busiAddress1"
+		FROM 	TB_EVALU_DESTI_BUSI_STAGE A, TREDSUSER.TB_PLANEVAL_BUSI B
+		WHERE	A.EVALU_BUSI_NO = B.PLANEVAL_BUSI_NO
+		AND	 	A.EVALU_BUSI_NO = #evaluBusiNo# 
+		AND 	A.EVALU_STAGE = #evaluStage#
+		AND		A.EVALU_GUBUN = #evaluGubun#
+    </select>
+    
+    <!-- 평가완료 정보 조회 -->
+    <!-- <select id="viewEvaluEndStageInfo" parameterClass="map"  resultClass="hashmap">
+    	SELECT
+    			B.EVALU_BUSI_NM,
+		        A.EVALU_BUSI_NO,
+		        A.EVALU_STAGE,
+		        (select EVALU_INDICAT_NM from TB_EVALU_INDICAT where EVALU_INDICAT_CD = A.EVALU_STAGE) as EVALU_STAGE_NM,
+		        A.EVALU_GUBUN,
+		        A.EVALU_GUIDE_YN,
+		        A.EVALU_PLAN_YN,
+		        A.FINAL_EVALU_IPM_NOTE,
+		        A.FINAL_EVALU_FND,
+		        A.FINAL_EVALU_FND_NOTE,
+				B.BUSI_ADDR1 ||' '|| B.BUSI_ADDR2 ||' '|| B.BUSI_ADDR3 ||' '|| B.BUSI_ADDR4 as "busiAddress1"
+		FROM 	TB_EVALU_DESTI_BUSI_STAGE A, TB_EVALU_DESTI_BUSI_INFO B
+		WHERE	A.EVALU_BUSI_NO = B.EVALU_BUSI_NO
+		AND	 	A.EVALU_BUSI_NO = #evaluBusiNo# 
+		AND 	A.EVALU_STAGE = #evaluStage#
+		AND		A.EVALU_GUBUN = #evaluGubun#
+    </select> -->
+    
+    <select id="viewEvaluEndStageInfo" parameterClass="map"  resultClass="hashmap">
+    	SELECT
+    			B.PLANEVAL_BUSI_NAME,
+		        A.EVALU_BUSI_NO,
+		        A.EVALU_STAGE,
+		        (select EVALU_INDICAT_NM from TB_EVALU_INDICAT where EVALU_INDICAT_CD = A.EVALU_STAGE) as EVALU_STAGE_NM,
+		        A.EVALU_GUBUN,
+		        A.EVALU_GUIDE_YN,
+		        A.EVALU_PLAN_YN,
+		        A.FINAL_EVALU_IPM_NOTE,
+		        A.FINAL_EVALU_FND,
+		        A.FINAL_EVALU_FND_NOTE,
+				B.BUSI_ADDR1 ||' '|| B.BUSI_ADDR2 ||' '|| B.BUSI_ADDR5 as "busiAddress1"
+		FROM 	TB_EVALU_DESTI_BUSI_STAGE A, TREDSUSER.TB_PLANEVAL_BUSI B
+		WHERE	A.EVALU_BUSI_NO = B.PLANEVAL_BUSI_NO
+		AND	 	A.EVALU_BUSI_NO = #evaluBusiNo# 
+		AND 	A.EVALU_STAGE = #evaluStage#
+		AND		A.EVALU_GUBUN = #evaluGubun#
+    </select>
+    
+    
+    <!-- 평가 파일 등록 -->
+    <insert id="regiEvaluFile" parameterClass="map" >
+        INSERT INTO TB_EVALU_DESTI_FILE (
+             EVALU_FILE_NO
+            ,ROOT_NO
+            ,ROOT_SEQ
+            ,DOCU_TYPE
+            ,ATTH_TYPE
+            ,FILE_ORG_NM
+            ,FILE_SVR_NM
+            ,FILE_PATH
+            ,FILE_SIZE
+            ,ATTH_RMK
+            ,REGI_ID
+            ,REGI_DATE
+            ,EVALU_STAGE
+            ,EVALU_STAGE_YEAR
+        ) VALUES (
+             (
+               SELECT NVL(MAX(EVALU_FILE_NO), 0) + 1
+               FROM   TB_EVALU_DESTI_FILE
+             )
+            ,#evaluBusiNo#
+            ,null
+            ,#docuType#
+            ,#atthType#
+            ,#fileOrgNm#
+            ,#fileSvrNm#
+            ,#tempDir#
+            ,#fileSize#
+            ,null
+            ,#gsUserId#
+            ,SYSDATE
+            ,#evaluStage#
+            ,#evaluGubun#
+        )
+    </insert>    
+    
+    <!-- 평가 파일 삭제 -->
+    <delete id="deltEvaluFile" parameterClass="map" >
+        DELETE FROM TB_EVALU_DESTI_FILE
+         WHERE (0=0)
+           AND Evalu_FILE_NO = #evaluFileNo#
+    </delete>
+    
+    <!-- 평가 파일 > 평가지침서 조회 -->
+    <select id="viewEvaluAFile" parameterClass="map"  resultClass="hashmap">
+        SELECT
+             A.EVALU_FILE_NO
+            ,A.ROOT_NO
+            ,A.ATTH_TYPE
+            ,A.FILE_ORG_NM
+            ,A.FILE_SIZE
+            ,A.EVALU_STAGE
+            ,A.EVALU_STAGE_YEAR
+            ,A.REGI_DATE
+          FROM TB_EVALU_DESTI_FILE A
+         WHERE (0=0)
+           AND ROOT_NO = #evaluBusiNo#
+           AND EVALU_STAGE = #evaluStage#
+           AND EVALU_STAGE_YEAR = #evaluGubun#
+           AND ATTH_TYPE = 'AT06'
+    </select>
+    
+    <!-- 평가 파일 > 서면검토서 조회 -->
+    <select id="viewEvaluBFile" parameterClass="map"  resultClass="hashmap">
+        SELECT
+             A.EVALU_FILE_NO
+            ,A.ROOT_NO
+            ,A.ATTH_TYPE
+            ,A.FILE_ORG_NM
+            ,A.FILE_SIZE
+            ,A.EVALU_STAGE
+            ,A.EVALU_STAGE_YEAR
+            ,A.REGI_DATE
+          FROM TB_EVALU_DESTI_FILE A
+         WHERE (0=0)
+           AND ROOT_NO = #evaluBusiNo#
+           AND EVALU_STAGE = #evaluStage#
+           AND EVALU_STAGE_YEAR = #evaluGubun#
+           AND ATTH_TYPE = 'AT07'
+    </select>
+    
+    <!-- 평가 파일 > 평가의견서 조회 -->
+    <select id="viewEvaluCFile" parameterClass="map"  resultClass="hashmap">
+        SELECT
+             A.EVALU_FILE_NO
+            ,A.ROOT_NO
+            ,A.ATTH_TYPE
+            ,A.FILE_ORG_NM
+            ,A.FILE_SIZE
+            ,A.EVALU_STAGE
+            ,A.EVALU_STAGE_YEAR
+            ,A.REGI_DATE
+          FROM TB_EVALU_DESTI_FILE A
+         WHERE (0=0)
+           AND ROOT_NO = #evaluBusiNo#
+           AND EVALU_STAGE = #evaluStage#
+           AND EVALU_STAGE_YEAR = #evaluGubun#
+           AND ATTH_TYPE = 'AT08'
+    </select>
+    
+    <!-- 평가지침 상태 변경 -->
+    <update id="updtEvaluGuideState" parameterClass="java.util.Map">
+    	UPDATE TB_EVALU_DESTI_BUSI_STAGE
+		SET    EVALU_GUIDE_YN       = #useYN#,
+			   UPDT_ID       		= #gsUserId#,
+			   UPDT_DATE     		= SYSDATE
+		WHERE 	EVALU_BUSI_NO 		= #evaluBusiNo# 
+	    AND 	EVALU_STAGE 		= #evaluStage#
+	    AND  	EVALU_GUBUN 		= #evaluGubun#
+    </update>
+    
+    <!-- 평가지침 평가진행이력 체크 -->
+    <select id="checkEvaluStageHist" parameterClass="map"  resultClass="hashMap">
+    	WITH AG AS (
+		        SELECT  count(*) as AGREE_CHECK
+		        FROM    TB_EVALU_DESTI_BUSI_COMMIT
+		        WHERE   EVALU_BUSI_NO = #evaluBusiNo#
+		        AND     EVALU_STAGE = #evaluStage#
+		        AND     EVALU_GUBUN = #evaluGubun#
+		        AND     AGREE_YN = 'Y'
+		), FI AS (
+		        SELECT  count(*) as FILE_CHECK
+		        FROM    TB_EVALU_DESTI_FILE
+		        WHERE   ROOT_NO = #evaluBusiNo#
+			    AND 	EVALU_STAGE = #evaluStage#
+			    AND  	EVALU_STAGE_YEAR = #evaluGubun#
+			    AND     ATTH_TYPE in ('AT11', 'AT12')
+		)
+		SELECT  ag.AGREE_CHECK, fi.FILE_CHECK
+		FROM    AG ag, FI fi
+    </select>
+    
+    
+    <!-- 평가위원 조회 -->
+    <select id="listEvaluCommit" parameterClass="map"  resultClass="hashmap">
+        SELECT 	A.EVALU_BUSI_NO,
+        		A.EVALU_STAGE,
+        		A.USER_ID,
+        		(select USER_NM from TB_EVALU_COMMIT_INFO where USER_ID = A.USER_ID) as USER_NM,
+        		A.EVALU_PROC_STEP,
+        		A.EVALU_GUBUN,
+        		A.REGI_DATE
+		FROM	TB_EVALU_DESTI_BUSI_COMMIT A
+		WHERE	A.EVALU_BUSI_NO = #evaluBusiNo#
+		AND 	A.EVALU_STAGE = #evaluStage#
+		AND 	A.EVALU_GUBUN = #evaluGubun#
+    </select>
+    
+    <!-- 평가위원 등록 -->
+    <insert id="regiEvaluCommit" parameterClass="map" >
+        INSERT INTO TB_EVALU_DESTI_BUSI_COMMIT (
+             EVALU_BUSI_NO
+            ,EVALU_STAGE
+            ,USER_ID
+            ,USE_YN
+            ,REGI_ID
+            ,REGI_DATE
+            ,EVALU_PROC_STEP
+            ,EVALU_GUBUN
+        ) VALUES (
+            #evaluBusiNo#
+            ,#evaluStage#
+            ,#userId#
+            ,'Y'
+            ,'admin'
+            ,SYSDATE
+            ,'AS10'
+            ,#evaluGubun#
+        )
+    </insert>
+    
+    <!-- 평가위원 삭제 -->
+    <delete id="deltEvaluCommit" parameterClass="java.util.Map">
+		DELETE FROM TB_EVALU_DESTI_BUSI_COMMIT
+		WHERE	EVALU_BUSI_NO = #evaluBusiNo#
+		AND 	EVALU_STAGE = #evaluStage#
+		AND 	EVALU_GUBUN = #evaluGubun#
+		AND		USER_ID = #userId#
+	</delete>
+	
+	<!-- 실행계획 상태 변경 -->
+    <update id="updtEvaluPlanState" parameterClass="java.util.Map">
+    	UPDATE TB_EVALU_DESTI_BUSI_STAGE
+		SET    EVALU_PLAN_YN       	= #useYN#,
+			   UPDT_ID       		= #gsUserId#,
+			   UPDT_DATE     		= SYSDATE
+		WHERE 	EVALU_BUSI_NO 		= #evaluBusiNo# 
+	    AND 	EVALU_STAGE 		= #evaluStage#
+	    AND  	EVALU_GUBUN 		= #evaluGubun#
+    </update>
+    
+    <!-- 평가일정 조회 -->
+	<select id="listEvaluDetailPlan" parameterClass="map"  resultClass="hashmap">
+		SELECT	EVALU_BUSI_NO,
+				EVALU_DETAIL_STAGE,
+				EVALU_STAGE, 
+	    		EVALU_STAGE_YEAR, 
+	    		DETAIL_STAGE_STT_DATE, 
+	    		DETAIL_STAGE_END_DATE 
+		FROM	TB_EVALU_DESTI_BUSI_DETA_STAGE
+		WHERE 	EVALU_BUSI_NO 		= #evaluBusiNo#
+		AND 	EVALU_STAGE 		= #evaluStage#
+		AND 	EVALU_STAGE_YEAR 	= #evaluGubun#
+		ORDER BY EVALU_DETAIL_STAGE asc
+	</select>    
+    
+    <!-- 평가일정 등록 -->
+    <insert id="regiEvaluDetailPlan" parameterClass="map">
+    	INSERT INTO TB_EVALU_DESTI_BUSI_DETA_STAGE
+    	(
+    		EVALU_BUSI_NO, 
+    		EVALU_DETAIL_STAGE, 
+    		EVALU_STAGE, 
+    		EVALU_STAGE_YEAR, 
+    		DETAIL_STAGE_STT_DATE, 
+    		DETAIL_STAGE_END_DATE, 
+    		REGI_ID, 
+    		REGI_DATE
+    	) VALUES (
+    		#evaluBusiNo#,
+    		#evaluDetailStage#,
+    		#evaluStage#,
+    		#evaluGubun#,
+    		#evaluDetailSttDate#,
+    		#evaluDetailEndDate#,
+    		#userId#,
+    		sysdate
+    	)
+    	
+    </insert>
+    
+    <!-- 평가일정 삭제 -->
+    <delete id="deltEvaluDetailPlan" parameterClass="java.util.Map">
+    	DELETE FROM TB_EVALU_DESTI_BUSI_DETA_STAGE
+		WHERE	EVALU_BUSI_NO = #evaluBusiNo#
+		AND 	EVALU_STAGE = #evaluStage#
+		AND 	EVALU_STAGE_YEAR = #evaluGubun#
+    </delete>
+    
+
+</sqlMap>

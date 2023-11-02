@@ -1,0 +1,94 @@
+﻿@charset "utf-8";
+
+
+/*Intro Player
+2013-05-29 ver.1
+2013-06-05 ver.2
+2013-06-18 ver.3
+jian*/
+
+#intro_box{width:324px;height:302px;padding:6px 7px;;background:url(../images/bg_intro.gif) no-repeat left top;}
+		.movie{width:317px;height:236px;/*border:1px solid pink*/padding:1px 0 0 2px}
+		.player{width:320px;padding:0 0 9px 0;height:30px;position:relative}/*27px 10px 9px 4px;*/
+
+
+			.bar_blue{float:left;padding:12px 0 0 2px;border:1px solid red} /*{position:absolute;top:12px;left:35px}*/
+			.volume{float:left;padding-top:12px;width:35px}
+			.sync{float:left;font:10px/1 "돋움",dotum;padding-top:10px;width:78px;padding-left:10px}
+			.view_max{float:right;width:25px;height:19px;margin-top:4px;cursor:pointer;background:url(../images/bu6.gif) no-repeat left top;font-size:0;text-indent:-999px;overflow:hidden}
+			.view_max.select{background-position:left -19px}
+			/*버튼*/
+		.play{clear:both;float:left}
+				.btn_play{cursor:pointer;width:31px;height:29px;float:left;background:url(../images/bu1_1.gif) no-repeat left -29px;font-size:0;text-indent:-999px;overflow:hidden}
+				.btn_play.select{background-position:left top}
+				.btn_play.pause{cursor:pointer;background-position:left -58px}
+				.btn_play.pause.select{background-position:left -87px}
+				.btn_stop{cursor:pointer;width:31px;height:29px;float:left;background:url(../images/bu2_1.gif) no-repeat left top;font-size:0;text-indent:-999px;overflow:hidden}
+				.btn_stop.select{background-position:left -29px}
+		.rewind{margin-left:50px;float:left;padding-top:2px}
+			.btn_sp10{cursor:pointer;width:25px;height:26px;background:url(../images/bu3.gif) no-repeat left top;float:left}
+			.btn_sp10.select,
+			.btn_sp30.select,
+			.btn_sp60.select{background-position:left -26px}
+			.btn_sp30{cursor:pointer;margin-left:3px;width:25px;height:25px;background:url(../images/bu4.gif) no-repeat left top;float:left}
+			.btn_sp60{cursor:pointer;margin-left:3px;width:25px;height:25px;background:url(../images/bu5.gif) no-repeat left top;float:left}			
+
+		.speed{float:left;padding-top:2px;padding-left:53px;}
+			.current_sp{font:11px/1 gulim,"굴림",arial;float:left;padding-top:10px;}
+			.btn_sp1,.btn_sp2,.btn_sp3{cursor:pointer;width:25px;height:26px;float:left;margin-left:2px}
+			.btn_sp1{background:url(../images/bu7.gif) no-repeat left top;}
+			.btn_sp2{background:url(../images/bu8.gif) no-repeat left top;}
+			.btn_sp3{background:url(../images/bu9.gif) no-repeat left top;}
+			
+			.btn_sp1{margin-left:8px}
+			.btn_sp1.select,
+			.btn_sp2.select,
+			.btn_sp3.select
+			{background-position:left -26px}
+
+	
+
+/*------------- Player ------------- */
+#playBar { 
+    clear: left;
+    width: 155px;
+    height: 4px;
+    background: none;
+    border: none;
+  margin : 12px  0 0 0 /* ;*/
+}
+#volumeSlide {
+    float: left;
+    clear: left;
+   /**/ width:35px;
+    height: 3px;
+    background: none;
+    border: none;
+	margin-left:6px
+
+}
+#playBar .ui-slider-range {
+    background: url(../images/bar1.gif);
+    height: 4px;
+}
+#playBar .ui-slider-handle {
+    width: 10px;
+    height: 10px;
+    background: url(../images/ctbu1.gif) no-repeat left top;
+    border: none;
+    margin: 2px 0 0 -1px;
+	cursor:pointer
+}
+#volumeSlide .ui-slider-range {
+    background: url(../images/bar2.gif);
+	margin-left:5px
+}
+#volumeSlide .ui-slider-handle {
+    width: 10px;
+    height: 10px;
+    background: url(../images/ctbu2.gif) no-repeat left top;
+    border: none;
+    margin: 2px 0 0 0;
+cursor:pointer
+}
+/*---------------------------------- */

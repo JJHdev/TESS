@@ -1,0 +1,120 @@
+﻿@font-face {font-family:nanum; src:url(../images/NanumGothic.eot)}
+#hd {font-family:nanum; font-size:12px}
+@charset "utf-8";
+
+
+/*HD Player
+2013-05-29 ver.1
+2013-06-05 ver.2
+2013-06-18 ver.3
+2013-07-11 ver.4  768*432 사이즈, 일부 기능 변경
+jian*/
+
+#hd{width:972px;height:510px;padding:4px 4px;font-size:12px}/*980*518*/
+	.l_side{width:770px;height:495px;float:left;font-size:12px}
+		.movie{width:768px;height:432px;border:1px solid #c5c5c5}
+		
+		.player{width:760px;padding:5px 10px 9px 0px;height:47px;background:url(../images/bg_payerHD.gif) no-repeat left top;position:relative}
+	 	.bar_blue{padding-bottom:5px}
+			/*버튼*/
+		.ctrl{padding:9px 0 0 13px;overflow:hidden}
+		.play{float:left;}
+				.btn_play{cursor:pointer;width:31px;height:29px;float:left;background:url(../images/bu1.gif) no-repeat left -29px;font-size:0;text-indent:-999px;overflow:hidden}
+				.btn_play.select{background-position:left top}
+				.btn_play.pause{cursor:pointer;background-position:left -58px}
+				.btn_play.pause.select{background-position:left -87px}
+				.btn_stop{cursor:pointer;width:31px;height:29px;float:left;background:url(../images/bu2.gif) no-repeat left top;font-size:0;text-indent:-999px;overflow:hidden}
+				.btn_stop.select{background-position:left -29px}
+
+		.rewind{margin-left:63px;float:left;padding-top:2px}
+			.btn_sp10{cursor:pointer;width:25px;height:26px;background:url(../images/bu3.gif) no-repeat left top;float:left}
+			.btn_sp10.select,
+			.btn_sp30.select,
+			.btn_sp60.select{background-position:left -26px}
+			.btn_sp30{cursor:pointer;margin-left:3px;width:25px;height:26px;background:url(../images/bu4.gif) no-repeat left top;float:left}
+			.btn_sp60{cursor:pointer;margin-left:3px;width:25px;height:26px;background:url(../images/bu5.gif) no-repeat left top;float:left}			
+
+			.speed{float:left;padding-top:2px;margin-left:58px}
+			.current_sp{font:11px/1 gulim,"굴림",arial;float:left;padding-top:9px}
+			.btn_sp1,.btn_sp2,.btn_sp3{cursor:pointer;width:25px;height:26px;float:left;margin-left:2px}
+			.btn_sp1{background:url(../images/bu7.gif) no-repeat left top;}
+			.btn_sp2{background:url(../images/bu8.gif) no-repeat left top;}
+			.btn_sp3{background:url(../images/bu9.gif) no-repeat left top;}
+			
+			.btn_sp1{margin-left:11px;}
+			.btn_sp1.select,
+			.btn_sp2.select,
+			.btn_sp3.select
+			{background-position:left -26px}
+			.btn_sp1.off,
+			.btn_sp2.off,
+			.btn_sp3.off
+			{background-position:left -52px; cursor:default}
+
+		p.volume{width:75px;float:left;margin-left:32px;padding-top:10px}
+		p.view_max{cursor:pointer;width:25px;height:26px;float:left;margin-top:2px;background:url(../images/bu6_bold.gif) no-repeat left top}
+		p.view_max.select{background-position:left -26px}
+		p.sync{float:right;width:106px;height:16px;padding:10px 9px 0 0;font:12px/1 dotum,"돋움";}
+		p.sync label{padding:0 2px}   
+
+
+	.r_side{width:198px;height:494px;background:;margin-left:3px;float:left;border-bottom:1px solid #ccc;FILTER: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr='#B0FFFFFF', EndColorStr='#B0FFFFFF')}/*width:181px;height:498;*/
+	.r_side p{padding:0 1px}
+	#hd h5{color:#b24c08;font:12px/1 nanum,dotum,"돋움";text-align:left;border:1px dotted #787878;border-left:none;border-right:none}
+	#hd h5 span{display:block;padding:7px 0 10px 5px; }
+	.study_list{font:12px/1 nanum, dotum,"돋움"}
+	.study_list>li {border-bottom:1px dotted #787878}
+	.study_list>li span{display:block;padding:7px 0 7px 13px;vertical-align:middle;color:#5a5a5a;}
+		#hd h5 span.select, #hd h5 span.select span, .study_list li span.select, .study_list li span.select span{background:#e2f6f5;color:#006380}
+	.study_list_sub{width:198px;padding:0 0 0 0;border-top:1px dotted #787878}
+	.study_list_sub li {border-bottom:1px dotted #787878}
+	.study_list_sub li span{padding:6px 0 2px 25px}
+	.study_list_sub li.last{border:none;padding-bottom:0}
+	.study_list_sub li.last span{display:block;padding:7px 0  7px 25px}
+
+[data-time] {
+    cursor:pointer;
+}
+
+/*------------- Player ------------- */
+.playBar {
+    float: left;
+    clear: left;
+    width: 764px;
+    height: 4px;
+    background: none;
+    border: none;
+}
+.volumeSlide {
+    float: left;
+    clear: left;
+    width: 52px;
+    height: 3px;
+    background: none;
+    border: none;
+}
+.playBar .ui-slider-range {
+    background: url(../images/bar1_HD.gif);
+    height: 4px;
+}
+.playBar .ui-slider-handle {
+    width: 8px;
+    height: 10px;
+    background: url(../images/ctbu1_hd.gif) no-repeat left top;
+    border: none;
+    margin: 2px 0 0 -1px;
+    cursor:pointer
+}
+.volumeSlide .ui-slider-range {
+    background: url(../images/bar2.gif);
+	margin-top:2px
+}
+.volumeSlide .ui-slider-handle {
+    width: 10px;
+    height: 10px;
+    background: url(../images/ctbu2.gif) no-repeat left top;
+    border: none;
+    margin: 5px 0 0 -1px;
+	cursor:pointer
+}
+/*---------------------------------- */

@@ -1,0 +1,61 @@
+#popup_container {
+	font-family: Verdana, Aerial;
+	font-size: 12px;
+	min-width: 250px; /* Dialog will be no smaller than this */
+	max-width: 580px; /* Dialog will wrap after this width */
+	background: #FFF;
+	/*border: solid 5px #808040;*/
+	border: solid 1px #9A8A66;			/* [20141117 LCS 수정] 디자인 변경 */
+	color: #000;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	top: 456.5px !important;
+}
+
+#popup_title {
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+	line-height: 1.75em;
+	/*color: #666;*/
+	color: #6B5A48;                                                        /* [20141120 LCS 수정] 디자인 변경 */
+	/*background: #e0e0c0 url(/images/alert/title.gif) top repeat-x;*/
+	background: #EFEBE2 url(/images/alert/title.gif) top repeat-x;         /* [20141120 LCS 수정] 디자인 변경 */            
+	/*border: solid 1px #FFF;*/                                            /* [20141117 LCS 수정] 디자인 변경 */
+	border-bottom: solid 1px #9A8A66;	                                   /* [20141120 LCS 수정] 디자인 변경 */
+	cursor: default;
+	padding: 0em;
+	margin: 0em;
+}
+
+#popup_content {
+	background: 16px 16px no-repeat url(/images/alert/info.gif);
+	padding: 1em 1.75em;
+	margin: 0em;
+}
+
+#popup_content.alert {
+	background-image: url(/images/alert/info.gif);
+}
+
+#popup_content.confirm {
+	background-image: url(/images/alert/important.gif);
+}
+
+#popup_content.prompt {
+	background-image: url(/images/alert/help.gif);
+}
+
+#popup_message {
+	padding-left: 48px;
+}
+
+#popup_panel {
+	text-align: center;
+	margin: 1em 0em 0em 1em;
+}
+
+#popup_prompt {
+	margin: .5em 0em;
+}

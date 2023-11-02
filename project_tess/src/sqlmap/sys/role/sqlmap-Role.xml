@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Role">
+
+	<typeAlias alias="ComboDomain" type="business.biz.comm.domain.ComboDomain" />
+
+
+    <!--******************************   ROLE MASTER  ***************************************-->
+	<!-- Role List Search -->
+	<select id="listRole" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT    ROLE_ID                               AS "roleId"
+				, PARENT_ROLE_ID                        AS "parentRoleId"
+				, ROLE_NM                            	AS "roleNm"
+				, REGI_ID                               AS "regiId"
+				, TO_CHAR(REGI_DATE, 'yyyy-mm-dd')      AS "regiDate"
+				, LEVEL	- 1								AS "level"      <!-- jqGrid -->
+				, PARENT_ROLE_ID						AS "parent"		<!-- jqGrid -->
+				, 'false'								AS "expanded"	<!-- jqGrid -->
+				, 'true'								AS "loaded"		<!-- jqGrid -->
+				, CASE WHEN MAX(level) OVER() = level THEN
+					'true'
+				  ELSE
+					'false'
+				  END 		             				AS "isLeaf"		<!-- jqGrid -->
+		FROM  SYS_ROLE
+		CONNECT BY PRIOR ROLE_ID = PARENT_ROLE_ID
+		START WITH PARENT_ROLE_ID = 'NONE'
+	</select>
+
+	<!-- Role List Search -->
+	<select id="listRoleHeirarchy" resultClass="java.util.HashMap" parameterClass="java.util.Map">
+		SELECT   PARENT_ROLE                           AS "parentRole"
+			   , CHILD_ROLE                            AS "childRole"
+			   , REGI_ID                               AS "regiId"
+			   , TO_CHAR(REGI_DATE, 'yyyy-mm-dd')      AS "regiDate"
+		FROM  SYS_ROLE_HIERARCHY
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="parentRole" prepend="AND">
+				PARENT_ROLE = #parentRole#
+			</isNotEmpty>
+		</dynamic>
+        <isNotEmpty property="sidx">
+    		ORDER BY $sidx$ $sord$
+        </isNotEmpty>
+        <isEmpty property="sidx">
+            ORDER BY PARENT_ROLE
+        </isEmpty>
+	</select>
+
+    <select id="listComboRole" parameterClass="java.util.Map" resultClass="ComboDomain">
+		SELECT   ROLE_ID                               AS "comboValue"
+			   , ROLE_ID||' : '||ROLE_NM               AS "comboText"
+		FROM  SYS_ROLE
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="roleId" prepend="AND">
+				ROLE_ID != #roleId#
+			</isNotEmpty>
+		</dynamic>
+    	CONNECT BY PRIOR ROLE_ID = PARENT_ROLE_ID
+    	START WITH PARENT_ROLE_ID = 'NONE'
+
+    	UNION ALL
+
+    	SELECT    'NONE'
+    			, 'NONE'
+    	FROM    DUAL
+    </select>
+
+	<!-- Role Registation -->
+	<insert id="regiRole" parameterClass="java.util.Map">
+		INSERT INTO SYS_ROLE (
+			ROLE_ID,
+			ROLE_NM,
+            PARENT_ROLE_ID,
+			REGI_ID,
+			REGI_DATE
+		) VALUES (
+			#roleId#,
+			#roleNm#,
+            <!-- [20140915 LCS] 화면에서 parent_role_id 값이 넘어오지 않으면 'NONE'으로 자동 등록:최상위 role로 설정 -->
+            <isNotEmpty property="parentRoleId">
+                #parentRoleId#,
+            </isNotEmpty>
+            <isEmpty property="parentRoleId">
+                'NONE',
+            </isEmpty>
+			#gsUserId#,
+			SYSDATE
+		)
+	</insert>
+	<!-- Role Hierarchy -->
+	<insert id="regiRoleHierarchy" parameterClass="java.util.Map">
+		INSERT INTO SYS_ROLE_HIERARCHY (
+			PARENT_ROLE,
+			CHILD_ROLE,
+			REGI_ID,
+			REGI_DATE
+		) VALUES (
+			#parentRole#,
+			#childRole#,
+			#gsUserId#,
+			SYSDATE
+		)
+	</insert>
+	<!-- Role Update -->
+	<update id="updtRole" parameterClass="java.util.Map">
+		UPDATE SYS_ROLE
+		SET      ROLE_NM = #roleNm#
+               , UPDT_ID = #gsUserId#
+               , UPDT_DATE = SYSDATE
+		WHERE  ROLE_ID = #roleId#
+	</update>
+	<!-- Role Update -->
+	<update id="updtRoleHierarchy" parameterClass="java.util.Map">
+		UPDATE SYS_ROLE_HIERARCHY
+		SET      CHILD_ROLE = #childRole#
+               , UPDT_ID = #gsUserId#
+               , UPDT_DATE = SYSDATE
+		WHERE  PARENT_ROLE = #parentRole#
+	</update>
+
+	<!-- Role Delete -->
+	<delete id="deltRole" parameterClass="java.util.Map">
+		DELETE FROM SYS_ROLE
+        WHERE ROLE_ID = #roleId#
+	</delete>
+	<delete id="deltRoleMulti" parameterClass="java.util.Map">
+		DELETE FROM SYS_ROLE
+        <dynamic prepend="WHERE">
+            <iterate prepend="AND" property="arrRoleId" open="(" close=")" conjunction="OR">
+                  ROLE_ID  = #arrRoleId[]#
+            </iterate>
+        </dynamic>
+	</delete>
+	<delete id="deltRoleHierarchy" parameterClass="java.util.Map">
+		DELETE FROM SYS_ROLE_HIERARCHY
+        WHERE  PARENT_ROLE = #parentRole#
+        <isNotEmpty property="arrChildRole">
+            <iterate prepend="AND" property="arrChildRole" open="(" close=")" conjunction="OR">
+                  CHILD_ROLE  = #arrChildRole[]#
+            </iterate>
+        </isNotEmpty>
+	</delete>
+
+	<!-- Role : Duplication Flag -->
+    <select id="getRoleCnt" resultClass="java.lang.Boolean" parameterClass="java.util.Map">
+		SELECT SIGN(COUNT(*))
+		FROM   SYS_ROLE
+		WHERE  ROLE_ID = #roleId#
+	</select>
+    <select id="getRoleHierarchyCnt" resultClass="java.lang.Boolean" parameterClass="java.util.Map">
+		SELECT SIGN(COUNT(*))
+		FROM   SYS_ROLE_HIERARCHY
+		WHERE  PARENT_ROLE = #parentRole#
+        AND    CHILD_ROLE = #childRole#
+	</select>
+
+	<delete id="deltRoleUser" parameterClass="java.util.Map">
+		DELETE FROM SYS_ROLE_USER
+		WHERE  0 = 0
+        <isNotEmpty property="userId">
+            AND  USER_ID = #userId#
+        </isNotEmpty>
+        <isNotEmpty property="roleId">
+            AND  ROLE_ID = #roleId#
+        </isNotEmpty>
+	</delete>
+
+
+</sqlMap>
