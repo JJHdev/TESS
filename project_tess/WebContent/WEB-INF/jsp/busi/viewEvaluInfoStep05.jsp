@@ -105,23 +105,15 @@
 	                        <div class="tab-wrap">
 	                            <ul class="tab-steps">
 	                                <li class=""><a onclick="goStep(1);" title="서면검토">서면검토</a></li>
-	                                <li class="active"><a onclick="goStep(2);" title="평가의견">평가의견</a></li>
+	                                <li class=""><a onclick="goStep(2);" title="평가의견">평가의견</a></li>
 	                                <li class="" style="background-color:#5f5f5f;"><a title="종합결과" style="cursor:no-drop;">종합결과</a></li>
-	                                <li class="" style="background-color:#5f5f5f;"><a title="이행계획서" style="cursor:no-drop;">이행계획서</a></li>
+	                                <li class="active"><a onclick="goStep(5);" title="이행계획서">이행계획서</a></li>
 	                                <li class="" style="background-color:#5f5f5f;"><a title="평가종료" style="cursor:no-drop;">평가종료</a></li>
 	                            </ul>
 	                        </div>
 	                        
 	                        <!-- Contents -->
-	                        <p class="section-title">평가의견서 제출<small class="silent">제출 전 첨부파일을 확인하시기 바랍니다.</small></p>
-		                        <!-- 관리자 전용 -->
-		                        <div class="select-committee">
-		                            <ul>
-		                                <li class="active"><a href="#" title="평가위원 A">평가위원 A (홍길동)</a></li>
-		                                <li class=""><a href="#" title="평가위원 B">평가위원 B (강감찬)</a></li>
-		                                <li class=""><a href="#" title="평가위원 C">평가위원 C (유관순)</a></li>
-		                            </ul>
-		                        </div>
+	                        <p class="section-title">이행계획서 제출<small class="silent">제출 전 첨부파일을 확인하시기 바랍니다.</small></p>
 		                        <!-- /관리자 전용 -->
 		                        <table class="evtdss-form-table">
 		                            <tr>
@@ -132,7 +124,7 @@
 		                                <th>승인</th>
 		                            </tr>
 		                            <tr>
-		                                <td class="fix-width title">평가의견서</td>
+		                                <td class="fix-width title">이행계획서</td>
 		                                <td>
 		                                    <input type="file" name="upload" class="regi-file-input" _docuType="PLYY" _atthType="AT12" id="AT12">
 		                                    <c:choose>
@@ -153,7 +145,7 @@
 											        </div>
 											    </c:otherwise>
 											</c:choose>
-		                                    <div class="regi-file">서면검토서.hwp</div>
+		                                    <div class="regi-file">이행계획서 양식.hwp</div>
 		                                </td>
 		                                <td class="fix-width date">${fileInfo.REGI_DATE}</td>
 		                                <td class="fix-width file">미제출</td>  <!-- 평가위원용 : 미제출/제출/승인 문구 표기 -->
@@ -181,11 +173,11 @@
 		                            <tr>
 		                                <td class="fix-width title">
 		                                    <c:if test="${viewCommitStatus.OPINION_NOTE_DATE == null}">
-		                                    	종합의견
+		                                    	이행계획서 관련 내용
 		                                    	<div class="save-date"><span class="txt-heightlight"></span> 저장되지 않음</div>
 		                                    </c:if>
 		                                    <c:if test="${viewCommitStatus.OPINION_NOTE_DATE != null}">
-		                                    	종합의견
+		                                    	이행계획서 관련 내용
 		                                    	<div class="save-date"><span class="txt-heightlight">${viewCommitStatus.OPINION_NOTE_DATE}</span> 저장</div>
 		                                    </c:if>
 		                                </td>
@@ -202,11 +194,11 @@
 		                            <tr>
 		                                <td class="fix-width title">
 		                                	<c:if test="${viewCommitStatus.IPM_NOTE_DATE == null}">
-		                                    	개선사항
+		                                    	이행계획서 관련 내용
 		                                    	<div class="save-date"><span class="txt-heightlight"></span> 저장되지 않음</div>
 		                                    </c:if>
 		                               	 	<c:if test="${viewCommitStatus.IPM_NOTE_DATE != null}">
-		                                    	개선사항
+		                                    	이행계획서 관련 내용
 		                                    	<div class="save-date"><span class="txt-heightlight">${viewCommitStatus.IPM_NOTE_DATE}</span> 저장</div>
 		                                    </c:if>
 		                                </td>
@@ -221,9 +213,7 @@
 		                                </td>
 		                            </tr>
 		                            <tr>
-		                                <td class="fix-width title">
-		                                    	평가의견서
-		                                </td>
+		                                <td class="fix-width title">이행계획서</td>
 		                                <td>
 		                                    <input type="file" name="upload" class="regi-file-input" _docuType="PLYY" _atthType="AT12" id="AT12">
 		                                    <c:if test="${fileInfo == null}">
@@ -247,9 +237,7 @@
 		                                </td>
 		                            </tr>
 		                            <tr>
-		                                <td class="fix-width title">
-		                                    	평가결과
-		                                </td>
+		                                <td class="fix-width title">이행계획서 결과</td>
 		                                <td>
 		                                    <strong class="txt-heightlight">[${evaluInfo.EVALU_STAGE_NM}]</strong> <!-- 해당 평가단계 -->
 		                                    <!-- 평가사업관리 > 평가지표 설정 > 평가결과 항목 에서 지정한 배열로 내용구성 -->
@@ -318,32 +306,15 @@
 		                        <div class="tab-wrap">
 		                            <ul class="tab-steps">
 		                                <li class=""><a onclick="goStep(1);" title="서면검토">서면검토</a></li>
-		                                <li class="active"><a onclick="goStep(2);" title="평가의견">평가의견</a></li>
+		                                <li class=""><a onclick="goStep(2);" title="평가의견">평가의견</a></li>
 		                                <li class=""><a onclick="goStep(3);" title="종합결과">종합결과</a></li>
-		                                <li class=""><a onclick="goStep(5);" title="이행계획서">이행계획서</a></li>
+		                                <li class="active"><a onclick="goStep(5);" title="이행계획서">이행계획서</a></li>
 		                                <li class=""><a onclick="goStep(4);" title="평가종료">평가종료</a></li>
 		                            </ul>
 		                        </div>
 		                        <!-- Contents -->
 		
-		                        <p class="section-title">평가의견서 제출<small class="silent">제출 전 첨부파일을 확인하시기 바랍니다.</small></p>
-		
-		                        <!-- 관리자 전용 -->
-		                        <div class="select-committee">
-		                            <ul>
-		                            	<c:forEach items="${commitList}" varStatus="status" var="comlist">
-											<c:if test="${status.first}">
-												<li class="active"><a href="#" title="평가위원 A">평가위원 (<c:out value="${comlist.USER_NM}"/>)</a></li>
-											</c:if>
-											<c:if test="${!status.first}">
-												<li><a href="#" title="평가위원 A">평가위원 (<c:out value="${comlist.USER_NM}"/>)</a></li>
-											</c:if>
-										</c:forEach>
-		                                <li class="active"><a href="#" title="평가위원 A">평가위원 A (홍길동)</a></li>
-		                                <li class=""><a href="#" title="평가위원 B">평가위원 B (강감찬)</a></li>
-		                                <li class=""><a href="#" title="평가위원 C">평가위원 C (유관순)</a></li> 
-		                            </ul>
-		                        </div>
+		                        <p class="section-title">이행계획서 제출 제출란 있을 경우 표시용<small class="silent">제출 전 첨부파일을 확인하시기 바랍니다.</small></p>
 		                        <!-- /관리자 전용 -->
 		                        <div id="commit_table_list">
 			                        <c:forEach items="${commitList}" varStatus="status" var="comlist">
@@ -407,7 +378,7 @@
 			                                    	</c:if>
 				                                    <input type="file" class="regi-file-input" id="upFile1">
 				                                    <div class="regi-file">등록파일 없음</div>
-				                                    <div class="regi-file">서면검토서.hwp</div>
+				                                    <div class="regi-file">이행계획서 양식.hwp</div>
 				                                    <div class="incell-btn button-set hor">
 				                                        <button class="inline-button green"><a href="#" title="선택파일 추가">저장</a></button>
 				                                        <button class="inline-button green"><a href="#" title="등록파일 삭제">삭제</a></button>
@@ -448,7 +419,7 @@
 			                                    	<c:if test="${comlist.FILE_ORG_NM != null}">
 			                                    		<div class="regi-file"><a href="/evalu/evaluFileDownload.do?EvaluFileNo=${comlist.FILE_NO}"><c:out value="${comlist.FILE_ORG_NM}"/></a></div>
 			                                    	</c:if>
-				                                    <div class="regi-file">서면검토서.hwp</div>
+				                                    <div class="regi-file">이행계획서 양식.hwp</div>
 				                                </td>
 				                                <td class="fix-width date"><c:out value="${comlist.FILE_REGI_DATE}"/></td>
 				                                <td class="fix-width file">미제출</td> <!-- 평가위원용 : 미제출/제출/승인 문구 표기 -->
@@ -494,7 +465,7 @@
 			                        </c:forEach>
 		                        </div>
 	
-								<p class="section-title">참조파일<small class="silent">아래 첨부파일을 다운로드하여 참고하세요</small></p>
+								<p class="section-title">이행계획서 참조파일<small class="silent">아래 첨부파일을 다운로드하여 참고하세요</small></p>
 		                        <table class="evtdss-form-table noMargin">
 		                            <tr>
 		                                <th>구분</th>
@@ -502,7 +473,7 @@
 		                                <th class="fix-width date">등록일시</th>
 		                            </tr>
 		                            <tr>
-		                                <td>평가의견서 샘플</td>
+		                                <td>이행계획서 샘플</td>
 		                                <c:if test="${evaluDocC == null}">
 		                                	<td class="fix-width file">
 			                                    <a title="평가의견서 샘플"></a>
@@ -517,10 +488,10 @@
 		                                </c:if>
 		                            </tr>
 		                            <tr>
-		                                <td>${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM} 평가지침서</td>
+		                                <td>${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM} 이행계획서 지침서</td>
 		                                <c:if test="${evaluDocA == null}">
 		                                	<td class="fix-width file">
-			                                    <a title="평가지침서 샘플"></a>
+			                                    <a title=" 이행계획서 지침서"></a>
 			                                </td>
 			                                <td class="fix-width date"></td>
 		                                </c:if>

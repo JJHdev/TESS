@@ -102,6 +102,8 @@
 	                        </div>
 	                        <!-- Contents -->
 	
+	                        
+	                        <%-- 				현재 평가진행 현황 (페이지 사용하지 않아 주석처리)
 	                        <!-- 관리자, 문체부 전용 -->
 	                        <p class="section-title">평가진행현황<small class="silent">평가진행현황입니다.</small></p>
 	                        <table class="evtdss-form-table">
@@ -109,7 +111,7 @@
 		                        	<tr>
 		                                <td  class="labeler">평가위원 이용동의</td>
 		                                <td colspan="3" class="noPadding">
-		                                    <table class="evtdss-form-table-incell">
+		                                    <table class="evtdss-form-table-incell"> 
 		                                        <tr>
 		                                            <td class="labeler"><c:out value="${paramMap.gsUserNm}"/></td>
 		                                            <c:if test="${paramMap.agreeYn == 'Y'}">
@@ -252,68 +254,16 @@
 		                            </tr>
 		                        </c:if>
 		                    </table>
-	
-	                        <p class="section-title">첨부 파일<small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
-	                        <table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
-							<caption class="sr-only">첨부파일</caption>
-							<colgroup><col /><col /><col /></colgroup>
-	                        <thead>
-	                        	<tr>
-	                                <th scope="col">구분</th>
-	                                <th scope="col" class="fix-width file">첨부파일</th>
-	                                <th scope="col" class="fix-width file">등록일시</th>
-	                            </tr>
-	                        </thead>
-	                        <tbody>
-	                        	<c:forEach items="${fileList }" varStatus="status" var="flist">
-	                        		<tr>
-		                                <td><c:out value="${flist.CODE_NM}"/></td>
-		                                <td class="fix-width file">
-		                                    <a href="#" class="<c:out value="${flist.CODE_NM}"/>">
-		                                    	<!-- <img src="../../../images/icon_file_hwp.jpg"> -->
-		                                    	<c:out value="${flist.FILE_ORG_NM}"/>
-		                                    </a>
-		                                </td>
-		                                <td class="fix-width date"><c:out value="${flist.REGI_DATE}"/></td>
-		                            </tr>
-	                        	</c:forEach>
-	                        </tbody>
-	                            <!-- <tr>
-	                                <th>구분</th>
-	                                <th class="fix-width file">첨부파일</th>
-	                                <th class="fix-width date">등록일시</th>
-	                            </tr>
-	                            <tr>
-	                                <td>보조금 교부신청서</td>
-	                                <td class="fix-width file">
-	                                    <a href="#" class="보조금 교부신청서"><img src="../../../images/icon_file_hwp.jpg"></a>
-	                                </td>
-	                                <td class="fix-width date">2018-09-13 23:14:11</td>
-	                            </tr>
-	                            <tr>
-	                                <td>사업설명서</td>
-	                                <td class="fix-width file">
-	                                    <a href="#" class="사업설명서"><img src="../../../images/icon_file_pdf.jpg"></a>
-	                                </td>
-	                                <td class="fix-width date">2018-09-13 23:14:11</td>
-	                            </tr>
-	                            <tr>
-	                                <td>기본계획 수립용역 보고서</td>
-	                                <td class="fix-width file">
-	                                    <a href="#" class="기본계획 수립용역 보고서"><img src="../../../images/icon_file_hwp.jpg"></a>
-	                                </td>
-	                                <td class="fix-width date">2018-09-13 23:14:11</td>
-	                            </tr>
-	                            <tr>
-	                                <td>추가 첨부파일</td>
-	                                <td class="fix-width file">
-	                                    <a href="#" class="기본계획 수립용역 보고서"><img src="../../../images/icon_file_zip.jpg"></a>
-	                                </td>
-	                                <td class="fix-width date">2018-09-13 23:14:11</td>
-	                            </tr> -->
-	                        </table>
-	
-	                        <p class="section-title">관광개발사업 개요<small>최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
+		                    
+		                    
+		                    
+		                    
+		                    --%>
+		                    
+		                    
+		                    
+		                    
+		                    <p class="section-title">관광개발사업 개요<small>최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
 	                        <table class="evtdss-form-table">
 	                            <tr>
 	                                <td class="labeler">사업명</td>
@@ -362,27 +312,94 @@
                                     </td>
 	                            </tr>
 	                        </table>
+		                    
 	
-	                        <%-- <p class="section-title">사업대상지 정보<small class="silent">최종본이 아닐 수 있으므로 사업계획서를 참조하시기 바랍니다.</small></p>
-	                        <table class="evtdss-form-table noMargin">
-	                            <c:forEach items="${areaFormList }" varStatus="status" var="areaForm">
+	                        <p class="section-title">첨부 파일<small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
+	                        <table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
+							<caption class="sr-only">첨부파일</caption>
+							<colgroup><col/><col/><col/></colgroup>
+	                        <thead>
+	                        	<tr>
+	                                <th scope="col">구분</th>
+	                                <th scope="col" class="fix-width file">첨부파일</th>
+	                                <th scope="col" class="fix-width file">등록일시</th>
+	                            </tr>
+	                        </thead>
+	                        
+	                        
+	                        
+	                        <tbody>
+	                        	<c:forEach items="${fileList}" varStatus="status" var="flist">
+	                        		<tr>
+		                                <td><c:out value="${flist.CODE_NM}"/></td>
+		                                <td class="fix-width file">
+		                                    <a href="#" class="<c:out value="${flist.CODE_NM}"/>">
+		                                    	<c:out value="${flist.FILE_ORG_NM}"/>
+		                                    </a>
+		                                </td>
+		                                <td class="fix-width date"><c:out value="${flist.REGI_DATE}"/></td>
+		                            </tr>
+	                        	</c:forEach>
+	                        </tbody>
+	                        
+	                        
+                             <tr>
+                                <th>구분</th>
+                                <th class="fix-width file">첨부파일</th>
+                                <th class="fix-width date">등록일시</th>
+                                <th class="fix-width file">지자체 등록</th>
+                            </tr>
+                            <tr>
+                                <td>보조금 교부신청서</td>
+                                <td class="fix-width file"><a href="#" class="보조금 교부신청서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
+                                <td class="fix-width date">2018-09-13 23:14:11</td>
+                                <td class="fix-width file">첨부파일 등록란</td>
+                            </tr>
+                            <tr>
+                                <td>사업설명서</td>
+                                <td class="fix-width file"><a href="#" class="사업설명서"><img src="../../../images/icon_file_pdf.jpg"></a></td>
+                                <td class="fix-width date">2018-09-13 23:14:11</td>
+                                <td class="fix-width file">첨부파일 등록란</td>
+                            </tr>
+                            <tr>
+                                <td>기본계획 수립용역 보고서</td>
+                                <td class="fix-width file"><a href="#" class="기본계획 수립용역 보고서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
+                                <td class="fix-width date">2018-09-13 23:14:11</td>
+                                <td class="fix-width file">첨부파일 등록란</td>
+                            </tr>
+                            <tr>
+                                <td>추가 첨부파일</td>
+                                <td class="fix-width file"><a href="#" class="기본계획 수립용역 보고서"><img src="../../../images/icon_file_zip.jpg"></a></td>
+                                <td class="fix-width date">2018-09-13 23:14:11</td>
+                                <td class="fix-width file">첨부파일 등록란</td>
+                            </tr>
+                        </table>
+	
+							<%--  첨부파일로 대체하여 주석처리 (추후 삭제 예정)
+							<p class="section-title">사업대상지 정보<small class="silent">최종본이 아닐 수 있으므로 사업계획서를 참조하시기 바랍니다.</small></p>
+							<table class="evtdss-form-table noMargin">
+								<c:forEach items="${areaFormList }" varStatus="status" var="areaForm">
 									<tr>
 										<td class="labeler"><c:out value="${areaForm.title }"/></th>
 										<td colspan="3">
-								            <c:forEach items="${areaFileList }" varStatus="idx" var="areaF">
-								                <c:if test="${areaF.atthType == areaForm.atthType }">
-							                        이미지 부분을 이미지가 표시되게 한 부분
-							                        <a href="#down" _todeFileNo='<c:out value="${areaF.todeFileNo }"/>'>
-							                        	<img class="ev-thumb" src='<c:url value="https://tdss.kr/tode/todeFileDownload.do?todeFileNo="/><c:out value="${areaF.todeFileNo }"/>' width="200" alt='<c:out value="${areaF.fileOrgNm }"/>' title='<c:out value="${areaF.fileOrgNm }"/>'>
-							                        </a>
-								                </c:if>
-								            </c:forEach>
-								            </div>
+											<c:forEach items="${areaFileList }" varStatus="idx" var="areaF">
+												<c:if test="${areaF.atthType == areaForm.atthType }"> 이미지 부분을 이미지가 표시되게 한 부분
+													<a href="#down" _todeFileNo='<c:out value="${areaF.todeFileNo }"/>'>
+							                      		<img class="ev-thumb" src='<c:url value="https://tdss.kr/tode/todeFileDownload.do?todeFileNo="/><c:out value="${areaF.todeFileNo }"/>' width="200" alt='<c:out value="${areaF.fileOrgNm }"/>' title='<c:out value="${areaF.fileOrgNm }"/>'>
+													</a>
+												</c:if>
+											</c:forEach>
 										</td>
 									</tr>
-							    </c:forEach>
-	                        </table> --%>
+								</c:forEach>
+							</table>  
+							--%>
 	                        <!-- /Contents -->
+	                        
+	                        
+	                        
+	                        
+	                        
 	                    </div>
 	                </div>
 	            </div> <!-- /.container -->

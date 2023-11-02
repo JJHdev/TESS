@@ -109,6 +109,7 @@
 	                                <li class=""><a onclick="goStep(1);" title="서면검토">서면검토</a></li>
 	                                <li class=""><a onclick="goStep(2);" title="평가의견">평가의견</a></li>
 	                                <li class=""><a onclick="goStep(3);" title="종합결과">종합결과</a></li>
+	                                <li class=""><a onclick="goStep(5);" title="이행계획서">이행계획서</a></li>
 	                                <li class="active"><a onclick="goStep(4);" title="평가종료">평가종료</a></li>
 	                            </ul>
 	                        </div>
@@ -145,15 +146,9 @@
 	                    </div>
 	                </div>
 	            </div> <!-- /.container -->
-	
 	        </div>
 	    </div>
-	
 	</div> <!-- /contents-wrap -->
-    
-    
-    
-    
 </form:form>
 </div><!-- /contents -->
 

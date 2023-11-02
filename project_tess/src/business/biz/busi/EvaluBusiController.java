@@ -750,6 +750,36 @@ public class EvaluBusiController extends BaseController {
     }
     
     /**
+     * [평가사업조회] 집행평가 이행계획서 화면.
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/busi/viewEvaluInfoStep05.do")
+    public String viewEvaluInfoStep05(HttpServletRequest request, ModelMap model)
+            throws Exception {
+
+    	//---------------------------------------------
+        //Default Value Setting
+        String method       = getMethodName(new Throwable());
+        Map paramMap = setMappingValues(request, method );
+        // default domain setting
+        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
+        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
+        //---------------------------------------------
+        
+        // 평가정보 조회
+        Map evaluInfo = evaluBusiMgmtService.viewEvaluStageInfo(paramMap);
+
+        model.addAttribute("model"   ,  evaluBusiDomain);
+        model.addAttribute("paramMap",  paramMap);
+        model.addAttribute("evaluInfo",  evaluInfo);
+
+        return "busi/viewEvaluInfoStep05";
+    }
+    
+    /**
      * [평가사업조회] 평가위원 종합의견 등록/삭제 ajax.
      * @param request
      * @param model

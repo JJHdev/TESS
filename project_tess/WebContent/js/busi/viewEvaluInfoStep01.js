@@ -65,6 +65,7 @@ var STEP01_URL		= ROOT_PATH+"/busi/viewEvaluInfoStep01.do" ;
 var STEP02_URL		= ROOT_PATH+"/busi/viewEvaluInfoStep02.do" ;
 var STEP03_URL		= ROOT_PATH+"/busi/viewEvaluInfoStep03.do" ;
 var STEP04_URL		= ROOT_PATH+"/busi/viewEvaluInfoStep04.do" ;
+var STEP05_URL		= ROOT_PATH+"/busi/viewEvaluInfoStep05.do" ;
 
 ////////////////////////////////////////////////////////////////////////////////
 //초기화 함수
@@ -440,6 +441,8 @@ function goStep(index) {
 		step_url = STEP03_URL;
 	} else if(index == 4) {
 		step_url = STEP04_URL;
+	} else if(index == 5) {
+		step_url = STEP05_URL;
 	}
 	
 	BIZComm.submit({
