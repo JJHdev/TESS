@@ -845,6 +845,10 @@ function isEmpty(value)
     return false;
 }
 
+function isNotEmpty(value) {
+	return !isEmpty;
+}
+
 //
 function isValidUserId(value){
     //var pattern = /^[a-zA-Z]{1}[a-zA-Z0-9]{3,12}$/;

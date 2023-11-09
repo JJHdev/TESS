@@ -612,4 +612,21 @@
 		AND
 			USER_ID = #evaluId#
 	</select>
+	
+	<!--
+    ################################################################
+    SUNDOSOFT 평가사업관리 > 평가사업등록
+    ################################################################
+    -->
+    
+    <!-- 법정동 코드 조회 -->
+    <select id="listBjd" resultClass="hashmap" parameterClass="java.util.Map">
+    	SELECT SUBSTR(BJD_CODE, 0, 2)	as "parentCode"
+    	     , BJD_CODE					as "code"
+    	     , SD						as "codeNm"
+    	  FROM TREDSUSER.TB_BJD_CODE
+    	 WHERE (1=1)
+    	 	   <isEqual property="type" compareValue="SD" >AND BJD_CODE LIKE '__00000000'</isEqual>
+    	 	   <isEqual property="type" compareValue="SGG">AND BJD_CODE LIKE '_____00000'</isEqual>
+    </select>
 </sqlMap>

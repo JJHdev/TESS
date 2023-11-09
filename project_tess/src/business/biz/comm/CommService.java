@@ -310,5 +310,16 @@ public class CommService extends BaseService {
     	map = (Map) dao.view("Comm.getPv710", paramMap);
     	return map;
     }
+    
+    //################################################################
+    //SUNDOSOFT 공통코드
+    //################################################################
+    
+    /**
+     * 법정동 코드 조회
+     */
+    public List listBjdCode(Map paramMap) throws Exception {
+    	return dao.list("Comm.listBjd", paramMap);
+    }
 	
 }

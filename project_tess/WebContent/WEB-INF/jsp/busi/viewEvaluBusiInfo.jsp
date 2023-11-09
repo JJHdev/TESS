@@ -101,215 +101,46 @@
 								<a href="javascript:void(0);" class="body-print" title="인쇄하기"><span class="glyphicon glyphicon-print" aria-hidden="true"><span class="sr-only">인쇄하기</span></span></a>
 	                        </div>
 	                        <!-- Contents -->
-	
-	                        
-	                        <%-- 				현재 평가진행 현황 (페이지 사용하지 않아 주석처리)
-	                        <!-- 관리자, 문체부 전용 -->
-	                        <p class="section-title">평가진행현황<small class="silent">평가진행현황입니다.</small></p>
-	                        <table class="evtdss-form-table">
-		                        <c:if test="${paramMap.gsRoleId != 'ROLE_AUTH_SYS'}">
-		                        	<tr>
-		                                <td  class="labeler">평가위원 이용동의</td>
-		                                <td colspan="3" class="noPadding">
-		                                    <table class="evtdss-form-table-incell"> 
-		                                        <tr>
-		                                            <td class="labeler"><c:out value="${paramMap.gsUserNm}"/></td>
-		                                            <c:if test="${paramMap.agreeYn == 'Y'}">
-		                                            	<td>제출</td>
-		                                            	<td class="fix-width file">완료</td>
-		                                            </c:if>
-		                                            <c:if test="${paramMap.agreeYn != 'Y'}">
-		                                            	<td>미제출</td>
-		                                            	<td class="fix-width file">대기</td>
-		                                            </c:if>
-		                                            <td class="fix-width date"><c:out value="${paramMap.agreeDate}"/></td>
-		                                        </tr>
-		                                    </table>
-		                                </td>
-		                            </tr>
-		                            <tr>
-		                                <td class="labeler">서면검토서</td>
-		                                <td colspan="3" class="noPadding">
-		                                    <table class="evtdss-form-table-incell">
-		                                        <tr>
-		                                            <td class="labeler"><c:out value="${paramMap.gsUserNm}"/></td>
-		                                            <c:if test="${paramMap.reviewYn == 'Y'}">
-		                                            	<td>제출</td>
-		                                            	<c:if test="${paramMap.reviewApvYn == 'Y'}">
-		                                            		<td class="fix-width file">승인</td>	
-		                                            	</c:if>
-		                                            	<c:if test="${paramMap.reviewApvYn != 'Y'}">
-		                                            		<td class="fix-width file">미승인</td>	
-		                                            	</c:if>
-		                                            </c:if>
-		                                            <c:if test="${paramMap.reviewYn != 'Y'}">
-		                                            	<td>미제출</td>
-		                                            	<td class="fix-width file">대기</td>
-		                                            </c:if>
-		                                            <td class="fix-width date"><c:out value="${paramMap.reviewApvDate}"/></td>
-		                                        </tr>
-		                                    </table>
-		                                </td>
-		                            </tr>
-		                            <tr>
-		                                <td class="labeler">평가의견서</td>
-		                                <td colspan="3" class="noPadding">
-		                                    <table class="evtdss-form-table-incell">
-		                                        <tr>
-		                                            <td class="labeler"><c:out value="${paramMap.gsUserNm}"/></td>
-		                                            <c:if test="${paramMap.opinionYn == 'Y'}">
-		                                            	<td>제출</td>
-		                                            	<c:if test="${paramMap.opinionApvYn == 'Y'}">
-		                                            		<td class="fix-width file">승인</td>
-		                                            	</c:if>
-		                                            	<c:if test="${paramMap.opinionApvYn != 'Y'}">
-		                                            		<td class="fix-width file">미승인</td>
-		                                            	</c:if>
-		                                            </c:if>
-		                                            <c:if test="${paramMap.opinionYn != 'Y'}">
-		                                            	<td>미제출</td>
-		                                            	<td class="fix-width file">대기</td>
-		                                            </c:if>
-		                                            <td class="fix-width date"><c:out value="${paramMap.opinionApvDate}"/></td>
-		                                        </tr>
-		                                    </table>
-		                                </td>
-		                            </tr>
-		                        </c:if>
-		                        
-		                        <!-- 관리자 -->
-		                        <c:if test="${paramMap.gsRoleId == 'ROLE_AUTH_SYS'}">
-		                        	<tr>
-		                                <td  class="labeler">평가위원 이용동의</td>
-		                                <td colspan="3" class="noPadding">
-		                                    <table class="evtdss-form-table-incell">
-		                                    	<c:forEach items="${commitAgreeList }" varStatus="status" var="agreelist">
-		                                    		<tr>
-			                                            <td class="labeler"><c:out value="${agreelist.USER_NM}"/></td>
-			                                            <c:if test="${agreelist.AGREE_YN == 'Y'}">
-			                                            	<td>제출</td>
-			                                            	<td class="fix-width file">완료</td>
-			                                            </c:if>
-			                                            <c:if test="${agreelist.AGREE_YN != 'Y'}">
-			                                            	<td>미제출</td>
-			                                            	<td class="fix-width file">대기</td>
-			                                            </c:if>
-			                                            <td class="fix-width date"><c:out value="${agreelist.AGREE_DATE}"/></td>
-			                                        </tr>
-		                                    	</c:forEach>
-		                                    </table>
-		                                </td>
-		                            </tr>
-		                            <tr>
-		                                <td class="labeler">서면검토서</td>
-		                                <td colspan="3" class="noPadding">
-		                                    <table class="evtdss-form-table-incell">
-		                                    	<c:forEach items="${commitReviewList }" varStatus="status" var="reviewlist">
-			                                        <tr>
-			                                            <td class="labeler"><c:out value="${reviewlist.USER_NM}"/></td>
-			                                            <c:if test="${reviewlist.REVIEW_YN == 'Y'}">
-			                                            	<td>제출</td>
-			                                            	<c:if test="${reviewlist.REVIEW_APV_YN == 'Y'}">
-			                                            		<td class="fix-width file">승인</td>	
-			                                            	</c:if>
-			                                            	<c:if test="${reviewlist.REVIEW_APV_YN != 'Y'}">
-			                                            		<td class="fix-width file">미승인</td>	
-			                                            	</c:if>
-			                                            </c:if>
-			                                            <c:if test="${reviewlist.REVIEW_YN != 'Y'}">
-			                                            	<td>미제출</td>
-			                                            	<td class="fix-width file">대기</td>
-			                                            </c:if>
-			                                            <td class="fix-width date"><c:out value="${reviewlist.REVIEW_APV_DATE}"/></td>
-			                                        </tr>
-			                                	</c:forEach>
-		                                    </table>
-		                                </td>
-		                            </tr>
-		                            <tr>
-		                                <td class="labeler">평가의견서</td>
-		                                <td colspan="3" class="noPadding">
-		                                    <table class="evtdss-form-table-incell">
-		                                    	<c:forEach items="${commitOpinionList }" varStatus="status" var="opinionlist">
-		                                    		<tr>
-			                                            <td class="labeler"><c:out value="${opinionlist.USER_NM}"/></td>
-			                                            <c:if test="${opinionlist.OPINION_YN == 'Y'}">
-			                                            	<td>제출</td>
-			                                            	<c:if test="${opinionlist.OPINION_APV_YN == 'Y'}">
-			                                            		<td class="fix-width file">승인</td>
-			                                            	</c:if>
-			                                            	<c:if test="${opinionlist.OPINION_APV_YN != 'Y'}">
-			                                            		<td class="fix-width file">미승인</td>
-			                                            	</c:if>
-			                                            </c:if>
-			                                            <c:if test="${opinionlist.OPINION_YN != 'Y'}">
-			                                            	<td>미제출</td>
-			                                            	<td class="fix-width file">대기</td>
-			                                            </c:if>
-			                                            <td class="fix-width date"><c:out value="${opinionlist.OPINION_APV_DATE}"/></td>
-			                                        </tr>
-		                                    	</c:forEach>
-		                                    </table>
-		                                </td>
-		                            </tr>
-		                        </c:if>
-		                    </table>
-		                    
-		                    
-		                    
-		                    
-		                    --%>
-		                    
-		                    
-		                    
-		                    
 		                    <p class="section-title">관광개발사업 개요<small>최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
 	                        <table class="evtdss-form-table">
+	                        	<tr>
+	                                <td class="labeler">코드명</td>
+	                                <td colspan="3"><input type="text" name="planEvalBusiNo"  id="planEvalBusiNo"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.planEvalBusiNo}"/>'/></td>
+	                            </tr>
+	                            <tr>
+	                            	<td class="labeler">사업유형</td>
+	                                <td colspan="3"><input type="text" name="busiTypeNm"  id="busiTypeNm"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.busiTypeNm}"/>'/></td>
+	                            </tr>
 	                            <tr>
 	                                <td class="labeler">사업명</td>
-	                                <td><c:out value="${mastMap.planEvalBusiName}"/></td>
-	                                <%-- <td class="labeler">사업지유형</td>
-	                                <td><c:out value="${mastMap.busiFigureType}"/></td> --%>
-	                                <td class="labeler">사업유형</td>
-	                                <td><c:out value="${mastMap.busiCateNm}"/></td>
+	                                <td colspan="3"><input type="text" name="planEvalBusiName"  id="planEvalBusiName"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.planEvalBusiName}"/>'/></td>
+	                            </tr>
+	                            <tr>
+	                                <td class="labeler">사업목적</td>
+	                                <td colspan="3"><input type="text" name="busiCateNm"  id="busiCateNm"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.busiCateNm}"/>'/></td>
 	                            </tr>
 	                            <tr>
 	                                <td class="labeler">위치</td>
-	                                <td colspan="3"><c:out value="${mastMap.busiAddr12}"/> <c:out value="${mastMap.busiAddr5}"/></td>
+	                                <td colspan="3">
+		                                <input type="text" name="busiAddr12"  id="busiAddr12"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.busiAddr12}"/>'/>
+	                                </td>
+	                            </tr>
+	                            <tr>
+	                                <td class="labeler">주요시설</td>
+	                                <td colspan="3">
+		                                <input type="text" name="busiAddr5"  id="busiAddr5"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.busiAddr5}"/>'/>
+	                                </td>
 	                            </tr>
 	                            <tr>
 	                                <td class="labeler">총 사업기간</td>
-	                                <td colspan="3"><c:out value="${mastMap.convBusiSttDate}"/> ~ <c:out value="${mastMap.convBusiEndDate}"/></td>
-	                            </tr>
-	                            <tr>
-	                                <td class="labeler">사업개발주체</td>
-	                                <td><c:out value="${mastMap.busiDevEnty}"/></td>
-                                    <td class="labeler">사업운영주체</td>
-                                    <td><c:out value="${mastMap.busiMgtEnty}"/></td>
-	                            </tr>
-	                            <tr>
-	                                <td class="labeler">개발사업 법적근거</td>
-                                    <td><c:out value="${mastMap.busiLeglBass}"/></td>
-                                    <td class="labeler">계획수립일자</td>
-                                    <td><c:out value="${mastMap.convBusiPlanDate}"/></td>
-	                            </tr>
-	                            <tr>
-	                                <td class="labeler">사업 내용</td>
-	                                <td colspan="3"><c:out value="${mastMap.busiNote}"/></td>
-	                            </tr>
-	                            <tr>
-	                                <td class="labeler">부지면적</td>
 	                                <td>
-                                    	<c:if test="${not empty mastMap.totSiteArea }">
-											<fmt:formatNumber value="${mastMap.totSiteArea}" type="number"/>㎡
-										</c:if>
-                                    </td>
-                                    <td class="labeler">전체시설면적</td>
-                                    <td>
-                                    	<c:if test="${not empty mastMap.totSiteArea }">
-											<fmt:formatNumber value="${mastMap.totFcltArea}" type="number"/>㎡
-										</c:if>
-                                    </td>
+	                                	<input type="text" name="convBusiSttDate"  id="convBusiSttDate"  value='<c:out value="${mastMap.convBusiSttDate}"/>'/> ~ 
+	                                	<input type="text" name="convBusiEndDate"  id="convBusiEndDate"  value='<c:out value="${mastMap.convBusiEndDate}"/>'/>
+                                	</td>
+                                	<td class="labeler">사업비</td>
+	                                <td>
+	                                	<input type="text" name="planBusiExps"  id="planBusiExps"  value='<c:out value="${mastMap.planBusiExps}"/>'/>
+                                	</td>
 	                            </tr>
 	                        </table>
 		                    
@@ -326,8 +157,7 @@
 	                            </tr>
 	                        </thead>
 	                        
-	                        
-	                        
+	                       <%--  DB 목록이 없어서 추후 작업 예정
 	                        <tbody>
 	                        	<c:forEach items="${fileList}" varStatus="status" var="flist">
 	                        		<tr>
@@ -341,65 +171,72 @@
 		                            </tr>
 	                        	</c:forEach>
 	                        </tbody>
-	                        
-	                        
-                             <tr>
-                                <th>구분</th>
-                                <th class="fix-width file">첨부파일</th>
-                                <th class="fix-width date">등록일시</th>
-                                <th class="fix-width file">지자체 등록</th>
+	                         --%>
+                            <tr>
+                                <td>세부 사업설명서</td>
+                                <td class="fix-width file"><a href="#" class="보조금 교부신청서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
+                                <td class="fix-width date">2018-09-13 23:14:11</td>
                             </tr>
                             <tr>
                                 <td>보조금 교부신청서</td>
-                                <td class="fix-width file"><a href="#" class="보조금 교부신청서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
-                                <td class="fix-width date">2018-09-13 23:14:11</td>
-                                <td class="fix-width file">첨부파일 등록란</td>
-                            </tr>
-                            <tr>
-                                <td>사업설명서</td>
                                 <td class="fix-width file"><a href="#" class="사업설명서"><img src="../../../images/icon_file_pdf.jpg"></a></td>
                                 <td class="fix-width date">2018-09-13 23:14:11</td>
-                                <td class="fix-width file">첨부파일 등록란</td>
                             </tr>
                             <tr>
                                 <td>기본계획 수립용역 보고서</td>
                                 <td class="fix-width file"><a href="#" class="기본계획 수립용역 보고서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
                                 <td class="fix-width date">2018-09-13 23:14:11</td>
-                                <td class="fix-width file">첨부파일 등록란</td>
                             </tr>
                             <tr>
                                 <td>추가 첨부파일</td>
                                 <td class="fix-width file"><a href="#" class="기본계획 수립용역 보고서"><img src="../../../images/icon_file_zip.jpg"></a></td>
                                 <td class="fix-width date">2018-09-13 23:14:11</td>
-                                <td class="fix-width file">첨부파일 등록란</td>
+                            </tr>
+                            </table>
+                            
+                            <p class="section-title">사업설명서 등록<small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
+	                        <table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
+							<caption class="sr-only">사업설명서 등록</caption>
+                             
+                             <tr>
+                                <th>구분</th>
+                                <th class="fix-width file">파일 업로드</th>
+                                <th class="fix-width file">첨부파일</th>
+                                <th class="fix-width date">등록일시</th>
+                            </tr>
+                            <tr>
+                                <td><span class="special-dot">*</span>사업설명서</td>
+                                <td><input type="file" class="regi-file-input" id="upFile1"></td>
+                                <td class="fix-width file"><a href="#" class="사업설명서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
+                                <td class="fix-width date">2018-09-13 23:14:11</td>
+                            </tr>
+                            <tr>
+                                <td>기본계획서</td>
+                                <td><input type="file" class="regi-file-input" id="upFile1"></td>
+                                <td class="fix-width file"><a href="#" class="기본계획서"><img src="../../../images/icon_file_pdf.jpg"></a></td>
+                                <td class="fix-width date">2018-09-13 23:14:11</td>
+                            </tr>
+                            <tr>
+                                <td>기타</td>
+                                <td><input type="file" class="regi-file-input" id="upFile1"></td>
+                                <td class="fix-width file"><a href="#" class="기타"><img src="../../../images/icon_file_hwp.jpg"></a></td>
+                                <td class="fix-width date">2018-09-13 23:14:11</td>
                             </tr>
                         </table>
-	
-							<%--  첨부파일로 대체하여 주석처리 (추후 삭제 예정)
-							<p class="section-title">사업대상지 정보<small class="silent">최종본이 아닐 수 있으므로 사업계획서를 참조하시기 바랍니다.</small></p>
-							<table class="evtdss-form-table noMargin">
-								<c:forEach items="${areaFormList }" varStatus="status" var="areaForm">
-									<tr>
-										<td class="labeler"><c:out value="${areaForm.title }"/></th>
-										<td colspan="3">
-											<c:forEach items="${areaFileList }" varStatus="idx" var="areaF">
-												<c:if test="${areaF.atthType == areaForm.atthType }"> 이미지 부분을 이미지가 표시되게 한 부분
-													<a href="#down" _todeFileNo='<c:out value="${areaF.todeFileNo }"/>'>
-							                      		<img class="ev-thumb" src='<c:url value="https://tdss.kr/tode/todeFileDownload.do?todeFileNo="/><c:out value="${areaF.todeFileNo }"/>' width="200" alt='<c:out value="${areaF.fileOrgNm }"/>' title='<c:out value="${areaF.fileOrgNm }"/>'>
-													</a>
-												</c:if>
-											</c:forEach>
-										</td>
-									</tr>
-								</c:forEach>
-							</table>  
-							--%>
-	                        <!-- /Contents -->
-	                        
-	                        
-	                        
-	                        
-	                        
+                        
+                        <div class="submit-set">
+                        	<c:if test="${viewCommitStatus.OPINION_YN != 'Y'}">
+                        		<button type="button" class="evtdss-submit"><a id="prcBtnSave" title="저장하기">저장하기</a></button>
+                        	</c:if>
+                        	<c:if test="${viewCommitStatus.OPINION_YN == 'Y' && viewCommitStatus.OPINION_APV_YN != 'Y'}">
+                        		<button type="button" class="evtdss-submit-cancel"><a id="prcBtnCancle" title="제출취소">제출취소</a></button>
+                        	</c:if>
+                            <!-- 제출이력이 있을 경우 표시 -->
+                            <div class="evtdss-submit-date">이 문서는 <span class="txt-heightlight">2018-08-21 14:24:36 에 제출</span> 되었습니다.</div>
+                            <!-- /제출이력이 있을 경우 표시 -->
+                        </div>
+                        
+                        <!-- /Contents -->
 	                    </div>
 	                </div>
 	            </div> <!-- /.container -->

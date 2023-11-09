@@ -593,3 +593,41 @@ function goBusiInfo() {
         }
     });
 }
+
+
+
+
+
+
+
+$(document).ready(function() {
+    // 모달창 가져오기
+    var modal = document.getElementById("pdfModal");
+    
+    // 모달창을 여는 버튼 가져오기
+    var btn = document.getElementById("preview-pdf-btn");
+    
+    // 모달창에서 닫기 버튼 가져오기
+    var span = document.getElementsByClassName("close")[0];
+    
+    // 사용자가 버튼을 클릭하면 모달창 열기
+    btn.onclick = function(event) {
+        event.preventDefault(); // 폼의 기본 제출 이벤트를 방지
+        modal.style.display = "block";
+    }
+    
+    // 사용자가 (x) 버튼을 클릭하면 모달창 닫기
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    
+    // 사용자가 모달창 외부를 클릭하면 닫기
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // pdf.js의 worker 설정
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdfjs-2.2.228-dist/build/pdf.worker.js';
+});

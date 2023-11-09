@@ -856,7 +856,6 @@
     		#userId#,
     		sysdate
     	)
-    	
     </insert>
     
     <!-- 평가일정 삭제 -->
@@ -866,6 +865,52 @@
 		AND 	EVALU_STAGE = #evaluStage#
 		AND 	EVALU_STAGE_YEAR = #evaluGubun#
     </delete>
+    
+    <!--
+    ################################################################
+    SUNDOSOFT 평가사업관리 > 평가사업등록
+    ################################################################
+    -->
+    
+    <!-- 평가사업 등록 -->
+    <insert id="regiEvaluBusiMgmt" parameterClass="map">
+		INSERT
+    	  INTO TB_EVALU_DESTI_BUSI_INFO
+			 ( EVALU_BUSI_NO,
+			   EVALU_BUSI_NM,
+			   REQ_CITYAUTH_CD,
+			   BUSI_ADDR1,
+			   BUSI_ADDR2,
+			   BUSI_ADDR5,
+			   BUSI_STT_DATE,
+			   BUSI_END_DATE,
+			   BUSI_DEV_ENTY,
+			   BUSI_PLAN_DATE,
+			   BUSI_TYPE,
+			   BUSI_CATE,
+			   TOT_SITE_AREA,
+			   REGI_ID,
+			   REGI_DATE
+    	     )
+    	VALUES
+    	     ( #evaluBusiNo#,
+    	       #evaluBusiNm#,
+    	       #busiAddr1#,
+    	       FN_GET_CITYAUTH(#busiAddr1#),
+    	       FN_GET_CITYAUTH(#busiAddr2#),
+    	       #busiAddr5#,
+    	       FN_FMT_STRTODATE(#busiSttDate#, ''),
+    	       FN_FMT_STRTODATE(#busiEndDate#, ''),
+    	       #busiDevEnty#,
+    	       FN_FMT_STRTODATE(#busiPlanDate#, ''),
+    	       #busiType#,
+    	       #busiCate#,
+    	       #totSiteArea#,
+    		   #userId#,
+    		   sysdate
+    	     )
+    </insert>
+    
     
 
 </sqlMap>

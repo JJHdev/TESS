@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -1127,27 +1128,74 @@ public class EvaluBusiMgmtController extends BaseController {
     //################################################################
 
     /**
-     * [관리자] 평가사업관리 리스트 화면.
+     * [관리자] 평가사업관리 > 평가사업등록 화면
      * @param request
      * @param model
      * @return
      * @throws Exception
     */		
-    @RequestMapping(value="/mng/openRegiEvaluBusiMgmt.do")
-    public String openRegiEvaluBusiMgmt(HttpServletRequest request, ModelMap model) throws Exception {
+    @RequestMapping(value="/mng/regiEvaluBusiMgmt.do")
+    public String regiEvaluBusiMgmt(HttpServletRequest request, ModelMap model) throws Exception {
     	//---------------------------------------------
     	//Default Value Setting
     	String method	= getMethodName(new Throwable());
-    	Map paramMap	= setMappingValues(request, method );
+    	Map paramMap	= setMappingValues(request, method);
 		// default domain setting
 		EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain();
 		BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
 		//---------------------------------------------
 		
+		paramMap.put("startParentCode", "BUSI_TYPE");
+        paramMap.put("level"     , "1");
+        List busiTypeComboList = commService.listCode(paramMap);
+		
 		model.addAttribute("model"   ,  evaluMgmtDomain);
 		model.addAttribute("paramMap",  paramMap);
+		model.addAttribute("busiTypeComboList",  busiTypeComboList);
 		
-		return "mng/openRegiEvaluBusiMgmt";
+		return "mng/regiEvaluBusiMgmt";
+    }
+    
+    /**
+     * [관리자] 평가사업관리 > 평가사업등록 등록 처리
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/mng/saveEvaluBusiMgmt.do")
+    public String saveEvaluBusiMgmt(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        //Default Value Setting
+    	String method       = getMethodName(new Throwable());
+        Map paramMap		= setMappingValues(request, method);
+        // default domain setting
+        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain();
+        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
+        //---------------------------------------------
+        int result = 0;
+        try {
+        	result = evaluBusiMgmtService.regiEvaluBusiMgmt(paramMap);
+        } catch (UncategorizedSQLException ue) {
+        	logger.error("error :: ", ue);
+        	result = 0;
+        } catch (Exception e) {
+        	logger.error("error :: ", e);
+        	result = 0;
+        }
+        
+        if (result > 0) {
+        	resultFlag("평가사업 등록이 완료되었습니다.");
+        } else {
+        	resultFlag("평가사업 등록에 실패했습니다. 입력 값을 확인해주세요.");
+        	return "redirect:/mng/regiEvaluBusiMgmt.do";
+        }
+        
+        model.addAttribute("model"   ,  evaluMgmtDomain);
+        model.addAttribute("paramMap",  paramMap);
+        
+        return "redirect:/mng/listEvaluBusiMgmt.do";
     }
 
 }

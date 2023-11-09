@@ -145,6 +145,34 @@ bizutils.findCode = function( args ) {
     });
 };
 
+bizutils.findBjd = function( args ) {
+
+	if (!args) {
+		alert('[bizutils.findCode] : 함수인자가 정의되지 않았습니다.');
+		return;
+	}
+	if (!args.fn || !$.isFunction(args.fn)) {
+		alert('[bizutils.findCode] : 결과처리함수가 정의되지 않았습니다.');
+		return;
+	}
+	var params = args.params || {};
+	var fn = args.fn;
+
+    $.ajax({
+        url: ROOT_PATH +"/comm/findBjdCodeAjax.do",
+        data:params,
+        dataType:"json",
+        contentType:"application/json; text/html; charset=utf-8",
+        success:fn,
+        error:function(request, status, error) {
+			console.log(request);
+			console.log(status);
+			console.log(error);
+        	alert('error');
+        }
+    });
+};
+
 /**
  * 주소 문자열을 받아서 업무구성에 맞게 5개 값으로 분리하는 method
  *

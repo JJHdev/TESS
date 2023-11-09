@@ -18,7 +18,6 @@
     .o-search.tab1 .o-search-col { left: 0%; }
     .o-search.tab2 .o-search-col { left: 33.5%; }
     .o-search.tab3 .o-search-col { left: 67.0%; width: 33% !important; border-right: 1px solid #444}
-
     .o-search-col{ width: 33.5%; }
 </style>
 
@@ -99,18 +98,15 @@
 	                                <div class="search-acd" id="searchItem" role="tablist" aria-multiselectable="true">
 	                                    <div class="o-search tab1 panel">
 	                                        <div class="o-search-col " role="tab" id="headingOne">
-	                                            <a onClick="$.searchSlider('headingOne')" class="collapsed" role="button"
-	                                               data-toggle="collapse" data-parent="#searchItem" href="#collapseThree"
-	                                               aria-expanded="false" aria-controls="collapseThree"
-	                                               title="평가연도/단계">평가연도/단계</a>
+	                                            <a onClick="$.searchSlider('headingOne')" class="collapsed" role="button"data-toggle="collapse" data-parent="#searchItem" 
+	                                               href="#collapseThree" aria-expanded="false" aria-controls="collapseThree" title="평가연도/단계">평가연도/단계</a>
 	                                        </div>
 	                                        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel"
 	                                             aria-labelledby="headingOne">
 	                                            <ul class="i-search">
 	                                                <li class="i-search-col w50">
 	                                                    <%--TODO:: 평가연도--%>
-	                                                    <div class="i-search-result" id="i-search-Year">
-	                                                    </div>
+	                                                    <div class="i-search-result" id="i-search-Year"></div>
 	                                                <li class="i-search-col w50">
 	                                                    <%--TODO:: 평가--%>
 	                                                    <div class="i-search-result" id="i-search-eval">
@@ -125,15 +121,12 @@
 	                                    </div>
 	                                    <div class="o-search tab2 panel">
 	                                        <div class="o-search-col" role="tab" id="headingTwo">
-	                                            <a onClick="$.searchSlider('headingTwo')" class="collapsed" role="button"
-	                                               data-toggle="collapse" data-parent="#searchItem" href="#collapseOne"
-	                                               aria-expanded="false" aria-controls="collapseOne" title="지역">지역</a>
+	                                            <a onClick="$.searchSlider('headingTwo')" class="collapsed" role="button"data-toggle="collapse" 
+	                                               data-parent="#searchItem" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne" title="지역">지역</a>
 	                                        </div>
-	                                        <div id="collapseOne" class="panel-collapse collapse" role="tabpanel"
-	                                             aria-labelledby="headingTwo">
+	                                        <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
 	                                            <ul class="i-search">
-	                                                <li class="i-search-col w50" id="i-search-sido">
-	                                                </li>
+	                                                <li class="i-search-col w50" id="i-search-sido"></li>
 	                                                <li class="i-search-col w50" id="i-search-gungu">
 	                                                    <div class="i-search-item selected"><a title="전체">전체</a></div>
 	                                                </li>
@@ -142,12 +135,10 @@
 	                                    </div>
 	                                    <div class="o-search tab3 panel">
 	                                        <div class="o-search-col " role="tab" id="headingThree">
-	                                            <a onClick="$.searchSlider('headingThree')" class="collapsed" role="button"
-	                                               data-toggle="collapse" data-parent="#searchItem" href="#collapseTwo"
-	                                               aria-expanded="false" aria-controls="collapseTwo" title="회계구분/사업유형">회계구분/사업유형</a>
+	                                            <a onClick="$.searchSlider('headingThree')" class="collapsed" role="button"data-toggle="collapse" data-parent="#searchItem" 
+	                                               href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" title="회계구분/사업유형">회계구분/사업유형</a>
 	                                        </div>
-	                                        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
-	                                             aria-labelledby="headingThree">
+	                                        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
 	                                            <ul class="i-search">
 	                                                <li class="i-search-col w50" id="i-search-busiType">
 	                                                    <div class="i-search-item active"><a title="전체"  onclick="selectBusiType(this, '', '전체')">전체</a></div>
@@ -178,23 +169,18 @@
 	
 	                                <div class="grid-head">
 	                                    <div class="grid-count">총 <strong id="girdCnt">0</strong> 건</div>
-	                                    <button class="grid-print" data-grid-control="excel-export" title="엑셀저장">엑셀저장
-	                                    </button>
+	                                    <button class="grid-print" data-grid-control="excel-export" title="엑셀저장">엑셀저장</button>
 	                                </div>
 	                                <div class="grid-wrap" data-ax5grid="project-grid" data-ax5grid-config="{}"></div>
 	                                <!-- /Contents -->
-	
 	                            </div>
 	                        </div>
 	                    </div>
 	                </div>
-	
 	            </div>
 	            <!-- /contents-wrap -->
-	
-	
-	    </div>
-	</form:form>
+		    </div>
+		</form:form>
 
     <!-- ======================================================= -->
     <!-- ==================== 중앙내용 종료 ==================== -->

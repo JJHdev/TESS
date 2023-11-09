@@ -45,6 +45,9 @@ public class EvaluBusiMgmtService extends BaseService {
     public static final String FL_AREA_ATTH_TYPE_05 = "A05";  // 위성사진(개발현황도)
     public static final String FL_AREA_ATTH_TYPE_06 = "A06";  // 현장사진
     
+    // 사업코드 변수
+    public static final String BS_CODE				= "EV"; // EVTDSS 사업 공통 부여 코드
+    
     
     @Autowired
     private CommonDAOImpl dao;
@@ -185,7 +188,17 @@ public class EvaluBusiMgmtService extends BaseService {
     	List<Map> list = (List)dao.list("TDSS.listTodeFile", paramMap);
     	
         return list;
-    } 
+    }
     
+    //################################################################
+    //SUNDOSOFT 평가사업관리 > 평가사업등록
+    //################################################################
     
+    // 평가사업등록
+    public int regiEvaluBusiMgmt(Map paramMap) throws Exception {
+    	// TODO 사업코드 생성
+    	// BS_CODE + 
+    	
+    	return (Integer) dao.insert("MngEvalu.regiEvaluBusiMgmt", paramMap);
+    }
 }

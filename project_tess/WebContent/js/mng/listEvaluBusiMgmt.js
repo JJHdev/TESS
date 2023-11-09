@@ -18,7 +18,7 @@ var GRID_NAME = "#grid";
 var GRID_PAGER_NAME = "#pager";
 var SEARCH_URL = ROOT_PATH + "/mng/getEvaluBusiMgmt.do";
 var VIEW_URL = ROOT_PATH + "/mng/viewEvaluBusiHist.do";
-var REGI_URL = ROOT_PATH + "/mng/openRegiEvaluBusiMgmt.do";
+var REGI_URL = ROOT_PATH + "/mng/regiEvaluBusiMgmt.do";
 
 /* 그리드 객체 생성 */
 var projectGrid = new ax5.ui.grid();

@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import business.biz.CommConst;
@@ -138,5 +139,35 @@ public class CommController extends BaseController {
 	private void SetMappingValues(Map reqMap, String method) {
 		if (method.equalsIgnoreCase("listComboCode")) {
 		}
+	}
+	
+	
+	
+	//################################################################
+    //SUNDOSOFT 공통코드
+    //################################################################
+	
+	/**
+     * 법정동 코드 목록을 AJAX로 반환한다.
+     *
+     * @param request HTTP 요청
+     * @param model 모델맵
+     * @return 모델뷰
+     * @throws Exception 발생오류
+     */
+    @RequestMapping("/comm/findBjdCodeAjax.do")
+    @SuppressWarnings({ "rawtypes" })
+    public ModelAndView findBjdCodeAjax(HttpServletRequest request, ModelMap model) throws Exception {
+
+		// Request Parameter Values Setting
+		Map paramMap  = getParameterMap(request, true);
+
+		List list = commService.listBjdCode(paramMap);
+
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("AJAX_MODEL", list);
+		mav.setViewName(ajaxView);
+
+		return mav;
 	}
 }

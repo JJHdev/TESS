@@ -775,6 +775,10 @@ public class EvaluBusiController extends BaseController {
         model.addAttribute("model"   ,  evaluBusiDomain);
         model.addAttribute("paramMap",  paramMap);
         model.addAttribute("evaluInfo",  evaluInfo);
+        
+        System.out.println("modelmodel"+model);
+        System.out.println("paramMapparamMap"+paramMap);
+        System.out.println("evaluInfoevaluInfo"+evaluInfo);
 
         return "busi/viewEvaluInfoStep05";
     }

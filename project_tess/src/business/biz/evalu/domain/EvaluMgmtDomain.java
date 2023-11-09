@@ -43,6 +43,7 @@ public class EvaluMgmtDomain extends BaseModel {
     private String totSiteArea  ;  // 전체부지면적
     private String busiType     ;  // 사업의구분
     private String busiCate     ;  // 사업의유형
+    private String busiNote		;  // 사업내용
     private String regiId       ;  // 등록자
     private String regiDate     ;  // 등록일자
     private String updtId       ;  // 수정자
@@ -202,6 +203,12 @@ public class EvaluMgmtDomain extends BaseModel {
     }
     public void setBusiCate(String busiCate) {
         this.busiCate = busiCate;
+    }
+    public String getBusiNote() {
+        return busiNote;
+    }
+    public void setBusiNote(String busiNote) {
+        this.busiNote = busiNote;
     }
     public String getRegiId() {
         return regiId;

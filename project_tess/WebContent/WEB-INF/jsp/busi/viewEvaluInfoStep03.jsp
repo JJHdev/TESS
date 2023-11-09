@@ -14,11 +14,11 @@
 	
 	<!-- jstree 추가 js -->
 	<script type="text/javascript" src="/jquery/jstree/jquery.jstree.js"></script>
-	<script type="text/javascript" src="/jquery/jstree/jquery.hotkeys.js"></script>
-	<script type="text/javascript" src="/jquery/jstree/jquery.cookie.js"></script>
+	<script type="text/javascript" src="/jquery/jstree/_lib/jquery.hotkeys.js"></script>
+	<script type="text/javascript" src="/jquery/jstree/_lib/jquery.cookie.js"></script>
 	
-</head>
-
+	<script language="javascript"  type="text/javascript" src='<c:url value="/js/pdfjs-2.2.228-dist/build/pdfobject.min.js"/>'></script>
+	
 <body id="top">
 <div class="wrap">
 
@@ -137,39 +137,25 @@
 	                                <th>구분</th>
 	                                <th>서류등록</th>
 	                                <th>등록일시</th>
-	                                <th>진행</th>
+	                                <th>미리보기</th>
 	                            </tr>
 	                            <tr>
 	                                <td class="fix-width title">종합결과서</td>
 	                                <td>
-	                                    <input type="file" name="upload" class="regi-file-input" _docuType="PLYY" _atthType="AT13" id="AT13">
-	                                    <c:if test="${fileInfo == null}">
-	                                    	<div class="regi-file" rel="N">등록파일 없음</div>
-	                                    	<div class="incell-btn button-set hor">
-		                                        <button type="button" class="inline-button green"><a onclick="doc_save('AT13');" title="선택파일 추가">저장</a></button>
-		                                    </div>
-	                                    </c:if>
 	                                    <c:if test="${fileInfo != null}">
 	                                    	<div class="regi-file" rel="Y" fileNo="${fileInfo.EVALU_FILE_NO}">${fileInfo.FILE_ORG_NM}</div>
 	                                    	<div class="incell-btn button-set hor">
 		                                        <button type="button" class="inline-button green"><a onclick="doFileDelete('${totalResultMap.TOTAL_RESULT_YN}')" title="등록파일 삭제">삭제</a></button>
 		                                    </div>
 	                                    </c:if>
-	                                    <div class="regi-file">서면검토서.hwp</div>
+	                                    <div class="regi-file" style="float:right;">서면검토서.hwp</div>
 	                                </td>
 	                                <td class="fix-width date">${fileInfo.REGI_DATE}</td>
-	                                <td class="fix-width file">미제출</td> <!-- 평가위원용 : 미제출/제출/승인 문구 표기 -->
 	                                <!-- 관리자용 : 미제출/승인버튼 -->
 	                                <td class="fix-width file">
 	                                    <!-- 미제출 -->
 	                                    <div class="button-set hor">
-	                                        <button class="inline-button confirm"><a href="#" title="승인처리">승인</a></button>
-	                                        <c:if test="${totalResultMap.TOTAL_RESULT_YN != 'Y'}">
-	                                        	미제출
-	                                        </c:if>
-	                                        <c:if test="${totalResultMap.TOTAL_RESULT_YN == 'Y'}">
-	                                        	제출
-	                                        </c:if>
+	                                        <button class="inline-button confirm" id="preview-pdf-btn"><a href="#" title="미리보기">미리보기</a></button>
 	                                    </div>
 	                                </td>
 	                            </tr>
@@ -211,8 +197,6 @@
 	                                    	개선사항
 	                                    	<div class="save-date"><span class="txt-heightlight">${evaluInfo.OPINION_NOTE_DATE}</span> 저장</div>
 	                                    </c:if>
-	                                    	개선사항
-	                                    	<div class="save-date"><span class="txt-heightlight"></span> 저장되지 않음</div>
 	                                </td>
 	                                <td>
 	                                    <div class="incell-textarea">
@@ -289,12 +273,12 @@
 	                            </c:if>
 	                        </table>
 	
-	                        <div class="body-descriptions">
+	                       <!--  <div class="body-descriptions">
 	                            파일명에 <strong>이름 및 소속 등의 개인정보는 반드시 삭제 후 <span class="txt-heightlight">한글(.hwp)</span>파일로 업로드</strong>하여 주시기 바랍니다.<br>
 	                            <br>
 	                            아래의 <strong><span class="txt-heightlight">제출</span> 버튼을 클릭</strong> 하면 작성한 <strong><span class="txt-heightlight">종합결과서</span>가 제출</strong>되며 관리자가 승인하기 전에는 제출취소를 통해 철회할 수 있습니다.<br>
 	                            내용이 정확한지 최종적으로 확인하신 후 진행하시기 바랍니다.<br>
-	                        </div>
+	                        </div> -->
 	
 	                        <div class="submit-set">
 	                        	<c:if test="${totalResultMap.TOTAL_RESULT_YN != 'Y'}">
@@ -303,7 +287,15 @@
 	                        	<c:if test="${totalResultMap.TOTAL_RESULT_YN == 'Y'}">
 	                        		<button type="button" class="evtdss-submit-cancel"><a id="prcBtnCancle" title="제출취소">제출취소</a></button>
 	                        	</c:if>
-	                            
+	                        	
+                                <!-- 미제출 -->
+                            	<button type="button" class="evtdss-submit"><a id="prcBtnSave2" title="승인처리">승인</a></button>
+                                <c:if test="${viewCommitStatus.OPINION_APV_YN != 'Y'}">
+                                	승인대기
+                                </c:if>
+                                <c:if test="${viewCommitStatus.OPINION_APV_YN == 'Y'}">
+                                	승인완료
+                                </c:if>
 	                            <!-- 제출이력이 있을 경우 표시 -->
 	                            <div class="evtdss-submit-date">이 문서는 <span class="txt-heightlight">2018-08-21 14:24:36 에 제출</span> 되었습니다.</div>
 	                            <!-- /제출이력이 있을 경우 표시 -->
@@ -315,6 +307,208 @@
 			</form:form>
 		</div> <!-- /contents-wrap -->
 	</div><!-- /contents -->
+
+
+<style>
+.modal-content {
+  display: flex; /* Flexbox를 사용하여 내부 컨텐츠를 나란히 배치 */
+  justify-content: center; /* 가운데 정렬 */
+  align-items: stretch; /* 높이를 같게 조정 */
+}
+
+.content-container {
+  display: flex; /* Flexbox를 사용하여 PDF와 테이블을 나란히 배치 */
+  width: 100%; /* 모달 컨텐츠의 전체 너비를 사용 */
+}
+
+.pdf-viewer {
+  flex: auto; /* 반을 차지하도록 유연성 부여 */
+  overflow: hidden; /* PDF가 컨테이너를 넘어가지 않도록 함 */
+}
+
+th, td {
+  border: 1px solid #ddd; /* 셀에 테두리 추가 */
+  padding: 8px; /* 셀 패딩 */
+}
+
+th {
+  background-color: #f2f2f2; /* 테이블 헤더 배경색 */
+  text-align: left; /* 텍스트 왼쪽 정렬 */
+}
+.modal {
+  display: none; /* 기본적으로 숨겨져 있음 */
+  position: fixed;
+  z-index: 100%; /* 페이지 위에 표시 */
+  left: 0;
+  top: 0;
+  width: 100%; /* 전체 너비 */
+  height: 170%; /* 전체 높이 */
+  overflow: auto; /* 스크롤바 추가 */
+  background-color: rgb(0,0,0); /* 백그라운드 색상 */
+  background-color: rgba(0,0,0,0.4); /* 어두운 투명도 */
+}
+
+/* 모달창 컨텐츠 스타일 */
+.modal-content {
+  background-color: #fefefe;
+  margin: 4% auto; /* 페이지 중앙에 위치 */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 95%; /* 대부분의 화면을 차지 */
+  height: 50%;
+}
+
+/* 닫기 버튼 스타일 */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#pdf-viewer {
+  width: 100%;
+  overflow-y: scroll;
+  background: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#pdf-viewer canvas {
+  width: 100%; /* 캔버스 너비를 컨테이너에 맞춥니다. */
+  border-bottom: 1px solid #ccc; /* 페이지 간 구분선 추가 */
+  margin-bottom: 20px; /* 페이지 간 간격 추가 */
+  page-break-after: always; /* 인쇄 시 페이지 구분 */
+}
+canvas {
+  width: 100%; /* 캔버스 너비를 컨테이너에 맞춥니다. */
+  border-bottom: 1px solid #ccc; /* 페이지 간 구분선 추가 */
+  margin-bottom: 20px; /* 페이지 간 간격 추가 */
+}
+
+</style>
+	
+<div id="pdfModal" class="modal">
+  <!-- 모달창 컨텐츠 -->
+  <div class="modal-content">
+    <div class="content-container">
+      <div class="pdf-viewer">
+        <object data='/1/Week01/data/download01/01.pdf#pagemode=thumbs&scrollbar=1&toolbar=1&statusbar=1&messages=1&navpanes=1'  type='application/pdf' width='100%' height='100%'>
+          <p>This browser does not support inline PDFs. Please download the PDF to view it: <a href="/1/Week01/data/download01/01.pdf">Download PDF</a></p>
+        </object>
+      </div>
+      
+      <div style="flex: auto; overflow: auto;">
+        <!-- 테이블 -->
+		<p class="section-title" style="margin-left : 50px;">종합결과서</p>
+        <table style=" width: 92%; margin-left : 50px; border-collapse: collapse;">
+			<tr>
+			    <th style="width: 50px;">구분</th>
+			    <th style="width: 450px;">내용</th>
+			</tr>
+			<tr>
+			    <td class="fix-width title">
+			    	<c:if test="${evaluInfo.FINAL_EVALU_FND_NOTE == null}">
+			        	종합의견
+			        	<div class="save-date"><span class="txt-heightlight"></span> 저장되지 않음</div>
+			        </c:if>
+			        <c:if test="${evaluInfo.FINAL_EVALU_FND_NOTE != null}">
+			        	종합의견
+			        	<%-- <div class="save-date"><span class="txt-heightlight">${evaluInfo.OPINION_NOTE_DATE}</span> 저장</div> --%>
+			        </c:if>
+			    </td>
+			    <td>
+			        <div class="incell-textarea">
+			            <textarea id="finalFndNote">${evaluInfo.FINAL_EVALU_FND_NOTE}</textarea>
+			            <div class="incell-btn button-set ver">
+			                <button type="button" class="inline-button green"><a onclick="saveNote();" title="저장">저장</a></button>
+			                <button type="button" class="inline-button green"><a onclick="deltNote();" title="삭제">삭제</a></button>
+			            </div>
+			        </div>
+			    </td>
+			</tr>
+			<tr>
+			    <td class="fix-width title">
+			    	<c:if test="${evaluInfo.FINAL_EVALU_IPM_NOTE == null}">
+			        	개선사항
+			        	<div class="save-date"><span class="txt-heightlight"></span> 저장되지 않음</div>
+			        </c:if>
+			        <c:if test="${evaluInfo.FINAL_EVALU_IPM_NOTE != null}">
+			        	개선사항
+			        	<div class="save-date"><span class="txt-heightlight">${evaluInfo.OPINION_NOTE_DATE}</span> 저장</div>
+			        </c:if>
+			    </td>
+			    <td>
+			        <div class="incell-textarea">
+			            <textarea id="finalIpmNote">${evaluInfo.FINAL_EVALU_IPM_NOTE}</textarea>
+			            <div class="incell-btn button-set ver">
+			                <button type="button" class="inline-button green"><a onclick="saveIpm();" title="저장">저장</a></button>
+			                <button type="button" class="inline-button green"><a onclick="deltIpm();" title="삭제">삭제</a></button>
+			            </div>
+			        </div>
+			    </td>
+			</tr>
+			<c:if test="${evaluInfo.EVALU_STAGE == 'EVALU_PREV' || evaluInfo.EVALU_STAGE == 'EVALU_PROG'}">
+				<tr>
+			     <td class="fix-width title">
+			        	 평가결과
+			     </td>
+			     <td>
+			         <strong class="txt-heightlight">[${evaluInfo.EVALU_STAGE_NM}]</strong> <!-- 해당 평가단계 -->
+			
+			         <!-- 평가사업관리 > 평가지표 설정 > 평가결과 항목 에서 지정한 배열로 내용구성 -->
+			         
+			         <label class="incell-radio radio-inline" title="적합">
+			         	<c:if test="${evaluInfo.FINAL_EVALU_FND == 'P'}">
+			         		<input type="radio" name="finalFnd" id="evalResult1" value="P" checked>적합
+			         	</c:if>
+			         	<c:if test="${evaluInfo.FINAL_EVALU_FND != 'P'}">
+			         		<input type="radio" name="finalFnd" id="evalResult1" value="P">적합
+			         	</c:if>
+			         </label>
+			         <label class="incell-radio radio-inline" title="조건부 적합">
+			         	<c:if test="${evaluInfo.FINAL_EVALU_FND == 'C'}">
+			 		<input type="radio" name="finalFnd" id="evalResult2" value="C" checked>조건부 적합
+			         	</c:if>
+			         	<c:if test="${evaluInfo.FINAL_EVALU_FND != 'C'}">
+			         		<input type="radio" name="finalFnd" id="evalResult2" value="C">조건부 적합
+			         	</c:if>
+			         </label>
+			         <label class="incell-radio radio-inline" title="부적합">
+			         	<c:if test="${evaluInfo.FINAL_EVALU_FND == 'F'}">
+			         		<input type="radio" name="finalFnd" id="evalResult3" value="F" checked>부적합
+			         	</c:if>
+			         	<c:if test="${evaluInfo.FINAL_EVALU_FND != 'F'}">
+			         		<input type="radio" name="finalFnd" id="evalResult3" value="F">부적합
+			         	</c:if>
+			         </label>
+			     </td>
+			 </tr>
+			</c:if>
+		</table>
+		<div class="submit-set">
+			<c:if test="${totalResultMap.TOTAL_RESULT_YN != 'Y'}">
+				<button type="button" class="evtdss-submit"><a id="prcBtnSave" title="저장하기">저장하기</a></button>
+			</c:if>
+			<c:if test="${totalResultMap.TOTAL_RESULT_YN == 'Y'}">
+				<button type="button" class="evtdss-submit-cancel"><a id="prcBtnCancle" title="취소">취소</a></button>
+			</c:if>
+			<!-- 제출이력이 있을 경우 표시 -->
+			<div class="evtdss-submit-date">이 문서는 <span class="txt-heightlight">2018-08-21 14:24:36 에 제출</span> 되었습니다.</div>
+			<!-- /제출이력이 있을 경우 표시 -->
+		</div>
+      </div>
+    </div>
+    <span class="close">&times;</span>
+  </div>
+</div>
 
 <!-- ======================================================= -->
 <!-- ==================== 중앙내용 종료 ==================== -->

@@ -94,5 +94,23 @@
     </bean>
 
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource" p:basename="messages"/>
-
+	
+	<!-- 2023.11.07 JSON XSS 방지 -->
+	<!-- <bean id="xssDefendObjectMapper" class="business.com.interceptor.XSSDefendObjectMapperFactory" /> -->
+	
+	<!-- json -->
+	<!--
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper" ref="xssDefendObjectMapper"></property>
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json; charset=UTF-8</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+	-->
 </beans>
