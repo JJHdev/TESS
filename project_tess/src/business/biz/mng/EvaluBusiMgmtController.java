@@ -27,6 +27,7 @@ import business.biz.bbs.BbsService;
 import business.biz.comm.CommService;
 import business.biz.evalu.EvaluCommService;
 import business.biz.evalu.EvaluMgmtService;
+import business.biz.evalu.domain.EvaluBusiMgmtDomain;
 import business.biz.evalu.domain.EvaluMgmtDomain;
 import business.biz.main.domain.MainDomain;
 import commf.message.Message;
@@ -145,46 +146,7 @@ public class EvaluBusiMgmtController extends BaseController {
         return new ModelAndView(ajaxView, returnMap);
     }
     
-    /**
-     * [관리자] 평가이력 화면.
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value="/mng/viewEvaluBusiHist.do")
-    public String viewEvaluBusiHist(HttpServletRequest request, ModelMap model)
-            throws Exception {
-    	
-    	//---------------------------------------------
-        //Default Value Setting
-    	String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
-        // default domain setting
-        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain();
-        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
-        //---------------------------------------------
-        
-        // 평가사업 정보
-        Map busiInfo = evaluBusiMgmtService.viewEvaluBusiInfo(paramMap);
-        
-        // 평가이력 조회
-        List evaluBusiHistList = evaluBusiMgmtService.listEvaluBusiHist(paramMap);
-        
-        // 평가진행이력 체크
-        Map checkStagekHist = evaluBusiMgmtService.checkEvaluStageHist(paramMap);
-        
-        model.addAttribute("model"   ,  evaluMgmtDomain);
-        model.addAttribute("paramMap",  paramMap);
-        model.addAttribute("busiInfo",  busiInfo); 
-        model.addAttribute("evaluBusiHistList",  evaluBusiHistList);
-        model.addAttribute("checkStagekHist",  checkStagekHist);
-        
-        // SESSEION 값 설정 : 만일 값이 존재할 때 해당 값을 이용해서 화면에서 처리 할 수 있음.
-        //setEvaluRtnSessionFg(request, model);
-        
-        return "mng/viewEvaluBusiHist";
-    }
+    
     
     /**
      * [관리자] 평가사업 등록 ajax.
@@ -1113,6 +1075,17 @@ public class EvaluBusiMgmtController extends BaseController {
         else if(method.equalsIgnoreCase("viewEvaluBusiHist")){
         	
         	// 평가단계 조회
+        	paramMap.put("useYn", "Y");
+        	List evaluStageList = evaluEnvService.listEvaluEnvStep(paramMap);
+        	
+        	request.setAttribute("evaluStageList", evaluStageList);
+        	
+        }
+        // 2023.11.10 LHB [관리자] 평가사업관리 > 평가이력
+        else if(method.equalsIgnoreCase("viewEvaluBusiMgmtHist")){
+        	
+        	// 평가단계 조회
+        	paramMap.put("useYn", "Y");
         	List evaluStageList = evaluEnvService.listEvaluEnvStep(paramMap);
         	
         	request.setAttribute("evaluStageList", evaluStageList);
@@ -1120,8 +1093,6 @@ public class EvaluBusiMgmtController extends BaseController {
         }
         
     }
-    
-    
     
     //################################################################
     //SUNDOSOFT 평가사업관리 > 평가사업등록
@@ -1141,19 +1112,52 @@ public class EvaluBusiMgmtController extends BaseController {
     	String method	= getMethodName(new Throwable());
     	Map paramMap	= setMappingValues(request, method);
 		// default domain setting
-		EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain();
-		BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
+		EvaluBusiMgmtDomain evaluBusiMgmtDomain = new EvaluBusiMgmtDomain();
+		BeanUtils.copyProperties(evaluBusiMgmtDomain, paramMap);
 		//---------------------------------------------
 		
 		paramMap.put("startParentCode", "BUSI_TYPE");
         paramMap.put("level"     , "1");
         List busiTypeComboList = commService.listCode(paramMap);
 		
-		model.addAttribute("model"   ,  evaluMgmtDomain);
+		model.addAttribute("model"   ,  evaluBusiMgmtDomain);
 		model.addAttribute("paramMap",  paramMap);
 		model.addAttribute("busiTypeComboList",  busiTypeComboList);
 		
 		return "mng/regiEvaluBusiMgmt";
+    }
+    
+    /**
+     *  [관리자] 평가사업관리 > 평가사업목록 호출
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/mng/getListEvaluBusiMgmt.do")
+    public ModelAndView getListEvaluBusiMgmt(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+        //---------------------------------------------
+        //Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method );
+        // default domain setting
+       
+        EvaluBusiMgmtDomain evaluBusiMgmtDomain = new EvaluBusiMgmtDomain(); 
+        BeanUtils.copyProperties(evaluBusiMgmtDomain, paramMap);
+        //---------------------------------------------
+        
+        CURR_PAGE = CommUtils.strToInt((String)paramMap.get("page"), CURR_PAGE);
+        PAGE_SIZE = CommUtils.toInt(CommUtils.nvlTrim((String)paramMap.get("rows"), String.valueOf(PAGE_SIZE)));
+        
+        PaginatedArrayList list = null;
+        list = evaluBusiMgmtService.listEvaluBusiMgmt(paramMap, CURR_PAGE, PAGE_SIZE);
+        
+        Map returnMap   = new HashMap();
+        returnMap.put("pageGridList", list);
+        returnMap.put("Total"       , list.getTotalSize());
+
+        return new ModelAndView(ajaxView, returnMap);
     }
     
     /**
@@ -1168,11 +1172,11 @@ public class EvaluBusiMgmtController extends BaseController {
     	
     	//---------------------------------------------
         //Default Value Setting
-    	String method       = getMethodName(new Throwable());
-        Map paramMap		= setMappingValues(request, method);
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
         // default domain setting
-        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain();
-        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
+        EvaluBusiMgmtDomain evaluBusiMgmtDomain = new EvaluBusiMgmtDomain();
+        BeanUtils.copyProperties(evaluBusiMgmtDomain, paramMap);
         //---------------------------------------------
         int result = 0;
         try {
@@ -1192,11 +1196,215 @@ public class EvaluBusiMgmtController extends BaseController {
         	return "redirect:/mng/regiEvaluBusiMgmt.do";
         }
         
-        model.addAttribute("model"   ,  evaluMgmtDomain);
+        model.addAttribute("model"   ,  evaluBusiMgmtDomain);
         model.addAttribute("paramMap",  paramMap);
         
         return "redirect:/mng/listEvaluBusiMgmt.do";
     }
-
+    
+    /**
+     * [관리자] 평가사업관리 > 평가사업이력 화면
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/mng/viewEvaluBusiMgmtHist.do")
+    public String viewEvaluBusiMgmtHist(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        //Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
+        // default domain setting
+        EvaluBusiMgmtDomain evaluBusiMgmtDomain = new EvaluBusiMgmtDomain();
+        BeanUtils.copyProperties(evaluBusiMgmtDomain, paramMap);
+        //---------------------------------------------
+        
+        // 평가사업 정보
+        Map busiInfo = evaluBusiMgmtService.viewEvaluBusiMgmt(paramMap);
+        
+        // 평가이력 조회
+        List evaluBusiMgmtHistList = evaluBusiMgmtService.listEvaluBusiMgmtHist(paramMap);
+        
+        // 평가진행이력 체크
+        Map checkStagekHist = evaluBusiMgmtService.checkEvaluStageHist(paramMap);
+        
+        model.addAttribute("model"   ,  evaluBusiMgmtDomain);
+        model.addAttribute("paramMap",  paramMap);
+        model.addAttribute("busiInfo",  busiInfo); 
+        model.addAttribute("evaluBusiMgmtHistList",  evaluBusiMgmtHistList);
+        model.addAttribute("checkStagekHist",  checkStagekHist);
+        
+        // SESSEION 값 설정 : 만일 값이 존재할 때 해당 값을 이용해서 화면에서 처리 할 수 있음.
+        //setEvaluRtnSessionFg(request, model);
+        
+        return "mng/viewEvaluBusiMgmtHist";
+    }
+    
+    /**
+     * [관리자] 평가사업관리 > 평가사업이력 확인
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/mng/chckEvaluBusiMgmtHist.do")
+    public ModelAndView chckEvaluBusiMgmtHist(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        //Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
+        // default domain setting
+       
+        EvaluBusiMgmtDomain evaluBusiMgmtDomain = new EvaluBusiMgmtDomain(); 
+        BeanUtils.copyProperties(evaluBusiMgmtDomain, paramMap);
+        //---------------------------------------------
+    	
+    	int result = evaluBusiMgmtService.chckEvaluBusiMgmtHist(paramMap);
+    	
+    	Map returnMap = new HashMap();
+    	returnMap.put("code", result);
+    	
+    	return new ModelAndView(ajaxView, returnMap);
+    }
+    
+    /**
+     * [관리자] 평가사업관리 > 평가사업등록 등록 처리
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/mng/regiEvaluBusiMgmtHist.do")
+    public ModelAndView regiEvaluBusiMgmtHist(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        //Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
+        // default domain setting
+        EvaluBusiMgmtDomain evaluBusiMgmtDomain = new EvaluBusiMgmtDomain();
+        BeanUtils.copyProperties(evaluBusiMgmtDomain, paramMap);
+        //---------------------------------------------
+        int result = 0;
+        try {
+        	result = evaluBusiMgmtService.regiEvaluBusiMgmtHist(paramMap);
+        } catch (UncategorizedSQLException ue) {
+        	logger.error("error :: ", ue);
+        	result = 0;
+        } catch (Exception e) {
+        	logger.error("error :: ", e);
+        	result = 0;
+        }
+        
+        Map returnMap = new HashMap();
+        
+        if (result > 0) {
+        	returnMap.put("code",	"1");
+        	returnMap.put("msg",	"평가사업 등록이 완료되었습니다.");
+        } else {
+        	returnMap.put("code",	"-1");
+        	returnMap.put("msg",	"평가사업 등록에 실패했습니다. 관리자에게 문의해주세요.");
+        }
+        
+        return new ModelAndView(ajaxView, returnMap);
+    }
+    
+    /**
+     * [관리자] 평가사업관리 > 평가지침 화면
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/mng/viewEvaluBusiMgmtGuide.do")
+    public String viewEvaluBusiMgmtGuide(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        //Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
+        // default domain setting
+        EvaluBusiMgmtDomain evaluBusiMgmtDomain = new EvaluBusiMgmtDomain();
+        BeanUtils.copyProperties(evaluBusiMgmtDomain, paramMap);
+        //---------------------------------------------
+        
+        // 평가사업 정보 (평가이력 일련번호 번호로 조회)
+        Map evaluInfo = evaluBusiMgmtService.viewEvaluBusiMgmtByHist(paramMap);
+        
+        // 평가사업 이력 상세조회
+        Map evaluBusiMgmtHistInfo = evaluBusiMgmtService.viewEvaluBusiMgmtHist(paramMap);
+        BeanUtils.copyProperties(evaluBusiMgmtDomain, paramMap);
+        
+        // 평가지침서 조회
+        Map evaluDocA = evaluBusiMgmtService.viewEvaluAFile(paramMap);
+        // 서면검토서 조회
+        Map evaluDocB = evaluBusiMgmtService.viewEvaluBFile(paramMap);
+        // 평가의견서 조회
+        Map evaluDocC = evaluBusiMgmtService.viewEvaluCFile(paramMap);
+        
+        // 평가진행이력 체크
+        Map checkStagekHist = evaluBusiMgmtService.checkEvaluStageHist(paramMap);
+        
+        List areaFileList = null;
+        List areaFormList = null;
+        
+        //----------------------
+        // 파일 리스트 조회
+        //----------------------
+        Map fpMap = new HashMap();
+        fpMap.put("rootNo", paramMap.get("evaluBusiNo"));
+        
+        // [사업대상지 정보] 부분 첨부파일 리스트 조회.
+        fpMap.put("docuType", evaluBusiMgmtService.FL_DOCU_TYPE_AREA);
+        areaFileList = evaluBusiMgmtService.listTodeFile(fpMap);
+        
+        System.out.println("areaFileList : " + areaFileList);
+        
+        // 사업 대상지 정보 form을 구성하는 list
+        areaFormList = new ArrayList();
+        Map a01Map = new HashMap();
+        Map a02Map = new HashMap();
+        Map a03Map = new HashMap();
+        Map a04Map = new HashMap();
+        Map a05Map = new HashMap();
+        Map a06Map = new HashMap();
+        a01Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_01);
+        a02Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_02);
+        a03Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_03);
+        a04Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_04);
+        a05Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_05);
+        a06Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_06);
+        a01Map.put("title"   , "조감도");
+        a02Map.put("title"   , "위치도(교통현황도)");
+        a03Map.put("title"   , "토지이용계획도");
+        a04Map.put("title"   , "시설배치도");
+        a05Map.put("title"   , "위성사진(개발현황도)");
+        a06Map.put("title"   , "현장사진");
+        areaFormList.add(a01Map);
+        areaFormList.add(a02Map);
+        areaFormList.add(a03Map);
+        areaFormList.add(a04Map);
+        areaFormList.add(a05Map);
+        areaFormList.add(a06Map);
+        
+        // 사업 정보
+        Map mastMap = evaluBusiMgmtService.viewTodeMgmtMast(paramMap);
+        
+        model.addAttribute("model",					evaluBusiMgmtDomain);
+        model.addAttribute("paramMap",				paramMap);
+        model.addAttribute("mastMap",				mastMap);
+        model.addAttribute("evaluInfo",				evaluInfo);
+        model.addAttribute("evaluBusiMgmtHistInfo",	evaluBusiMgmtHistInfo);
+        model.addAttribute("areaFileList",			areaFileList);
+        model.addAttribute("areaFormList",			areaFormList);
+        model.addAttribute("evaluDocA",				evaluDocA);
+        model.addAttribute("evaluDocB",				evaluDocB);
+        model.addAttribute("evaluDocC",				evaluDocC);
+        model.addAttribute("checkStagekHist",		checkStagekHist);
+        
+        return "mng/viewEvaluBusiMgmtGuide";
+    }
 }
-

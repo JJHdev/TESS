@@ -13,18 +13,21 @@
 
 	<!-- 평가단계 조회 -->
 	<select id="listEvaluEnvStep" parameterClass="map"  resultClass="hashmap">
-        SELECT
-				EVALU_INDICAT_CD 			as "evaluIndicatCd",
-				UPPER_EVALU_INDICAT_CD 		as "upperEvaluIndicatCd",
-				CODE_ORD 					as "codeOrd",
-				EVALU_INDICAT_NM 			as "evaluIndicatNm",
-				EVALU_INDICAT_USE_YN 		as "evaluIndicatUseYn",
-				MAIN_OPEN_YN				as "mainOpenYn",
-				MAIN_OPEN_ORD				as "mainOpenOrd",
-				REGI_DATE 					as "regiDate"
+        SELECT EVALU_INDICAT_CD 			as "evaluIndicatCd",
+			   UPPER_EVALU_INDICAT_CD 		as "upperEvaluIndicatCd",
+			   CODE_ORD 					as "codeOrd",
+			   EVALU_INDICAT_NM 			as "evaluIndicatNm",
+			   EVALU_INDICAT_USE_YN 		as "evaluIndicatUseYn",
+			   MAIN_OPEN_YN				as "mainOpenYn",
+			   MAIN_OPEN_ORD				as "mainOpenOrd",
+			   REGI_DATE 					as "regiDate"
         FROM TB_EVALU_INDICAT
-        WHERE UPPER_EVALU_INDICAT_CD = 'EVALU_ITEM'
-        ORDER BY CODE_ORD
+       WHERE UPPER_EVALU_INDICAT_CD = 'EVALU_ITEM'
+             <isEqual property="useYn" compareValue="Y">
+             AND EVALU_INDICAT_USE_YN = 'Y'
+             </isEqual>
+       ORDER BY
+             CODE_ORD
     </select>
     
     <!-- 평가단계 등록 -->

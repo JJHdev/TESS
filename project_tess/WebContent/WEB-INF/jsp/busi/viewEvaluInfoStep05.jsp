@@ -110,7 +110,7 @@
 	                                <li class="" style="background-color:#5f5f5f;"><a title="평가종료" style="cursor:no-drop;">평가종료</a></li>
 	                            </ul>
 	                        </div>
-	                        
+
 	                        <p class="section-title">이행계획서<small class="silent">제출 전 첨부파일을 확인하시기 바랍니다.</small></p>
 							<table class="evtdss-form-table">
 	                        	<tr>

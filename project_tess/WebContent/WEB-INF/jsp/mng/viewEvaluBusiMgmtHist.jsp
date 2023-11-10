@@ -1,3 +1,14 @@
+<%--
+*******************************************************************************
+***    명칭: viewEvaluBusiMgmtHist.jsp
+***    설명: [관리자] 평가사업관리 > 평가이력 화면
+***
+***    -----------------------------    Modified Log   ---------------------------
+***    버전        수정일자        수정자        내용
+*** ---------------------------------------------------------------------------
+***    1.0    2023.11.07        LHB       First Coding.
+*******************************************************************************
+--%>
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 
@@ -41,7 +52,7 @@
     <input type="hidden" name="mode"        id="mode"        value='<c:out value="${paramMap.mode }"/>'>
 
     <%-- pk --%>
-    <form:hidden path="evaluBusiNo" />
+    <form:hidden path="evaluBusiSn" />
 
     <%-- 검색조건 --%>
     <div id="srchCondArea">
@@ -77,8 +88,8 @@
 	            <div class="project-header" style="background-image:url(/img/storage/project-theme.jpg)">
 	                <div class="shade"></div>
 	                <div class="project-title">
-	                    <h2>${busiInfo.planEvalBusiName}</h2>
-	                    <p>${busiInfo.busiAddress1} <%-- / ${busiInfo.EVALU_GUBUN} ${busiInfo.EVALU_STAGE_NM} --%><!--  / 서면검토 단계 --></p>
+	                    <h2>${busiInfo.evaluBusiNm}</h2>
+	                    <p>${busiInfo.busiAddr} <%-- / ${busiInfo.EVALU_GUBUN} ${busiInfo.EVALU_STAGE_NM} --%><!--  / 서면검토 단계 --></p>
 	                </div>
 	                <div class="local-menu th3">
 	                    <ul>
@@ -110,76 +121,40 @@
 	                            <tr>
 	                                <th>평가연도</th>
 	                                <th>평가단계</th>
-	                                <th>평가지침</th>
-	                                <th>실행계획</th>
 	                                <th>생성일시</th>
 	                                <th>진행상황</th>
 	                                <th>관리</th>
 	                            </tr>
-	                            <c:if test="${fn:length(evaluBusiHistList) == 0}">
+	                            <c:if test="${fn:length(evaluBusiMgmtHistList) == 0}">
 	                            	<tr>
 		                                <td class="noData" colspan="7">
-		                                    	데이터가 존재하지 않습니다.
+											데이터가 존재하지 않습니다.
 		                                </td>
 		                            </tr>
 	                            </c:if>
-	                            <c:if test="${fn:length(evaluBusiHistList) > 0}">
-	                            	<c:forEach items="${evaluBusiHistList}" var="list"  varStatus="idx">
+	                            <c:if test="${fn:length(evaluBusiMgmtHistList) > 0}">
+	                            	<c:forEach items="${evaluBusiMgmtHistList}" var="list" varStatus="idx">
 	                            		<tr>
 			                                <td class="fix-width status">
-			                                	<%-- <c:if test="${list.EVALU_GUBUN == 'PREV'}">2014</c:if>
-			                                	<c:if test="${list.EVALU_GUBUN == 'AFTER'}">2015</c:if>
-			                                	<c:if test="${list.EVALU_GUBUN == 'AFTER2016'}">2016</c:if>
-			                                	<c:if test="${list.EVALU_GUBUN == '2017'}">2017</c:if>
-			                                	<c:if test="${list.EVALU_GUBUN == '2018'}">2018</c:if> --%>
-			                                	
-			                                	<%-- <c:if test="${list.EVALU_GUBUN == '2014'}">2014</c:if>
-			                                	<c:if test="${list.EVALU_GUBUN == '2015'}">2015</c:if>
-			                                	<c:if test="${list.EVALU_GUBUN == '2016'}">2016</c:if>
-			                                	<c:if test="${list.EVALU_GUBUN == '2017'}">2017</c:if>
-			                                	<c:if test="${list.EVALU_GUBUN == '2018'}">2018</c:if>
-			                                	<c:if test="${list.EVALU_GUBUN == '2019'}">2019</c:if> --%>
-			                                	
-			                                	${list.EVALU_GUBUN}
+			                                	<c:out value="${list.evaluYear}" />
 			                                </td>
-			                                <td>${list.EVALU_STAGE_NM}</td>
-			                                <td class="fix-width status">
-												<c:if test="${list.EVALU_GUIDE_YN == 'Y'}">등록</c:if>			                                
-												<c:if test="${list.EVALU_GUIDE_YN == 'N' || empty list.EVALU_GUIDE_YN}">미등록</c:if>
+			                                <td>
+			                                	<c:out value="${list.evaluStageNm}" />
+			                                </td>
+			                                <td class="fix-width date">
+			                                	<c:out value="${list.regiDate}" />
 			                                </td>
 			                                <td class="fix-width status">
-			                                	<c:if test="${list.EVALU_PLAN_YN == 'Y'}">등록</c:if>
-												<c:if test="${list.EVALU_PLAN_YN == 'N' || empty list.EVALU_PLAN_YN}">미등록</c:if>
-			                                </td>
-			                                <td class="fix-width date">${list.REGI_DATE}</td>
-			                                <td class="fix-width status">
-			                                    <c:if test="${list.EVALU_FINAL_YN == 'Y'}">
-			                                    	평가완료
-			                                    </c:if>
-			                                    <c:if test="${list.EVALU_FINAL_YN == 'N' && AGREE_COUNT != 0}">
-			                                    	평가중
-			                                    </c:if>
-			                                    <%-- <c:if test="${list.EVALU_GUIDE_YN == 'N' || empty list.EVALU_GUIDE_YN || list.EVALU_PLAN_YN == 'N' || empty list.EVALU_PLAN_YN}"> --%>
-			                                    <c:if test="${list.EVALU_FINAL_YN == 'N' && AGREE_COUNT == 0}">
-			                                    	대기
-			                                    </c:if>
+			                                    <c:out value="${list.prgrGubunNm}" />
 			                                </td>
 			                                <td class="fix-width status">
 			                                    <div class="button-set hor">
-			                                    	<%-- <c:if test="${list.EVALU_GUIDE_YN == 'N' || empty list.EVALU_GUIDE_YN || list.EVALU_PLAN_YN == 'N' || empty list.EVALU_PLAN_YN}">
-			                                    		<button type="button" class="inline-button confirm"><a onclick="goModfy('${list.EVALU_GUBUN}', '${list.EVALU_STAGE}');" title="수정">수정</a></button>
-			                                        	<button type="button" class="inline-button black"><a onclick="goDelete('${list.EVALU_GUBUN}', '${list.EVALU_STAGE}');" title="삭제">삭제</a></button>
-			                                    	</c:if>
-			                                        <c:if test="${list.EVALU_FINAL_YN == 'Y' || list.EVALU_FINAL_YN == 'N' && list.EVALU_GUIDE_YN == 'Y' && list.EVALU_PLAN_YN == 'Y'}">
-			                                        	<button type="button" class="inline-button green"><a href="./projectInfo.html" title="조회">조회</a></button>
-			                                        </c:if> --%>
-			                                        
 			                                        <c:if test="${list.AGREE_COUNT == 0}">
 			                                        	<button type="button" class="inline-button confirm"><a onclick="goModfy('${list.EVALU_GUBUN}', '${list.EVALU_STAGE}');" title="수정">수정</a></button>
 			                                        	<button type="button" class="inline-button black"><a onclick="goDelete('${list.EVALU_GUBUN}', '${list.EVALU_STAGE}');" title="삭제">삭제</a></button>
 			                                        </c:if>
 			                                        <c:if test="${list.AGREE_COUNT != 0}">
-			                                        	<button type="button" class="inline-button green"><a onclick="goModfy('${list.EVALU_GUBUN}', '${list.EVALU_STAGE}');" title="조회">조회</a></button>
+			                                        	<button type="button" class="inline-button green"><a onclick="goModfy('<c:out value="${list.evaluHistSn}"/>');" title="조회">조회</a></button>
 			                                        </c:if>
 			                                    </div>
 			                                </td>
@@ -199,30 +174,19 @@
 	                                <td class="fix-width title">
 	                                    <select id="regiEvaluGubun">
 	                                        <!-- <option value="">연도선택</option> -->
-	                                        <option value="2019" selected>2019</option>
-	                                        <option value="2020">2020</option>
-	                                        <option value="2021">2021</option>
-	                                        <option value="2022">2022</option>
+	                                        <jsp:useBean id="now" class="java.util.Date" />
+											<fmt:formatDate value="${now}" pattern="yyyy" var="yearStart" /> 
+											<c:forEach begin="0" end="5" var="result" step="1">
+												<option value="<c:out value="${yearStart - result}" />" <c:if test="${step eq 1}">selected</c:if>><c:out value="${yearStart - result}" /></option>
+											</c:forEach>
 	                                    </select>
 	                                </td>
 	                                <td>
-	                                    <!-- 연도 선택 전 -->
-	                                    <!--
-	                                    <select id="newEvalLevel" disabled>
-	                                        <option value="">-</option>
-	                                    </select>
-	                                    -->
 	                                    <!-- /연도 선택 전 -->
 	                                    <select id="regiEvaluStage">
 	                                    	<c:forEach items="${evaluStageList}" var="list"  varStatus="idx">
 	                                    		<option value="${list.evaluIndicatCd}">${list.evaluIndicatNm}</option>
 	                                    	</c:forEach>
-	                                    
-	                                        <!-- <option value="재정평가심사">재정평가심사</option>
-	                                        <option value="사전평가">사전평가</option>
-	                                        <option value="집행평가">집행평가</option>
-	                                        <option value="사후평가">사후평가</option>
-	                                        <option value="컨설팅">컨설팅</option> -->
 	                                    </select>
 	                                </td>
 	                                <td class="fix-width status">

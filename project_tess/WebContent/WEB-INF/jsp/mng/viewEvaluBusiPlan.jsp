@@ -212,6 +212,7 @@
 	                            </table> --%>
 	                        </div>
 	
+							<!-- 
 	                        <p class="section-title">평가일정수립<small class="silent">평가일정계획수립</small></p>
 	                        <table class="evtdss-form-table">
 	                            <tr>
@@ -322,12 +323,110 @@
 	                        <div class="submit-set">
 	                            <button type="button" class="evtdss-submit"><a onclick="savePlan();" title="저장">저장</a></button>
 	                            <button type="button" class="evtdss-submit-cancel"><a onclick="planReset();" title="초기화">초기화</a></button>
-	                            <!-- 제출이력이 있을 경우 표시
+	                            제출이력이 있을 경우 표시
 	                            <div class="evtdss-submit-date">이 문서는 <span class="txt-heightlight">2018-08-21 14:24:36 에 저장</span> 되었습니다.</div>
-	                            /제출이력이 있을 경우 표시 -->
 	                        </div>
+	                        -->
+	                        
+	                        <!-- 
+	                        <p class="section-title">담당자 배정<small class="silent">지자체 담당자를 지정합니다.</small></p>
+	                        <table class="evtdss-form-table">
+	                            <tr>
+	                                <th>구분</th>
+	                                <th>지자체 담당자</th>
+	                                <th>등록일시</th>
+	                            </tr>
+	                            <tr>
+	                                <td class="fix-width title">담당자</td>
+	                                <td>
+	                                	<c:if test="${empty commitMap01}">
+	                                		<input type="text" class="regi-file-input" name="evaluCommNm1" id ="evaluCommNm1" placeholder="담당자 검색" readonly>
+	                                		<div class="block-btn button-set hor">
+		                                        <button type="button" class="inline-button green" id="selBtnCommit"><a href="#link" title="담당자  등록" onclick="modal_open();"><i class="glyphicon glyphicon-search"></i>담당자 검색</a></button>
+		                                    </div>
+		                                    <div class="incell-btn button-set hor">
+	                        					<button type="button" class="inline-button green"><a onclick="commit_save(1);" title="담당자 등록">저장</a></button>
+		                                    </div>
+		                                    <input type="hidden" name="evaluCommId1" id="evaluCommId1" class="_objCommId"/>
+	                                	</c:if>
+	                                	<c:if test="${not empty commitMap01}">
+	                                		<input type="text" class="regi-file-input" name="evaluCommNm1" id ="evaluCommNm1" placeholder="담당자 검색" value="${commitMap01.USER_NM}" readonly>
+	                                		<div class="incell-btn button-set hor">
+	                        					<button type="button" class="inline-button green"><a onclick="commit_delt(1);" title="등록파일 삭제">삭제</a></button>
+		                                    </div>
+		                                    <input type="hidden" name="evaluCommId1" id="evaluCommId1" class="_objCommId" value="${commitMap01.USER_ID}" />
+	                                	</c:if>
+	                                </td>
+	                                <c:if test="${empty commitMap01}">
+	                                	<td class="fix-width date">-</td>
+	                                </c:if>
+	                                <c:if test="${not empty commitMap01}">
+	                                	<td class="fix-width date">${commitMap01.REGI_DATE}</td>
+	                                </c:if>
+	                            </tr>
+	                            
+	                            <tr>
+	                                <td class="fix-width title">담당자</td>
+	                                <td>
+	                                	<c:if test="${empty commitMap02}">
+	                                		<input type="text" class="regi-file-input" name="evaluCommNm2" id ="evaluCommNm2" placeholder="담당자 검색" readonly>
+	                                		<div class="block-btn button-set hor">
+		                                        <button type="button" class="inline-button green" id="selBtnCommit"><a href="#link" title="담당자 등록" onclick="modal_open();"><i class="glyphicon glyphicon-search"></i>담당자 검색</a></button>
+		                                    </div>
+		                                    <div class="incell-btn button-set hor">
+		                                        <button type="button" class="inline-button green"><a onclick="commit_save(2);" title="담당자 등록">저장</a></button>
+		                                    </div>
+		                                    <input type="hidden" name="evaluCommId2" id="evaluCommId2" class="_objCommId"/>
+	                                	</c:if>
+	                                	<c:if test="${not empty commitMap02}">
+	                                		<input type="text" class="regi-file-input" name="evaluCommNm2" id ="evaluCommNm2" placeholder="담당자 검색" value="${commitMap02.USER_NM}" readonly>
+	                                		<div class="incell-btn button-set hor">
+	                        					<button type="button" class="inline-button green"><a onclick="commit_delt(2);" title="등록파일 삭제">삭제</a></button>
+		                                    </div>
+		                                    <input type="hidden" name="evaluCommId2" id="evaluCommId2" class="_objCommId" value="${commitMap02.USER_ID}" />
+	                                	</c:if>
+	                                </td>
+	                                <c:if test="${empty commitMap02}">
+	                                	<td class="fix-width date">-</td>
+	                                </c:if>
+	                                <c:if test="${not empty commitMap02}">
+	                                	<td class="fix-width date">${commitMap02.REGI_DATE}</td>
+	                                </c:if>
+	                            </tr>
+	                            
+	                            <tr>
+	                                <td class="fix-width title">담당자</td>
+	                                <td>
+	                                	<c:if test="${empty commitMap03}">
+	                                		<input type="text" class="regi-file-input" name="evaluCommNm3" id ="evaluCommNm3" placeholder="담당자 검색" readonly>
+	                                		<div class="block-btn button-set hor">
+		                                        <button type="button" class="inline-button green" id="selBtnCommit"><a href="#link" title="담당자 등록" onclick="modal_open();"><i class="glyphicon glyphicon-search"></i>담당자 검색</a></button>
+		                                    </div>
+		                                    <div class="incell-btn button-set hor">
+	                        					<button type="button" class="inline-button green"><a onclick="commit_save(3);" title="담당자 등록">저장</a></button>
+		                                    </div>
+		                                    <input type="hidden" name="evaluCommId3" id="evaluCommId3" class="_objCommId"/>
+	                                	</c:if>
+	                                	<c:if test="${not empty commitMap03}">
+	                                		<input type="text" class="regi-file-input" name="evaluCommNm3" id ="evaluCommNm3" placeholder="담당자 검색" value="${commitMap03.USER_NM}" readonly>
+	                                		<div class="incell-btn button-set hor">
+	                        					<button type="button" class="inline-button green"><a onclick="commit_delt(3);" title="등록파일 삭제">삭제</a></button>
+		                                    </div>
+		                                    <input type="hidden" name="evaluCommId3" id="evaluCommId3" class="_objCommId" value="${commitMap03.USER_ID}" />
+	                                	</c:if>
+	                                </td>
+	                                <c:if test="${empty commitMap03}">
+	                                	<td class="fix-width date">-</td>
+	                                </c:if>
+	                                <c:if test="${not empty commitMap03}">
+	                                	<td class="fix-width date">${commitMap03.REGI_DATE}</td>
+	                                </c:if>
+	                            </tr>
+	                        </table>
+	                        -->
+	                        
 	
-	                        <p class="section-title">기획평가단 구성<small class="silent">평가위원을 지정합니다.</small></p>
+	                        <p class="section-title">평가위원 배정<small class="silent">평가위원을 지정합니다.</small></p>
 	                        <div class="body-descriptions">
 	                            배정된 평가위원은 <strong>등록 즉시 평가사업 정보의 열람이 바로 가능</strong>합니다.<br>
 	                        </div>
@@ -337,8 +436,6 @@
 	                                <th>평가위원</th>
 	                                <th>등록일시</th>
 	                            </tr>
-	                            
-	                            
 	                            <tr>
 	                                <td class="fix-width title">평가위원</td>
 	                                <td>
@@ -348,14 +445,6 @@
 		                                        <button type="button" class="inline-button green" id="selBtnCommit"><a href="#link" title="평가위원 등록" onclick="modal_open();"><i class="glyphicon glyphicon-search"></i>평가위원검색</a></button>
 		                                    </div>
 		                                    <div class="incell-btn button-set hor">
-		                                    	<%-- <c:if test="${evaluInfo.EVALU_PLAN_YN == 'Y'}">
-	                        						<c:if test="${checkStagekHist.AGREE_CHECK == 0}">
-	                        							<button type="button" class="inline-button green"><a onclick="commit_save(1);" title="평가위원 등록">저장</a></button>
-	                        						</c:if>
-	                        					</c:if>
-	                        					<c:if test="${evaluInfo.EVALU_PLAN_YN != 'Y'}">
-	                        							<button type="button" class="inline-button green"><a onclick="commit_save(1);" title="평가위원 등록">저장</a></button>
-	                        					</c:if> --%>
 	                        					<button type="button" class="inline-button green"><a onclick="commit_save(1);" title="평가위원 등록">저장</a></button>
 		                                    </div>
 		                                    <input type="hidden" name="evaluCommId1" id="evaluCommId1" class="_objCommId"/>
@@ -363,14 +452,6 @@
 	                                	<c:if test="${not empty commitMap01}">
 	                                		<input type="text" class="regi-file-input" name="evaluCommNm1" id ="evaluCommNm1" placeholder="평가위원 검색" value="${commitMap01.USER_NM}" readonly>
 	                                		<div class="incell-btn button-set hor">
-	                                			<%-- <c:if test="${evaluInfo.EVALU_PLAN_YN == 'Y'}">
-	                        						<c:if test="${checkStagekHist.AGREE_CHECK == 0}">
-	                        							<button type="button" class="inline-button green"><a onclick="commit_delt(1);" title="등록파일 삭제">삭제</a></button>
-	                        						</c:if>
-	                        					</c:if>
-	                        					<c:if test="${evaluInfo.EVALU_PLAN_YN != 'Y'}">
-	                        						<button type="button" class="inline-button green"><a onclick="commit_delt(1);" title="등록파일 삭제">삭제</a></button>
-	                        					</c:if> --%>
 	                        					<button type="button" class="inline-button green"><a onclick="commit_delt(1);" title="등록파일 삭제">삭제</a></button>
 		                                    </div>
 		                                    <input type="hidden" name="evaluCommId1" id="evaluCommId1" class="_objCommId" value="${commitMap01.USER_ID}" />
@@ -393,14 +474,6 @@
 		                                        <button type="button" class="inline-button green" id="selBtnCommit"><a href="#link" title="평가위원 등록" onclick="modal_open();"><i class="glyphicon glyphicon-search"></i>평가위원검색</a></button>
 		                                    </div>
 		                                    <div class="incell-btn button-set hor">
-		                                    	<%-- <c:if test="${evaluInfo.EVALU_PLAN_YN == 'Y'}">
-	                        						<c:if test="${checkStagekHist.AGREE_CHECK == 0}">
-														<button type="button" class="inline-button green"><a onclick="commit_save(2);" title="평가위원 등록">저장</a></button>						                        						
-	                        						</c:if>
-	                        					</c:if>
-		                                        <c:if test="${evaluInfo.EVALU_PLAN_YN != 'Y'}">
-		                                        	<button type="button" class="inline-button green"><a onclick="commit_save(2);" title="평가위원 등록">저장</a></button>
-		                                        </c:if> --%>
 		                                        <button type="button" class="inline-button green"><a onclick="commit_save(2);" title="평가위원 등록">저장</a></button>
 		                                    </div>
 		                                    <input type="hidden" name="evaluCommId2" id="evaluCommId2" class="_objCommId"/>
@@ -408,14 +481,6 @@
 	                                	<c:if test="${not empty commitMap02}">
 	                                		<input type="text" class="regi-file-input" name="evaluCommNm2" id ="evaluCommNm2" placeholder="평가위원 검색" value="${commitMap02.USER_NM}" readonly>
 	                                		<div class="incell-btn button-set hor">
-	                                			<%-- <c:if test="${evaluInfo.EVALU_PLAN_YN == 'Y'}">
-	                        						<c:if test="${checkStagekHist.AGREE_CHECK == 0}">
-	                        							<button type="button" class="inline-button green"><a onclick="commit_delt(2);" title="등록파일 삭제">삭제</a></button>
-	                        						</c:if>
-	                        					</c:if>
-	                        					<c:if test="${evaluInfo.EVALU_PLAN_YN != 'Y'}">
-	                        						<button type="button" class="inline-button green"><a onclick="commit_delt(2);" title="등록파일 삭제">삭제</a></button>
-	                        					</c:if> --%>
 	                        					<button type="button" class="inline-button green"><a onclick="commit_delt(2);" title="등록파일 삭제">삭제</a></button>
 		                                    </div>
 		                                    <input type="hidden" name="evaluCommId2" id="evaluCommId2" class="_objCommId" value="${commitMap02.USER_ID}" />
@@ -438,14 +503,6 @@
 		                                        <button type="button" class="inline-button green" id="selBtnCommit"><a href="#link" title="평가위원 등록" onclick="modal_open();"><i class="glyphicon glyphicon-search"></i>평가위원검색</a></button>
 		                                    </div>
 		                                    <div class="incell-btn button-set hor">
-		                                    	<%-- <c:if test="${evaluInfo.EVALU_PLAN_YN == 'Y'}">
-	                        						<c:if test="${checkStagekHist.AGREE_CHECK == 0}">
-	                        							<button type="button" class="inline-button green"><a onclick="commit_save(3);" title="평가위원 등록">저장</a></button>
-	                        						</c:if>
-	                        					</c:if>
-	                        					<c:if test="${evaluInfo.EVALU_PLAN_YN == 'N'}">
-	                        						<button type="button" class="inline-button green"><a onclick="commit_save(3);" title="평가위원 등록">저장</a></button>
-	                        					</c:if> --%>
 	                        					<button type="button" class="inline-button green"><a onclick="commit_save(3);" title="평가위원 등록">저장</a></button>
 		                                    </div>
 		                                    <input type="hidden" name="evaluCommId3" id="evaluCommId3" class="_objCommId"/>
@@ -453,14 +510,6 @@
 	                                	<c:if test="${not empty commitMap03}">
 	                                		<input type="text" class="regi-file-input" name="evaluCommNm3" id ="evaluCommNm3" placeholder="평가위원 검색" value="${commitMap03.USER_NM}" readonly>
 	                                		<div class="incell-btn button-set hor">
-	                                			<%-- <c:if test="${evaluInfo.EVALU_PLAN_YN == 'Y'}">
-	                        						<c:if test="${checkStagekHist.AGREE_CHECK == 0}">
-	                        							<button type="button" class="inline-button green"><a onclick="commit_delt(3);" title="등록파일 삭제">삭제</a></button>
-	                        						</c:if>
-	                        					</c:if>
-	                        					<c:if test="${evaluInfo.EVALU_PLAN_YN == 'N'}">
-	                        						<button type="button" class="inline-button green"><a onclick="commit_delt(3);" title="등록파일 삭제">삭제</a></button>
-	                        					</c:if> --%>
 	                        					<button type="button" class="inline-button green"><a onclick="commit_delt(3);" title="등록파일 삭제">삭제</a></button>
 		                                    </div>
 		                                    <input type="hidden" name="evaluCommId3" id="evaluCommId3" class="_objCommId" value="${commitMap03.USER_ID}" />
@@ -473,117 +522,6 @@
 	                                	<td class="fix-width date">${commitMap03.REGI_DATE}</td>
 	                                </c:if>
 	                            </tr>
-	                            
-	                            <%-- <c:if test="${empty rtnMap.commList}">	
-	                            	<tr>
-		                                <td class="fix-width title">평가위원</td>
-		                                <td>
-		                                    <input type="text" class="regi-file-input" name="evaluCommNm1" id ="evaluCommNm1" placeholder="평가위원 검색" readonly>
-		                                    <div class="block-btn button-set hor">
-		                                        <!-- <button type="button" class="inline-button green"><a href="#link" title="평가위원 등록" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-search"></i>평가위원검색</a></button> -->
-		                                        <button type="button" class="inline-button green" id="selBtnCommit"><a href="#link" title="평가위원 등록" onclick="modal_open();"><i class="glyphicon glyphicon-search"></i>평가위원검색</a></button>
-		                                    </div>
-		                                    <!-- <div class="regi-file">평가위원을 검색하세요</div> -->
-		                                    <!-- <div class="regi-file">서면검토서.hwp</div> -->
-		                                    <div class="incell-btn button-set hor">
-		                                        <button type="button" class="inline-button green"><a href="#" title="평가위원 등록">저장</a></button>
-		                                        <button type="button" class="inline-button green"><a href="#" title="등록파일 삭제">삭제</a></button>
-		                                    </div>
-		                                    <input type="hidden" name="evaluCommId1" id="evaluCommId1" class="_objCommId"/>
-		                                </td>
-		                                <td class="fix-width date">2018-09-08 16:18:00</td>
-		                            </tr>
-	                            </c:if>
-	                            
-	                            <c:if test="${not empty rtnMap.commList}">   
-	                            	<c:forEach items="${rtnMap.commList }" var="item"  varStatus="idx">
-	                            		<tr>
-			                                <td class="fix-width title">평가위원</td>
-			                                <td>
-			                                    <input type="text" class="regi-file-input" name="evaluCommNm${idx.count }"  id="evaluCommNm${idx.count }" placeholder="평가위원 검색" value="${item.userNm }"  readonly="readonly">
-			                                    <div class="block-btn button-set hor">
-			                                        <button type="button" class="inline-button green" id="selBtnCommit"><a href="#" title="평가위원 등록" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-search"></i>평가위원검색</a></button>
-			                                    </div>
-			                                    <!-- <div class="regi-file">평가위원을 검색하세요</div> -->
-			                                    <!-- <div class="regi-file">서면검토서.hwp</div> -->
-			                                    <div class="incell-btn button-set hor">
-			                                        <button type="button" class="inline-button green"><a href="#" title="평가위원 등록">저장</a></button>
-			                                        <button type="button" class="inline-button green"><a href="#" title="등록파일 삭제">삭제</a></button>
-			                                    </div>
-			                                </td>
-			                                <td class="fix-width date">2018-09-08 16:18:00</td>
-			                            </tr>
-	                            	</c:forEach>
-	                            </c:if> --%>
-	                            
-	                            
-	                            
-	                            
-	                            
-	                            <!-- <tr>
-	                                <td class="fix-width title">평가위원 B</td>
-	                                <td>
-	                                    <input type="text" class="regi-file-input" id="committee2" placeholder="평가위원 검색" value="유관순" readonly>
-	                                    <div class="block-btn button-set hor">
-	                                        <button class="inline-button green"><a href="#" title="평가위원 등록"><i class="glyphicon glyphicon-search"></i>평가위원검색</a></button>
-	                                    </div>
-	                                    <div class="regi-file">평가위원을 검색하세요</div>
-	                                    <div class="regi-file">서면검토서.hwp</div>
-	                                    <div class="incell-btn button-set hor">
-	                                        <button class="inline-button green"><a href="#" title="평가위원 등록">저장</a></button>
-	                                        <button class="inline-button green"><a href="#" title="등록파일 삭제">삭제</a></button>
-	                                    </div>
-	                                </td>
-	                                <td class="fix-width date">2018-09-08 16:18:00</td>
-	                            </tr>
-	                            <tr>
-	                                <td class="fix-width title">평가위원 C</td>
-	                                <td>
-	                                    <input type="text" class="regi-file-input" id="committee3" placeholder="평가위원 검색" value="강감찬" readonly>
-	                                    <div class="block-btn button-set hor">
-	                                        <button class="inline-button green"><a href="#" title="평가위원 등록"><i class="glyphicon glyphicon-search"></i>평가위원검색</a></button>
-	                                    </div>
-	                                    <div class="regi-file">평가위원을 검색하세요</div>
-	                                    <div class="regi-file">서면검토서.hwp</div>
-	                                    <div class="incell-btn button-set hor">
-	                                        <button class="inline-button green"><a href="#" title="평가위원 등록">저장</a></button>
-	                                        <button class="inline-button green"><a href="#" title="등록파일 삭제">삭제</a></button>
-	                                    </div>
-	                                </td>
-	                                <td class="fix-width date">2018-09-08 16:18:00</td>
-	                            </tr>
-	                            <tr>
-	                                <td class="fix-width title">평가위원 B</td>
-	                                <td>
-	                                    <input type="text" class="regi-file-input" id="committee4" placeholder="평가위원 검색" value="" readonly>
-	                                    <div class="block-btn button-set hor">
-	                                        <button class="inline-button green"><a href="#" title="평가위원 등록"><i class="glyphicon glyphicon-search"></i>평가위원검색</a></button>
-	                                    </div>
-	                                    <div class="regi-file">평가위원을 검색하세요</div>
-	                                    <div class="regi-file">서면검토서.hwp</div>
-	                                    <div class="incell-btn button-set hor">
-	                                        <button class="inline-button green"><a href="#" title="평가위원 등록">저장</a></button>
-	                                        <button class="inline-button green"><a href="#" title="등록파일 삭제">삭제</a></button>
-	                                    </div>
-	                                </td>
-	                                <td class="fix-width date">-</td>
-	                            </tr>
-	                            <tr>
-	                                <td class="fix-width title">평가위원 E</td>
-	                                <td>
-	                                    <input type="text" class="regi-file-input" id="committee5" placeholder="평가위원 검색" value="" readonly>
-	                                    <div class="block-btn button-set hor">
-	                                        <button class="inline-button green"><a href="#" title="평가위원 등록"><i class="glyphicon glyphicon-search"></i>평가위원검색</a></button>
-	                                    </div>
-	                                    <div class="regi-file">평가위원을 검색하세요</div>
-	                                    <div class="regi-file">서면검토서.hwp</div>
-	                                    <div class="incell-btn button-set hor">
-	                                        <button class="inline-button green"><a href="#" title="평가위원 등록">저장</a></button>
-	                                        <button class="inline-button green"><a href="#" title="등록파일 삭제">삭제</a></button>
-	                                    </div>
-	                                </td>
-	                                <td class="fix-width date">-</td>
-	                            </tr> -->
 	                        </table>
 	
 	                        <!-- 조회 모드에서는 제공되지 않습니다. -->

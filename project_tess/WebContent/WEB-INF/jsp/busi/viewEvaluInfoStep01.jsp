@@ -117,48 +117,35 @@
 		                            </ul>
 		                        </div>
 		                        
-		                        <p class="section-title">연구원분들이 추후 입력 값 전달 예정<small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
-		                        <table class="evtdss-form-table" >
-		                            <tr>
-		                                <td class="labeler">사업명</td>
-		                                <td><input type="text" name="planEvalBusiName"  id="planEvalBusiName"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.planEvalBusiName}"/>'/></td>
-		                                <td class="labeler">사업지유형</td>
-		                                <td><c:out value="${mastMap.busiFigureType}"/></td>
-		                                <td class="labeler">사업유형</td>
-		                                <td><input type="text" name="busiCateNm"  id="busiCateNm"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.busiCateNm}"/>'/></td>
-		                            </tr>
-		                            <tr>
-		                                <td class="labeler">위치</td>
-		                                <td colspan="3">
-			                                <input type="text" name="busiAddr12"  id="busiAddr12"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.busiAddr12}"/>'/>
-		                                </td>
-		                            </tr>
-	                            </table>
-	                        		
-                        		<p class="section-title">사업설명서<small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
-			                        <table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
-									<caption class="sr-only">사업설명서 등록</caption>
-		                             <tr>
-		                                <th>구분</th>
-		                                <th class="fix-width file">첨부파일</th>
-		                                <th class="fix-width date">등록일시</th>
-		                            </tr>
-		                            <tr>
-		                                <td><span class="special-dot">*</span>사업설명서</td>
-		                                <td class="fix-width file"><a href="#" class="사업설명서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
-		                                <td class="fix-width date">2018-09-13 23:14:11</td>
-		                            </tr>
-		                            <tr>
-		                                <td>기본계획서</td>
-		                                <td class="fix-width file"><a href="#" class="기본계획서"><img src="../../../images/icon_file_pdf.jpg"></a></td>
-		                                <td class="fix-width date">2018-09-13 23:14:11</td>
-		                            </tr>
-		                            <tr>
-		                                <td>기타</td>
-		                                <td class="fix-width file"><a href="#" class="기타"><img src="../../../images/icon_file_hwp.jpg"></a></td>
-		                                <td class="fix-width date">2018-09-13 23:14:11</td>
-		                            </tr>
-		                        </table>
+                        		<p class="section-title" style="display:flex; justify-content: space-between;">사업설명서
+								    <small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small>
+								</p>
+								<table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
+								    <thead>
+								        <tr>
+								            <th>구분</th>
+								            <th class="fix-width file">첨부파일</th>
+								        </tr>
+								    </thead>
+								    <tbody id="tableBody">
+								        <tr>
+								            <td><span class="special-dot">*</span>사업설명서(한글)</td>
+								            <td class="fix-width file"><a href="#" class="사업설명서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
+								        </tr>
+								        <tr>
+								            <td><span class="special-dot">*</span>사업설명서(PDF)</td>
+								            <td class="fix-width file"><a href="#" class="사업설명서"><img src="../../../images/icon_file_pdf.jpg"></a></td>
+								        </tr>
+								        <tr>
+			                                <td>기본계획서</td>
+			                                <td class="fix-width file"><a href="#" class="기본계획서"><img src="../../../images/icon_file_pdf.jpg"></a></td>
+			                            </tr>
+			                            <tr>
+			                                <td>기타</td>
+			                                <td class="fix-width file"><a href="#" class="기타"><img src="../../../images/icon_file_hwp.jpg"></a></td>
+			                            </tr>
+								    </tbody>
+								</table>
                         		
 								<p class="section-title">참조파일<small class="silent">아래 첨부파일을 다운로드하여 참고하세요</small></p>
                         		<table class="evtdss-form-table noMargin">
@@ -182,22 +169,23 @@
 			                                <td class="fix-width date">${evaluDocB.REGI_DATE}</td>
 		                                </c:if>
 		                            </tr>
-		                            <tr>
-		                                <td>${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM} 평가지침서</td>
-		                                <c:if test="${evaluDocA == null}">
-		                                	<td class="fix-width file">
-			                                    <a title="평가지침서 샘플"></a>
-			                                </td>
-			                                <td class="fix-width date"></td>
-		                                </c:if>
-		                                <c:if test="${evaluDocA != null}">
-		                                	<td class="fix-width file">
-			                                    <a href="/evalu/evaluFileDownload.do?EvaluFileNo=${evaluDocA.EVALU_FILE_NO}" title="평가지침서 샘플"><img src="../../../images/icon_file_hwp.jpg"></a>
-			                                </td>
-			                                <td class="fix-width date">${evaluDocA.REGI_DATE}</td>
-		                                </c:if>
-		                            </tr>
                         		</table>
+                        		
+                        		
+                        		
+                        		 <hr style="background-color: black; height: 2px;">
+                        		
+                        		
+                        		
+                        		<p class="section-title" style="margin-top:30px;">서면검토서 의견 작성<small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
+		                        <table class="evtdss-form-table" >
+		                            <tr>
+		                                <td class="labeler">서면검토 의견서</td>
+		                                <td colspan="3">
+		                                	<input type="text" name="planEvalBusiName"  id="planEvalBusiName"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.planEvalBusiName}"/>'/>
+		                                </td>
+		                            </tr>
+	                            </table>
                         		
                         		<div class="submit-set">
 		                        	<c:if test="${viewCommitStatus.OPINION_YN != 'Y'}">
@@ -210,6 +198,30 @@
 		                            <div class="evtdss-submit-date">이 문서는 <span class="txt-heightlight">2018-08-21 14:24:36 에 제출</span> 되었습니다.</div>
 		                            <!-- /제출이력이 있을 경우 표시 -->
 		                        </div>
+		                        
+		                        
+		                        
+		                        <hr style="background-color: black; height: 2px;">
+		                        
+		                        
+		                        
+		                        <div class="body-descriptions" style="text-align:center;">
+		                             <strong><span class="txt-heightlight">서면검토</span> 확인하였습니다. <input role="checkbox" id="cb_grid" class="cbox" type="checkbox"></strong> 
+		                        </div>
+		                        
+		                        <div class="submit-set">
+		                        	<c:if test="${viewCommitStatus.OPINION_YN != 'Y'}">
+		                        		<button type="button" class="evtdss-submit"><a id="prcBtnSave" title="검토확인">검토확인</a></button>
+		                        	</c:if>
+		                        	<c:if test="${viewCommitStatus.OPINION_YN == 'Y' && viewCommitStatus.OPINION_APV_YN != 'Y'}">
+		                        		<button type="button" class="evtdss-submit-cancel"><a id="prcBtnCancle" title="검토확인 완료됨">검토확인 완료됨</a></button>
+		                        	</c:if>
+		                        </div>
+		                        
+		                        
+		                        
+		                        
+		                        
 	                        <!-- /Contents -->
                     		</div>
                 		</div>

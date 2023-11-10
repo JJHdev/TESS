@@ -30,11 +30,11 @@ function validation() {
 		}
 	}
 	
-	if (!isDate(formValue['busiSttDate'].replaceAll("-", ""))) {
+	if (isNotEmpty(formValue['busiSttDate']) && !isDate(formValue['busiSttDate'].replaceAll("-", ""))) {
 		alert('사업기간 형식이 잘못되었습니다.');
 		$("#busiSttDate").focus();
 		return false;
-	} else if (!isDate(formValue['busiEndDate'].replaceAll("-", ""))) {
+	} else if (isNotEmpty(formValue['busiEndDate']) && !isDate(formValue['busiEndDate'].replaceAll("-", ""))) {
 		alert('사업기간 형식이 잘못되었습니다.');
 		$("#busiEndDate").focus();
 		return false;
@@ -44,13 +44,17 @@ function validation() {
 		return false;
 	}
 	
-	return true;
+	if (confirm('사업을 등록하시겠습니까?')) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 // 지역 검색조건 combo loading
 function loadBusiAddrCombo() {
 	//시도 선택시 지자체(구군) 검색
-	comutils.changeCityAuth({
+	comutils.changeCityBjd({
 		loading : true,
 		citysido: "busiAddr1",
 		cityauth: "busiAddr2",

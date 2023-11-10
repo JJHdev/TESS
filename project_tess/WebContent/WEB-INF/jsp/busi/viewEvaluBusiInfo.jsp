@@ -14,8 +14,8 @@
 	
 	<!-- jstree 추가 js -->
 	<script type="text/javascript" src="/jquery/jstree/jquery.jstree.js"></script>
-	<script type="text/javascript" src="/jquery/jstree/jquery.hotkeys.js"></script>
-	<script type="text/javascript" src="/jquery/jstree/jquery.cookie.js"></script>
+	<script type="text/javascript" src="/jquery/jstree/_lib/jquery.hotkeys.js"></script>
+	<script type="text/javascript" src="/jquery/jstree/_lib/jquery.cookie.js"></script>
 	
 </head>
 
@@ -153,7 +153,6 @@
 	                        	<tr>
 	                                <th scope="col">구분</th>
 	                                <th scope="col" class="fix-width file">첨부파일</th>
-	                                <th scope="col" class="fix-width file">등록일시</th>
 	                            </tr>
 	                        </thead>
 	                        
@@ -173,69 +172,67 @@
 	                        </tbody>
 	                         --%>
                             <tr>
-                                <td>세부 사업설명서</td>
+                                <td>사업설명서 지침서</td>
                                 <td class="fix-width file"><a href="#" class="보조금 교부신청서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
-                                <td class="fix-width date">2018-09-13 23:14:11</td>
-                            </tr>
-                            <tr>
-                                <td>보조금 교부신청서</td>
-                                <td class="fix-width file"><a href="#" class="사업설명서"><img src="../../../images/icon_file_pdf.jpg"></a></td>
-                                <td class="fix-width date">2018-09-13 23:14:11</td>
-                            </tr>
-                            <tr>
-                                <td>기본계획 수립용역 보고서</td>
-                                <td class="fix-width file"><a href="#" class="기본계획 수립용역 보고서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
-                                <td class="fix-width date">2018-09-13 23:14:11</td>
                             </tr>
                             <tr>
                                 <td>추가 첨부파일</td>
                                 <td class="fix-width file"><a href="#" class="기본계획 수립용역 보고서"><img src="../../../images/icon_file_zip.jpg"></a></td>
-                                <td class="fix-width date">2018-09-13 23:14:11</td>
+                                <!-- <td class="fix-width date">2018-09-13 23:14:11</td> -->
                             </tr>
                             </table>
                             
-                            <p class="section-title">사업설명서 등록<small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
-	                        <table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
-							<caption class="sr-only">사업설명서 등록</caption>
-                             
-                             <tr>
-                                <th>구분</th>
-                                <th class="fix-width file">파일 업로드</th>
-                                <th class="fix-width file">첨부파일</th>
-                                <th class="fix-width date">등록일시</th>
-                            </tr>
-                            <tr>
-                                <td><span class="special-dot">*</span>사업설명서</td>
-                                <td><input type="file" class="regi-file-input" id="upFile1"></td>
-                                <td class="fix-width file"><a href="#" class="사업설명서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
-                                <td class="fix-width date">2018-09-13 23:14:11</td>
-                            </tr>
-                            <tr>
-                                <td>기본계획서</td>
-                                <td><input type="file" class="regi-file-input" id="upFile1"></td>
-                                <td class="fix-width file"><a href="#" class="기본계획서"><img src="../../../images/icon_file_pdf.jpg"></a></td>
-                                <td class="fix-width date">2018-09-13 23:14:11</td>
-                            </tr>
-                            <tr>
-                                <td>기타</td>
-                                <td><input type="file" class="regi-file-input" id="upFile1"></td>
-                                <td class="fix-width file"><a href="#" class="기타"><img src="../../../images/icon_file_hwp.jpg"></a></td>
-                                <td class="fix-width date">2018-09-13 23:14:11</td>
-                            </tr>
-                        </table>
-                        
-                        <div class="submit-set">
-                        	<c:if test="${viewCommitStatus.OPINION_YN != 'Y'}">
-                        		<button type="button" class="evtdss-submit"><a id="prcBtnSave" title="저장하기">저장하기</a></button>
-                        	</c:if>
-                        	<c:if test="${viewCommitStatus.OPINION_YN == 'Y' && viewCommitStatus.OPINION_APV_YN != 'Y'}">
-                        		<button type="button" class="evtdss-submit-cancel"><a id="prcBtnCancle" title="제출취소">제출취소</a></button>
-                        	</c:if>
-                            <!-- 제출이력이 있을 경우 표시 -->
-                            <div class="evtdss-submit-date">이 문서는 <span class="txt-heightlight">2018-08-21 14:24:36 에 제출</span> 되었습니다.</div>
-                            <!-- /제출이력이 있을 경우 표시 -->
-                        </div>
-                        
+                            <p class="section-title" style="display:flex; justify-content: space-between;">사업설명서 등록
+							    <small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small>
+							    <sapn class="submit-set" style="padding: 0px 0 0; margin-bottom:5px;">
+							    	<button type="button" id="addRowBtn" class="evtdss-submit"><a id="addRow" title="저장하기">추가</a></button>
+							    	<button type="button" id="removeRowBtn" class="evtdss-submit"><a id="removeRow" title="삭제">삭제</a></button>
+							    </sapn>
+							</p>
+							<table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
+							    <caption class="sr-only">사업설명서 등록</caption>
+							    <thead>
+							        <tr>
+							            <th>구분</th>
+							            <th class="fix-width file">파일 업로드</th>
+							            <th class="fix-width file">첨부파일</th>
+							        </tr>
+							    </thead>
+							    <tbody id="tableBody">
+							        <tr>
+							            <td><span class="special-dot">*</span>사업설명서(한글)</td>
+							            <td><input type="file" class="regi-file-input" id="upFile1"></td>
+							            <td class="fix-width file"><a href="#" class="사업설명서(한글)"><img src="../../../images/icon_file_hwp.jpg"></a></td>
+							        </tr>
+							        <tr>
+							            <td><span class="special-dot">*</span>사업설명서(PDF)</td>
+							            <td><input type="file" class="regi-file-input" id="upFile1"></td>
+							            <td class="fix-width file"><a href="#" class="사업설명서(PDF)"><img src="../../../images/icon_file_pdf.jpg"></a></td>
+							        </tr>
+							        <tr>
+		                                <td>기본계획서</td>
+		                                <td><input type="file" class="regi-file-input" id="upFile1"></td>
+		                                <td class="fix-width file"><a href="#" class="기본계획서"><img src="../../../images/icon_file_pdf.jpg"></a></td>
+		                            </tr>
+		                            <tr>
+		                                <td>기타</td>
+		                                <td><input type="file" class="regi-file-input" id="upFile1"></td>
+		                                <td class="fix-width file"><a href="#" class="기타"><img src="../../../images/icon_file_hwp.jpg"></a></td>
+		                            </tr>
+							    </tbody>
+							</table>
+							
+	                        <div class="submit-set">
+	                        	<c:if test="${viewCommitStatus.OPINION_YN != 'Y'}">
+	                        		<button type="button" class="evtdss-submit"><a id="prcBtnSave" title="저장하기">저장하기</a></button>
+	                        	</c:if>
+	                        	<c:if test="${viewCommitStatus.OPINION_YN == 'Y' && viewCommitStatus.OPINION_APV_YN != 'Y'}">
+	                        		<button type="button" class="evtdss-submit-cancel"><a id="prcBtnCancle" title="제출취소">제출취소</a></button>
+	                        	</c:if>
+	                            <!-- 제출이력이 있을 경우 표시 -->
+	                            <div class="evtdss-submit-date">이 문서는 <span class="txt-heightlight">2018-08-21 14:24:36 에 제출</span> 되었습니다.</div>
+	                            <!-- /제출이력이 있을 경우 표시 -->
+	                        </div>
                         <!-- /Contents -->
 	                    </div>
 	                </div>

@@ -95,7 +95,7 @@
 				                                    <td class="labeler">시행주체<span class="special-dot">*</span></td>
 				                                    <td colspan="3">
 				                                    	<form:select path="busiAddr1" class="input-sm wd-20p"><option value="">선택</option></form:select>
-				                                    	<form:select path="busiAddr2" class="input-sm wd-20p"><option value="">선택</option></form:select>
+				                                    	<form:select path="busiAddr2" class="input-sm wd-20p"><option value="000">본청</option></form:select>
 				                                    	<form:input path="busiAddr5" class="g-search-input-txt wd-80p" maxLength="80"/>
 				                                    </td>
 				                                </tr>
@@ -103,22 +103,29 @@
 				                                    <td class="labeler">총 사업기간</td>
 				                                    <td colspan="3"><form:input path="busiSttDate" class="g-search-input-txt date-picker w-120px"/> ~ <form:input path="busiEndDate" class="g-search-input-txt date-picker w-120px"/></td>
 				                                </tr>
+				                                <!--  
 				                                <tr>
 				                                    <td class="labeler">사업개발주체</td>
 				                                    <td colspan="3"><form:input path="busiDevEnty" class="g-search-input-txt" maxLength="100"/></td>
 				                                </tr>
+				                                
 				                                <tr>
 				                                    <td class="labeler">계획수립일자</td>
 				                                    <td colspan="3"><form:input path="busiPlanDate" class="g-search-input-txt date-picker w-120px"/></td>
 				                                </tr>
+				                                -->
 				                                <tr>
-				                                    <td class="labeler">사업 내용</td>
+				                                    <td class="labeler">사업 목적</td>
 				                                    <td colspan="3"><form:textarea path="busiNote" class="g-search-input-txt" style="height: 60px;" maxLength="4000"/></td>
 				                                </tr>
 				                                <tr>
-				                                    <td class="labeler">전체부지면적</td>
+				                                    <td class="labeler">주요 시설</td>
+				                                    <td colspan="3"><form:textarea path="mainFclt" class="g-search-input-txt" style="height: 60px;" maxLength="1000"/></td>
+				                                </tr>
+				                                <tr>
+				                                    <td class="labeler">사업비</td>
 				                                    <td colspan="3">
-				                                    	<form:input path="totSiteArea" type="number" class="g-search-input-txt w-120px"/><span>㎡</span>
+				                                    	<form:input path="totBusiExps" type="number" class="g-search-input-txt w-120px"/><span>원</span>
 				                                    </td>
 				                                </tr>
 				                            </table>

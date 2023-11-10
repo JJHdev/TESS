@@ -102,6 +102,101 @@ comutils.changeCityAuth = function( args ) {
     }
 };
 
+// 2023.11.07 LHB 시도/시군구 셀렉트 박스 함수 (법정동 코드)
+comutils.changeCityBjd = function( args ) {
+
+    if (!args) {
+        alert('[comutils.changeCityBjd] : 함수인자가 정의되지 않았습니다.');
+        return;
+    }
+    if (!args.citysido) {
+        alert('[comutils.changeCityBjd] : 시도선택 콤보박스(citysido) ID는 필수입니다.');
+        return;
+    }
+    if (!args.cityauth) {
+        alert('[comutils.changeCityBjd] : 구군선택 콤보박스(cityauth) ID는 필수입니다.');
+        return;
+    }
+    var loading = args.loading;//초기로딩여부
+    var sidoid = args.citysido;
+    var authid = args.cityauth;
+    var initid = args.initcity;//지자체 최초 선택값 ID
+    var initfn = args.init;    //지자체 최초 선택시 실행함수
+    var prntCd = "COMM.CITYAUTH";
+
+    var sidoObj = $("#"+sidoid);
+    var cityObj = $("#"+authid);
+
+    //시도 초기선택값
+    var initSidoVal = false;
+    var initObj = false;
+    var initVal = false;
+
+    //시도 있을 경우
+    if (!isEmpty(sidoObj.val())) {
+        initSidoVal = sidoObj.val();
+    }
+
+    if (initid) {
+        initObj = $("#"+initid);
+        initVal = initObj.val();
+        if (!isEmpty(initVal)) {
+            initSidoVal = (initSidoVal ? initSidoVal : initVal.substring(0,2)+"00");
+        }
+    }
+    
+    //초기 로딩시
+    if (loading) {
+        //공통코드 AJAX
+        bizutils.findBjd({
+            params: {type: 'SD'},
+            fn: function(result) {
+                if (result != null) {
+                    sidoObj.loadSelect(result);
+
+                    if (initSidoVal) {
+                        sidoObj.val(initSidoVal);
+                        sidoObj.trigger('change');
+                        initSidoVal = false;
+                    }
+
+                }
+            }
+        });
+    }
+
+    //시도 선택시 지자체 검색
+    sidoObj.change(function() {
+        var sidoVal = $(this).val();
+        cityObj.emptySelect();
+
+        if (!isEmpty(sidoVal)){
+            //공통코드 AJAX
+            bizutils.findBjd({
+                params: {type: 'SGG', parentCode: sidoVal},
+                fn: function(result) {
+                    if(result != null) {
+                        cityObj.loadSelect(result);
+
+                        if (initid) {
+                            if (!isEmpty($("#"+initid).val())) {
+                                cityObj.val($("#"+initid).val());
+                                $("#"+initid).val("");
+                            }
+                        }
+                        if (initfn)
+                            initfn();
+                    }
+                }
+            });
+        }
+    });
+    //시도 있을 경우
+    if (!isEmpty(sidoObj.val())) {
+        sidoObj.trigger('change');
+    }
+};
+
 /**
  * 공통코드 목록 호출 AJAX 함수
  *
@@ -167,7 +262,7 @@ bizutils.findBjd = function( args ) {
         error:function(request, status, error) {
 			console.log(request);
 			console.log(status);
-			console.log(error);
+			console.log(error)
         	alert('error');
         }
     });

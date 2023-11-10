@@ -622,11 +622,23 @@
     <!-- 법정동 코드 조회 -->
     <select id="listBjd" resultClass="hashmap" parameterClass="java.util.Map">
     	SELECT SUBSTR(BJD_CODE, 0, 2)	as "parentCode"
-    	     , BJD_CODE					as "code"
+    	       <isEqual property="type" compareValue="SD">
+    	     , SUBSTR(BJD_CODE, 0, 2)	as "code"  
     	     , SD						as "codeNm"
+    	       </isEqual>
+    	       <isEqual property="type" compareValue="SGG">
+    	     , SUBSTR(BJD_CODE, 3, 3)	as "code"
+    	     , SGG						as "codeNm"
+    	       </isEqual>
     	  FROM TREDSUSER.TB_BJD_CODE
     	 WHERE (1=1)
     	 	   <isEqual property="type" compareValue="SD" >AND BJD_CODE LIKE '__00000000'</isEqual>
-    	 	   <isEqual property="type" compareValue="SGG">AND BJD_CODE LIKE '_____00000'</isEqual>
+    	 	   <isEqual property="type" compareValue="SGG">
+    	 	   AND SGG IS NOT NULL
+    	 	   AND BJD_CODE LIKE '_____00000'
+	    	 	   <isNotEmpty property="parentCode">
+	    	 	       AND BJD_CODE LIKE #parentCode#||'%'
+	    	 	   </isNotEmpty>
+    	 	   </isEqual>
     </select>
 </sqlMap>

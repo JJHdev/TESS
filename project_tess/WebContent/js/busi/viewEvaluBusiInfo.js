@@ -189,3 +189,35 @@ function fn_goEvaluInfo() {
     });
 }
 
+
+
+
+
+
+
+$(document).ready(function() {
+    $('#addRow').click(function(event) {
+		event.preventDefault();
+        var $tableBody = $('#tableBody');
+        if ($tableBody.find('tr').length < 5) { // 최대 2개의 추가 행을 허용
+            $tableBody.append(`
+                <tr>
+                    <td>기타</td>
+                    <td><input type="file" class="regi-file-input"></td>
+                    <td class="fix-width file"><a href="#" class="기타"></td>
+                </tr>
+            `);
+        }else{
+			alert('추가 서류는 최대 3개까지 가능합니다.');
+		}
+    });
+
+    $('#removeRow').click(function(event) {
+		event.preventDefault
+        var $tableBody = $('#tableBody');
+        if ($tableBody.find('tr').length > 3) {
+            $tableBody.find('tr:last').remove(); // 마지막 행 삭제
+
+        }
+    });
+});

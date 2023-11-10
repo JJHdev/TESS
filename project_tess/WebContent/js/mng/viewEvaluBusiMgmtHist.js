@@ -1,25 +1,21 @@
 /**
- * 평가이력 화면
- *
- * @author LSZ
- * @version 1.0 2018-12-04
- */
+*******************************************************************************
+***    명칭: viewEvaluBusiMgmtHist.js
+***    설명: [관리자] 평가사업관리 > 평가이력 화면
+***
+***    -----------------------------    Modified Log   ------------------------
+***    버전        수정일자        수정자        내용
+*** ---------------------------------------------------------------------------
+***    1.0      2023.11.10      LHB     First Coding.
+*******************************************************************************
+**/
 
-////////////////////////////////////////////////////////////////////////////////
-// Loading
-////////////////////////////////////////////////////////////////////////////////
-
-
-/**
- * evaluComm.js에서 자동 호출하는 함수 (페이지 초기 설정 관련 수행)
- * 
- */
-function loadInitPage(){
+function loadInitPage() {
 
 }
 
 
-$(document).ready(function(){
+$(document).ready(function() {
 //  // Set disable 'back' event at next page
 //  window.history.forward(0);
 });
@@ -29,9 +25,9 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 
 var LIST_URL 		= ROOT_PATH+"/mng/listEvaluBusiMgmt.do" ;
-var VIEW_URL 		= ROOT_PATH+"/mng/viewEvaluBusiGuide.do" ;
-var REGI_URL		= ROOT_PATH+"/mng/regiEvaluBusi.do";
-var CHECK_URL		= ROOT_PATH+"/mng/checkEvaluStage.do";
+var VIEW_URL 		= ROOT_PATH+"/mng/viewEvaluBusiMgmtGuide.do" ;
+var REGI_URL		= ROOT_PATH+"/mng/regiEvaluBusiMgmtHist.do";
+var CHECK_URL		= ROOT_PATH+"/mng/chckEvaluBusiMgmtHist.do";
 var DELT_URL		= ROOT_PATH+"/mng/deltEvaluStage.do";
 
 var HIST_URL		= ROOT_PATH+"/mng/viewEvaluBusiHist.do";
@@ -68,12 +64,12 @@ function loadData() {
 ////////////////////////////////////////////////////////////////////////////////
 
 // 평가 대상 화면으로 이동
-function goView(evaluBusiNo, evaluStage, evaluUserId){
+function goView(evaluBusiSn, evaluStage, evaluUserId) {
     
     BIZComm.submit({
         url : ROOT_PATH+ REGI_URL,
         userParam : {
-            evaluBusiNo : evaluBusiNo,
+            evaluBusiSn : evaluBusiSn,
             evaluStage : evaluStage,
             evaluUserId : evaluUserId
         }
@@ -109,7 +105,7 @@ function onClickButton( id ) {
 ////////////////////////////////////////////////////////////////////////////////
 
 //목록으로 이동 
-function goList(){
+function goList() {
     BIZComm.submit({
         url : ROOT_PATH + LIST_URL
     });
@@ -118,43 +114,44 @@ function goList(){
 
 function save_btn() {
 	
-	var evaluBusiNo = $("input[name=evaluBusiNo]").val();
-	var evaluGubun = $("#regiEvaluGubun option:selected").val();
-	var evaluStage = $("#regiEvaluStage option:selected").val();
+	const evaluBusiSn	= $("#evaluBusiSn").val();
+	var evaluYear		= $("#regiEvaluGubun option:selected").val();
+	var evaluStage		= $("#regiEvaluStage option:selected").val();
 	
-	nConfirm(MSG_EVALU_M008, null, function(isConfirm){
-		if(isConfirm){
-			check_stage(evaluBusiNo, evaluGubun, evaluStage);
+	nConfirm(MSG_EVALU_M008, null, function(isConfirm) {
+		if(isConfirm) {
+			check_stage(evaluBusiSn, evaluYear, evaluStage);
 		}
 	});
 }
 
-function save_ajax(evaluBusiNo, evaluGubun, evaluStage) {
-	var params = {"evaluBusiNo": evaluBusiNo, "evaluGubun": evaluGubun, "evaluStage": evaluStage};
+function save_ajax(evaluBusiSn, evaluYear, evaluStage) {
+	var params = {evaluBusiSn: evaluBusiSn, "evaluYear": evaluYear, "evaluStage": evaluStage};
 	
 	$.ajax({
         url: REGI_URL,
         type: "POST",
         data:params, 
-        dataType:"json", 
-//		            contentType:"application/json; text/html; charset=utf-8",
+        dataType:"json",
         success:function(result) {
-        	//window.location.href = LIST_URL;
-        	
-        	BIZComm.submit({
-                url : ROOT_PATH + HIST_URL,
-                userParam: {
-                    evaluBusiNo: evaluBusiNo,
-                }
-            });
+			const code = result.code;
+			const msg = result.msg;
+        	if (code > 0) {
+				nAlert(msg, null, function() {
+					window.location.reload();	
+				});
+			} else {
+				nAlert(msg, null, null);
+				return false;
+			}
         }
 	});
 }
 
 
-function check_stage(evaluBusiNo, evaluGubun, evaluStage) {
+function check_stage(evaluBusiSn, evaluYear, evaluStage) {
 	
-	var params = {"evaluBusiNo": evaluBusiNo, "evaluGubun": evaluGubun, "evaluStage": evaluStage};
+	var params = {"evaluBusiSn": evaluBusiSn, "evaluYear": evaluYear, "evaluStage": evaluStage};
 	
 	$.ajax({
         url: CHECK_URL,
@@ -162,37 +159,31 @@ function check_stage(evaluBusiNo, evaluGubun, evaluStage) {
         data:params,
         async: true,
         dataType:"json", 
-//	            contentType:"application/json; text/html; charset=utf-8",
         success:function(result) {
-        	
-        	if(result.checkResult == 0) {
-        		save_ajax(evaluBusiNo, evaluGubun, evaluStage);
+			const code = result.code;
+        	if(code > 0) {
+				nAlert("이미 등록되어 있습니다.", null, null);
         	} else {
-        		nAlert("이미 등록되어 있습니다.", null, null);
+        		save_ajax(evaluBusiSn, evaluYear, evaluStage);
         	}
         }
 	});
 }
 
 //수정 페이지 이동 
-function goModfy(gubun, stage){
-	
-	var evaluBusiNo = $("#evaluBusiNo").val();
-	
+function goModfy(evaluHistSn) {
     BIZComm.submit({
         url : ROOT_PATH + VIEW_URL,
         userParam: {
         	type: "MOD",
-            evaluBusiNo: evaluBusiNo,
-            evaluGubun: gubun,
-            evaluStage: stage
+            evaluHistSn: evaluHistSn
         }
     });
 }
 
 
 //삭제 
-function goDelete(gubun, stage){
+function goDelete(gubun, stage) {
 	
 	var evaluBusiNo = $("#evaluBusiNo").val();
 	var evaluBusiStage = stage;
@@ -200,8 +191,8 @@ function goDelete(gubun, stage){
 	
 	var params = {"evaluBusiNo": evaluBusiNo, "evaluGubun": evaluBusiGubun, "evaluStage": evaluBusiStage};
 	
-	nConfirm("정말 삭제 하시겠습니까?", null, function(isConfirm){
-    	if(isConfirm){
+	nConfirm("정말 삭제 하시겠습니까?", null, function(isConfirm) {
+    	if(isConfirm) {
     		$.ajax({
     	        url: DELT_URL,
     	        type: "POST",

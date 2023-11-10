@@ -58,9 +58,11 @@ public class EvaluBusiMgmtService extends BaseService {
     /************************************************/
     
     // 평가사업 리스트 조회.
+    /* 23.11.07 LHB 구버전 평가 목록 조회 메소드 주석처리
     public PaginatedArrayList listEvaluBusiMgmt(Map paramMap, int currPage, int pageSize) throws Exception {
         return dao.pageList("MngEvalu.listEvaluBusiMgmt", paramMap, currPage, pageSize);
     }
+    */
     
     // 평가사업 상세정보
     public Map viewEvaluBusiInfo(Map paramMap) throws Exception {
@@ -194,11 +196,52 @@ public class EvaluBusiMgmtService extends BaseService {
     //SUNDOSOFT 평가사업관리 > 평가사업등록
     //################################################################
     
-    // 평가사업등록
+    // 평가사업 목록
+    public PaginatedArrayList listEvaluBusiMgmt(Map paramMap, int currPage, int pageSize) throws Exception {
+        return dao.pageList("MngEvalu.listEvaluBusiMgmt", paramMap, currPage, pageSize);
+    }
+    
+    // 평가사업 상세
+    public Map viewEvaluBusiMgmt(Map paramMap) throws Exception {
+        return (Map) dao.view("MngEvalu.viewEvaluBusiMgmt", paramMap);
+    }
+    
+    // 평가사업 상세 (평가이력 일련번호로 조회)
+    public Map viewEvaluBusiMgmtByHist(Map paramMap) throws Exception {
+        return (Map) dao.view("MngEvalu.viewEvaluBusiMgmtByHist", paramMap);
+    }
+    
+    // 평가사업 등록
     public int regiEvaluBusiMgmt(Map paramMap) throws Exception {
-    	// TODO 사업코드 생성
-    	// BS_CODE + 
+    	paramMap.put("bsCode", BS_CODE);
     	
-    	return (Integer) dao.insert("MngEvalu.regiEvaluBusiMgmt", paramMap);
+    	String busiSttDate = CommUtils.isEmpty(paramMap.get("busiSttDate").toString()) ? "--" : paramMap.get("busiSttDate").toString();
+    	String busiEndDate = CommUtils.isEmpty(paramMap.get("busiEndDate").toString()) ? "--" : paramMap.get("busiEndDate").toString();
+    	paramMap.put("busiSttDate", busiSttDate);
+    	paramMap.put("busiEndDate", busiEndDate);
+    	
+    	int result = (Integer) dao.update("MngEvalu.regiEvaluBusiMgmt", paramMap);
+    	return result;
+    }
+    
+    // 평가사업 이력 존재 여부 조회
+    public int chckEvaluBusiMgmtHist(Map paramMap) throws Exception {
+    	return (Integer) dao.view("MngEvalu.chckEvaluBusiMgmtHist", paramMap);
+    }
+    
+    // 평가사업 이력 목록
+    public List listEvaluBusiMgmtHist(Map paramMap) throws Exception {
+    	return dao.list("MngEvalu.listEvaluBusiMgmtHist", paramMap);
+    }
+    
+    // 평가사업 이력 상세
+    public Map viewEvaluBusiMgmtHist(Map paramMap) throws Exception {
+    	return (Map) dao.view("MngEvalu.viewEvaluBusiMgmtHist", paramMap);
+    }
+    
+    // 평가사업 이력 등록
+    public int regiEvaluBusiMgmtHist(Map paramMap) throws Exception {
+    	int result = (Integer) dao.update("MngEvalu.regiEvaluBusiMgmtHist", paramMap);
+    	return result;
     }
 }

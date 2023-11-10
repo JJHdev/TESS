@@ -1,14 +1,14 @@
 /**
- * 평가사업관리 리스트 스크립트
- *
- * @author lsz
- * @version 1.0 2018-11-26
- */
-
-////////////////////////////////////////////////////////////////////////////////
-// Loading
-////////////////////////////////////////////////////////////////////////////////
-
+*******************************************************************************
+***    명칭: listEvaluBusiMgmt.js
+***    설명: [관리자] 평가사업관리 > 평가이력 화면 스크립트
+***
+***    -----------------------------    Modified Log   ------------------------
+***    버전        수정일자        수정자        내용
+*** ---------------------------------------------------------------------------
+***    1.0      2023.11.10      LHB     First Coding.
+*******************************************************************************
+**/
 
 ////////////////////////////////////////////////////////////////////////////////
 //글로벌 변수
@@ -16,8 +16,8 @@
 
 var GRID_NAME = "#grid";
 var GRID_PAGER_NAME = "#pager";
-var SEARCH_URL = ROOT_PATH + "/mng/getEvaluBusiMgmt.do";
-var VIEW_URL = ROOT_PATH + "/mng/viewEvaluBusiHist.do";
+var SEARCH_URL = ROOT_PATH + "/mng/getListEvaluBusiMgmt.do";
+var VIEW_URL = ROOT_PATH + "/mng/viewEvaluBusiMgmtHist.do";
 var REGI_URL = ROOT_PATH + "/mng/regiEvaluBusiMgmt.do";
 
 /* 그리드 객체 생성 */
@@ -484,7 +484,8 @@ function grid() {
             align: "center",
             columnHeight: 28,
             onClick: function () {
-                goView(this.item.busino);
+				// 2023.11.07 LHB 클릭 번호 EVALU_BUSI_SN 컬럼으로 변경
+                goView(this.item.evaluBusiSn);
             },
             onDBLClick: function () {
             }
@@ -502,14 +503,14 @@ function grid() {
             }
         },
         columns: [
-            {key: "idx", label: "번호", align: "center", width: 60},
-            {key: "busino", label: "사업코드", align: "left", width: 120},
-            {key: "locale", label: "지역", align: "left", width: 158},
-            /*{key: "organization", label: "지자체", align: "left", width: 137},*/
-            {key: "title", label: "사업명", align: "left", width: 388},
-            {key: "money", label: "사업비(백만원)", formatter: "money", align: "right", width: 123},
-            {key: "startYear", label: "시작연도", align: "center", width: 80},
-            {key: "endYear", label: "종료연도", align: "center", width: 80}
+			{key: "idx", label: "번호", align: "center", width: 60},
+			{key: "evaluBusiNo", label: "사업코드", align: "left", width: 200},
+			{key: "busiAddr", label: "시행주체", align: "left", width: 160},
+			{key: "evaluBusiNm", label: "사업명", align: "left", width: 450},
+			{key: "regiDate", label: "등록일", align: "left", width: 100},
+            //{key: "money", label: "사업비(백만원)", formatter: "money", align: "right", width: 123},
+            //{key: "startYear", label: "시작연도", align: "center", width: 80},
+            //{key: "endYear", label: "종료연도", align: "center", width: 80}
         ]
     });
 
@@ -574,13 +575,14 @@ function grid_data(page, params) {
             	
                 list.push({
                     idx: index,									// 번호
-                    busino: result.rows[i].planEvalBusiNo,		// 사업코드
-                    locale: result.rows[i].busiAddr12,			// 지역
-                    /*organization: "서울시청",*/
-                    title: result.rows[i].planEvalBusiName,		// 사업명
-                    money: result.rows[i].planBusiExps,			// 사업비
-                    startYear: sttYear,							// 시작연도
-                    endYear: endYear							// 종료연도
+					evaluBusiSn: result.rows[i].evaluBusiSn,
+                    evaluBusiNo: result.rows[i].evaluBusiNo,	// 사업코드
+					evaluBusiNm: result.rows[i].evaluBusiNm,	// 사업명
+                    busiAddr: result.rows[i].busiAddr,			// 지역
+					regiDate: result.rows[i].regiDate,			// 등록일
+                    //money: result.rows[i].planBusiExps,		// 사업비
+                    //startYear: sttYear,						// 시작연도
+                    //endYear: endYear							// 종료연도
                 });
             }
 
@@ -645,11 +647,11 @@ function search_btn(page) {
 ////////////////////////////////////////////////////////////////////////////////
 
 //상세페이지 화면으로 이동
-function goView(evaluBusiNo) {
+function goView(evaluBusiSn) {
     BIZComm.submit({
         url: VIEW_URL,
         userParam: {
-            evaluBusiNo: evaluBusiNo
+            evaluBusiSn: evaluBusiSn
         }
     });
 }
