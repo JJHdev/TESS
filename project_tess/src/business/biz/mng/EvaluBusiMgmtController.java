@@ -79,6 +79,9 @@ public class EvaluBusiMgmtController extends BaseController {
 	@Autowired
     private FileController fileController;
 	
+	// 사업코드 변수
+    public static final String BS_CODE				= "EV"; // EVTDSS 사업 공통 부여 코드
+	
 	//################################################################
 	//	평가사업관리
 	//################################################################	
@@ -95,7 +98,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -124,7 +127,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
         //---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -160,7 +163,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -190,7 +193,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -219,7 +222,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -249,7 +252,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -351,7 +354,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -422,7 +425,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -451,7 +454,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -612,7 +615,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -642,7 +645,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -671,7 +674,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -700,7 +703,7 @@ public class EvaluBusiMgmtController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
@@ -874,7 +877,7 @@ public class EvaluBusiMgmtController extends BaseController {
             String reqCityauthCd = (String)paramMap.get("cityauth1");
             
             //코드가 3자리일 경우 앞에 0을 붙임
-            if(reqCityauthCd.length()==3){
+            if(reqCityauthCd.length()==3) {
             	reqCityauthCd = "0"+reqCityauthCd;
             }
             
@@ -910,7 +913,7 @@ public class EvaluBusiMgmtController extends BaseController {
         // check wrong access
         //+++++++++++++++++++++++++++++++
         String reqReferer =  request.getHeader("REFERER");
-        if(CommUtils.empty(reqReferer)){
+        if(CommUtils.empty(reqReferer)) {
             // msg : 잘못된 방법으로 접근하였습니다.
             ex = new EgovBizException(Message.getMessage("exception.Evalu.accsWrongWay"));
         }
@@ -927,7 +930,7 @@ public class EvaluBusiMgmtController extends BaseController {
      */
     private void formObject(Map paramMap, String method) throws Exception {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        
+        paramMap.put("bsCode", BS_CODE);
         // 리스트화면 구성 관련 
         if (method.equalsIgnoreCase("listEvaluBusiMgmt") || method.equalsIgnoreCase("listEvaluStgMgmt") || method.equalsIgnoreCase("listEvaluBudtMgmt")) {
             
@@ -1027,7 +1030,7 @@ public class EvaluBusiMgmtController extends BaseController {
            
         }
         //평가계획 수립화면
-        else if(method.equalsIgnoreCase("regiEvaluStgMgmt")){
+        else if(method.equalsIgnoreCase("regiEvaluStgMgmt")) {
         	
             // [정부부처] 항목 콤보 객체
             paramMap.put("parentCode", "EVALU_ITEM");
@@ -1047,7 +1050,7 @@ public class EvaluBusiMgmtController extends BaseController {
             request.setAttribute("evaluAssmentComboList", evaluAssment);
         }
         
-        else if(method.equalsIgnoreCase("viewEvaluBudtMgmt2")){
+        else if(method.equalsIgnoreCase("viewEvaluBudtMgmt2")) {
             // 평가결과 조회 콤보
             List finlRestlSel = new ArrayList ();
             Map srchType1Map = new HashMap();
@@ -1062,7 +1065,7 @@ public class EvaluBusiMgmtController extends BaseController {
             srchType3Map.put("code"  , "F");
             srchType3Map.put("codeNm", "부적합");
             finlRestlSel.add(srchType3Map);
-            if(request.getParameter("evaluStage").equals("EVALU_CENT")){
+            if(request.getParameter("evaluStage").equals("EVALU_CENT")) {
             	Map srchType4Map = new HashMap();
                 srchType4Map.put("code"  , "R");
                 srchType4Map.put("codeNm", "재검토");
@@ -1072,7 +1075,7 @@ public class EvaluBusiMgmtController extends BaseController {
         }
         
         // 평가이력 화면
-        else if(method.equalsIgnoreCase("viewEvaluBusiHist")){
+        else if(method.equalsIgnoreCase("viewEvaluBusiHist")) {
         	
         	// 평가단계 조회
         	paramMap.put("useYn", "Y");
@@ -1082,11 +1085,12 @@ public class EvaluBusiMgmtController extends BaseController {
         	
         }
         // 2023.11.10 LHB [관리자] 평가사업관리 > 평가이력
-        else if(method.equalsIgnoreCase("viewEvaluBusiMgmtHist")){
+        else if(method.equalsIgnoreCase("viewEvaluBusiMgmtHist")) {
         	
         	// 평가단계 조회
+        	paramMap.put("parentCode", "EVALU_STAGE");
         	paramMap.put("useYn", "Y");
-        	List evaluStageList = evaluEnvService.listEvaluEnvStep(paramMap);
+            List evaluStageList = commService.listCode(paramMap);
         	
         	request.setAttribute("evaluStageList", evaluStageList);
         	
@@ -1108,7 +1112,7 @@ public class EvaluBusiMgmtController extends BaseController {
     @RequestMapping(value="/mng/regiEvaluBusiMgmt.do")
     public String regiEvaluBusiMgmt(HttpServletRequest request, ModelMap model) throws Exception {
     	//---------------------------------------------
-    	//Default Value Setting
+    	// Default Value Setting
     	String method	= getMethodName(new Throwable());
     	Map paramMap	= setMappingValues(request, method);
 		// default domain setting
@@ -1116,13 +1120,13 @@ public class EvaluBusiMgmtController extends BaseController {
 		BeanUtils.copyProperties(evaluBusiMgmtDomain, paramMap);
 		//---------------------------------------------
 		
-		paramMap.put("startParentCode", "BUSI_TYPE");
-        paramMap.put("level"     , "1");
-        List busiTypeComboList = commService.listCode(paramMap);
+		paramMap.put("parentCode",	"NONE");
+		paramMap.put("addCol01",	"BUSI_TYPE_LEVEL1");
+        List busiTypeLevel1ComboList = commService.listCode(paramMap);
 		
 		model.addAttribute("model"   ,  evaluBusiMgmtDomain);
 		model.addAttribute("paramMap",  paramMap);
-		model.addAttribute("busiTypeComboList",  busiTypeComboList);
+		model.addAttribute("busiTypeLevel1ComboList",  busiTypeLevel1ComboList);
 		
 		return "mng/regiEvaluBusiMgmt";
     }
@@ -1138,7 +1142,7 @@ public class EvaluBusiMgmtController extends BaseController {
     public ModelAndView getListEvaluBusiMgmt(HttpServletRequest request, ModelMap model) throws Exception {
     	
         //---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method	= getMethodName(new Throwable());
         Map paramMap	= setMappingValues(request, method );
         // default domain setting
@@ -1171,7 +1175,7 @@ public class EvaluBusiMgmtController extends BaseController {
     public String saveEvaluBusiMgmt(HttpServletRequest request, ModelMap model) throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method	= getMethodName(new Throwable());
         Map paramMap	= setMappingValues(request, method);
         // default domain setting
@@ -1213,7 +1217,7 @@ public class EvaluBusiMgmtController extends BaseController {
     public String viewEvaluBusiMgmtHist(HttpServletRequest request, ModelMap model) throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method	= getMethodName(new Throwable());
         Map paramMap	= setMappingValues(request, method);
         // default domain setting
@@ -1253,7 +1257,7 @@ public class EvaluBusiMgmtController extends BaseController {
     public ModelAndView chckEvaluBusiMgmtHist(HttpServletRequest request, ModelMap model) throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method	= getMethodName(new Throwable());
         Map paramMap	= setMappingValues(request, method);
         // default domain setting
@@ -1281,7 +1285,7 @@ public class EvaluBusiMgmtController extends BaseController {
     public ModelAndView regiEvaluBusiMgmtHist(HttpServletRequest request, ModelMap model) throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method	= getMethodName(new Throwable());
         Map paramMap	= setMappingValues(request, method);
         // default domain setting
@@ -1313,7 +1317,7 @@ public class EvaluBusiMgmtController extends BaseController {
     }
     
     /**
-     * [관리자] 평가사업관리 > 평가지침 화면
+     * [관리자] 평가사업관리 > 평가사업상세 > 사업관리 화면
      * @param request
      * @param model
      * @return
@@ -1323,7 +1327,7 @@ public class EvaluBusiMgmtController extends BaseController {
     public String viewEvaluBusiMgmtGuide(HttpServletRequest request, ModelMap model) throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method	= getMethodName(new Throwable());
         Map paramMap	= setMappingValues(request, method);
         // default domain setting
@@ -1333,10 +1337,14 @@ public class EvaluBusiMgmtController extends BaseController {
         
         // 평가사업 정보 (평가이력 일련번호 번호로 조회)
         Map evaluInfo = evaluBusiMgmtService.viewEvaluBusiMgmtByHist(paramMap);
+        BeanUtils.copyProperties(evaluBusiMgmtDomain, evaluInfo);
         
         // 평가사업 이력 상세조회
         Map evaluBusiMgmtHistInfo = evaluBusiMgmtService.viewEvaluBusiMgmtHist(paramMap);
-        BeanUtils.copyProperties(evaluBusiMgmtDomain, paramMap);
+        BeanUtils.copyProperties(evaluBusiMgmtDomain, evaluBusiMgmtHistInfo);
+        
+        // 제출이력 조회
+        List listEvaluBusiMgmtHistLog = evaluBusiMgmtService.listEvaluBusiMgmtHistLog(paramMap);
         
         // 평가지침서 조회
         Map evaluDocA = evaluBusiMgmtService.viewEvaluAFile(paramMap);
@@ -1397,7 +1405,7 @@ public class EvaluBusiMgmtController extends BaseController {
         model.addAttribute("paramMap",				paramMap);
         model.addAttribute("mastMap",				mastMap);
         model.addAttribute("evaluInfo",				evaluInfo);
-        model.addAttribute("evaluBusiMgmtHistInfo",	evaluBusiMgmtHistInfo);
+        model.addAttribute("listEvaluBusiMgmtHistLog",	listEvaluBusiMgmtHistLog);
         model.addAttribute("areaFileList",			areaFileList);
         model.addAttribute("areaFormList",			areaFormList);
         model.addAttribute("evaluDocA",				evaluDocA);
@@ -1406,5 +1414,57 @@ public class EvaluBusiMgmtController extends BaseController {
         model.addAttribute("checkStagekHist",		checkStagekHist);
         
         return "mng/viewEvaluBusiMgmtGuide";
+    }
+    
+    /**
+     * [관리자] 평가사업관리 > 평가사업상세 > 사업관리 개발사업 개요 수정
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/mng/saveEvaluBusiMgmtGuide.do")
+    public ModelAndView saveEvaluBusiMgmtGuide(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        // Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
+        // default domain setting
+        EvaluBusiMgmtDomain evaluBusiMgmtDomain = new EvaluBusiMgmtDomain();
+        BeanUtils.copyProperties(evaluBusiMgmtDomain, paramMap);
+        //---------------------------------------------
+        
+        String evaluBusiSn = (String) paramMap.get("evaluBusiSn");
+        String evaluHistSn = (String) paramMap.get("evaluHistSn");
+        
+        // 평가사업 정보
+        Map busiInfo = evaluBusiMgmtService.viewEvaluBusiMgmt(paramMap);
+        
+        // 평가사업 이력 상세조회
+        Map evaluBusiMgmtHistInfo = evaluBusiMgmtService.viewEvaluBusiMgmtHist(paramMap);
+        
+        int result = 0;
+        try {
+        	result = evaluBusiMgmtService.saveEvaluBusiMgmtGuide(paramMap);
+        } catch (UncategorizedSQLException ue) {
+        	logger.error("error :: ", ue);
+        	result = 0;
+        } catch (Exception e) {
+        	logger.error("error :: ", e);
+        	result = 0;
+        }
+        
+        Map returnMap = new HashMap();
+        
+        if (result > 0) {
+        	returnMap.put("code",	"1");
+        	returnMap.put("msg",	"저장이 완료되었습니다.");
+        } else {
+        	returnMap.put("code",	"-1");
+        	returnMap.put("msg",	"저장에 실패했습니다. 관리자에게 문의해주세요.");
+        }
+        
+        return new ModelAndView(ajaxView, returnMap);
     }
 }

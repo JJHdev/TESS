@@ -104,6 +104,7 @@
                                 </form>
 
                                 <div class="search-acd" id="searchItem" role="tablist" aria-multiselectable="true">
+                                	<!--
                                     <div class="o-search tab1 panel">
                                         <div class="o-search-col " role="tab" id="headingOne">
                                             <a onClick="$.searchSlider('headingOne')" class="collapsed" role="button"
@@ -126,18 +127,34 @@
                                             </ul>
                                         </div>
                                     </div>
+                                    -->
+                                    <div class="o-search tab1 panel">
+                                        <div class="o-search-col" role="tab" id="headingOne">
+                                            <a onClick="$.searchSlider('headingOne')" class="collapsed" role="button"
+                                               data-toggle="collapse" data-parent="#searchItem" href="#collapseOne"
+                                               aria-expanded="false" aria-controls="collapseOne" title="시행주체">시행주체</a>
+                                        </div>
+                                        <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                                            <ul class="i-search">
+                                                <li class="i-search-col w50" id="i-search-sido1">
+                                                </li>
+                                                <li class="i-search-col w50" id="i-search-gungu1">
+                                                    <div class="i-search-item selected"><a title="전체">전체</a></div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                     <div class="o-search tab2 panel">
                                         <div class="o-search-col" role="tab" id="headingTwo">
                                             <a onClick="$.searchSlider('headingTwo')" class="collapsed" role="button"
-                                               data-toggle="collapse" data-parent="#searchItem" href="#collapseOne"
-                                               aria-expanded="false" aria-controls="collapseOne" title="지역">지역</a>
+                                               data-toggle="collapse" data-parent="#searchItem" href="#collapseTwo"
+                                               aria-expanded="false" aria-controls="collapseTwo" title="지역">지역</a>
                                         </div>
-                                        <div id="collapseOne" class="panel-collapse collapse" role="tabpanel"
-                                             aria-labelledby="headingTwo">
+                                        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
                                             <ul class="i-search">
-                                                <li class="i-search-col w50" id="i-search-sido">
+                                                <li class="i-search-col w50" id="i-search-sido2">
                                                 </li>
-                                                <li class="i-search-col w50" id="i-search-gungu">
+                                                <li class="i-search-col w50" id="i-search-gungu2">
                                                     <div class="i-search-item selected"><a title="전체">전체</a></div>
                                                 </li>
                                             </ul>
@@ -146,11 +163,10 @@
                                     <div class="o-search tab3 panel">
                                         <div class="o-search-col " role="tab" id="headingThree">
                                             <a onClick="$.searchSlider('headingThree')" class="collapsed" role="button"
-                                               data-toggle="collapse" data-parent="#searchItem" href="#collapseTwo"
-                                               aria-expanded="false" aria-controls="collapseTwo" title="회계구분/사업유형">회계구분/사업유형</a>
+                                               data-toggle="collapse" data-parent="#searchItem" href="#collapseThree"
+                                               aria-expanded="false" aria-controls="collapseThree" title="회계구분/사업유형">회계구분/사업유형</a>
                                         </div>
-                                        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
-                                             aria-labelledby="headingThree">
+                                        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
                                             <ul class="i-search">
                                                 <li class="i-search-col w50" id="i-search-busiType">
                                                     <div class="i-search-item active"><a title="전체"  onclick="selectBusiType(this, '', '전체')">전체</a></div>
@@ -171,8 +187,8 @@
                                         <!-- <p>현재 지정된 검색 조건이 없습니다.</p> -->
                                         <p class="silent">현재 지정된 검색 조건이 없습니다.</p>
                                         <label>검색조건 :</label>
-                                        <div class="searach-word" id="search_year">[연도]&nbsp;전체</div>
-                                        <div class="searach-word" id="search_area">[지역]&nbsp;전체</div>
+                                        <div class="searach-word" id="search_year">[시행주체]&nbsp;전체</div>
+                                        <div class="searach-word" id="search_area">[대상지역]&nbsp;전체</div>
                                         <div class="searach-word" id="search_type">[유형]&nbsp;전체</div>
                                     </div>
 

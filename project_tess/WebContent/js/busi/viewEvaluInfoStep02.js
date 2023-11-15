@@ -642,3 +642,26 @@ function goBusiInfo() {
     });
 }
 
+
+document.addEventListener("DOMContentLoaded", function() {
+    var options = {
+        height: "100%",
+        width: "100%",
+        pdfOpenParams: {
+            pagemode: "thumbs",
+            scrollbar: "1",
+            toolbar: "1",
+            statusbar: "1",
+            messages: "1",
+            navpanes: "1"
+        }
+    };
+
+    PDFObject.embed("/1/Week01/data/download01/01.pdf", "#pdf-viewer1", options);
+
+});
+
+
+$(document).ready(function(){
+
+});

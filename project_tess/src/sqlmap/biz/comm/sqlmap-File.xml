@@ -149,6 +149,27 @@
     <statement id="getMaxFileNo" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
         SELECT MAX(FILE_NO) FROM TB_ATTHFILE 
     </statement>
+    
+    <!--
+    ################################################################
+    SUNDOSOFT 평가사업관리 > 평가사업등록
+    ################################################################
+    -->
+    
+    <select id="viewSampleFile" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		SELECT CODE				AS "fileNo"
+		     , PARENT_CODE		AS "rootNo"
+		     , CODE_NM||'.pdf'	AS "fileOrgNm"
+		     , ADD_COL5			AS "fileSvrNm"
+			 , ADD_COL1			AS "docuType"
+		     , 'pdf'			AS "atthType"
+		     , USE_YN			AS "useYn"
+		  FROM SYS_CODE
+		 WHERE (1=1)
+		   AND PARENT_CODE = 'FILE_TYPE'
+		   AND USE_YN = 'Y'
+		   AND CODE = #fileNo#
+    </select>
 
 
 </sqlMap>

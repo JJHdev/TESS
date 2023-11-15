@@ -43,8 +43,8 @@
 		        window.location = $(this).attr('href');
 		        return false;
 		    });
-
-		 $(".date-picker").datepicker({
+		
+		$(".date-picker").datepicker({
 		 	dateFormat: 'yy-mm-dd',
 		    changeMonth: true,
 		    changeYear: true,

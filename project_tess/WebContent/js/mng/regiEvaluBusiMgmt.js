@@ -13,13 +13,14 @@
 $(document).ready(function() {
 	loadBusiCate();
 	loadBusiAddrCombo();
+	loadBusiMbyAddrCombo();
 });
 
 function validation() {
 	console.log('validation()');
 	// 사업명, 사업구분(사업유형), 위치, 총 사업기간, 사업개발주체, 계획수립일자, 사업 내용, 전체부지면적
-	const requiredListValue = ["evaluBusiNm", "busiType", "busiCate", "busiAddr1", "busiAddr2"];
-	const requiredListKey	= ["사업명", "사업유형", "사업유형", "시행주체", "시행주체"];
+	const requiredListValue = ["evaluBusiNm", "busiCate", "busiMbyAddr1",	"busiAddr1"];
+	const requiredListKey	= ["사업명",        "사업유형",   "시행주체",			"대상지역"];
 	
 	const formValue = $("#model").serializeObject();
 	for (let i=0 ; i<requiredListValue.length ; i++) {
@@ -28,20 +29,6 @@ function validation() {
 			$("#" + requiredListValue[i]).focus();
 			return false;
 		}
-	}
-	
-	if (isNotEmpty(formValue['busiSttDate']) && !isDate(formValue['busiSttDate'].replaceAll("-", ""))) {
-		alert('사업기간 형식이 잘못되었습니다.');
-		$("#busiSttDate").focus();
-		return false;
-	} else if (isNotEmpty(formValue['busiEndDate']) && !isDate(formValue['busiEndDate'].replaceAll("-", ""))) {
-		alert('사업기간 형식이 잘못되었습니다.');
-		$("#busiEndDate").focus();
-		return false;
-	} else if (isNotEmpty(formValue['busiPlanDate']) && !isDate(formValue['busiPlanDate'].replaceAll("-", ""))) {
-		alert('계획수립일자 형식이 잘못되었습니다.');
-		$("#busiPlanDate").focus();
-		return false;
 	}
 	
 	if (confirm('사업을 등록하시겠습니까?')) {
@@ -64,8 +51,25 @@ function loadBusiAddrCombo() {
 	});
 }
 
+// 지역 검색조건 combo loading
+function loadBusiMbyAddrCombo() {
+	//시도 선택시 지자체(구군) 검색
+	comutils.changeCityBjd({
+		loading : true,
+		citysido: "busiMbyAddr1",
+		cityauth: "busiMbyAddr2",
+		init    : function(){
+			return;
+		}
+	});
+}
+
+// 부서 검색조건 combo loading
 function loadBusiCate() {
-	$("#busiType").change(function() {
+	const level1 = "busiTypeLevel1";
+	const level2 = "busiTypeLevel2";
+	const level3 = "busiCate";
+	$("#"+level1).change(function() {
 		const selectCode = $(this).val();
 		
 		// 사업유형 데이터 조회
@@ -73,13 +77,49 @@ function loadBusiCate() {
 	        params: {parentCode: selectCode},
 	        fn: function (result) {
 				let html = '<option value="">선택</option>';
-				if (result != null && result.length > 1) {
+				if (result != null && result.length > 0) {
+					$("#"+level2).addClass("hide");
+					$("#"+level3).addClass("hide");
+					
+					if (result[0].addCol2 == '3') {
+						$("#"+level3).removeClass("hide");
+						$.each(result, function () {
+		                    var code = this.code
+		                    var name = this.codeNm;
+		                    html += ('<option value="' + code + '">' + name + '</option>');
+		                });
+						$("#"+level3).html(html);
+					} else {
+						$("#"+level2).removeClass("hide");
+						$.each(result, function () {
+		                    var code = this.code
+		                    var name = this.codeNm;
+		                    html += ('<option value="' + code + '">' + name + '</option>');
+		                });
+						$("#"+level2).html(html);
+					}
+					
+				}
+	        }
+	    });
+	});
+	
+	$("#"+level2).change(function() {
+		const selectCode = $(this).val();
+		
+		// 사업유형 데이터 조회
+	    bizutils.findCode({
+	        params: {parentCode: selectCode},
+	        fn: function (result) {
+				let html = '<option value="">선택</option>';
+				if (result != null && result.length > 0) {
+					$("#"+level3).removeClass("hide");
 					$.each(result, function () {
 	                    var code = this.code
 	                    var name = this.codeNm;
 	                    html += ('<option value="' + code + '">' + name + '</option>');
 	                });
-					$("#busiCate").html(html);
+					$("#"+level3).html(html);
 				}
 	        }
 	    });

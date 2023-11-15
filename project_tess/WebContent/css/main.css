@@ -777,6 +777,7 @@ h3.page-title {
 }
 .g-search-col.w25 { width: 25%; }
 .g-search-col.w50 { width: 50%; }
+.g-search-col.w75 { width: 75%; }
 .g-search-input-txt {
     height: 45px;
     width: 100%;
@@ -926,7 +927,7 @@ h3.page-title {
     line-height: 20px;
 }
 .i-search-col .i-search-blank .i-search-guide:before {
-    content: '← ';
+    content: '占쎈� ';
 }
 .i-search-item {
     position: relative;
@@ -1217,7 +1218,7 @@ h3.page-title {
 }
 .body-descriptions {
     font-size: 14px;
-    margin-bottom: 15px;
+    margin: 15px 0;
 }
 .doc-form-section {
     border: 1px solid #aaaaaa;
@@ -1971,7 +1972,7 @@ table .fix-width.duration-time {
     font-size: 13px;
 }
 .paging-wrap .dots:after {
-    content: '…';
+    content: '占쏙옙';
     padding: 0 8px;
 }
 .paging-wrap .page-btn {
@@ -2114,7 +2115,7 @@ p.clearfix.br {
 
 .flexi_apply_content.calendar_area .fc-day-number:after {display: none;}
 
-/* 휴일 */
+/* 占쎌몧占쎌뵬 */
 .calendar_area .fc-sat .fc-day-number, .calendar_area .fc-sun .fc-day-number { color : #b2b2b2 !important;}
 .calendar_area .fc-sat .fc-day-number:after, .calendar_area .fc-sun .fc-day-number:after, .calendar_area .fc-content-skeleton td.__holiday:before, .calendar_area .fc-content-skeleton td.fc-sun:before ,.calendar_area .fc-content-skeleton td.fc-sat:before  { display: none;}
 .calendar_area .__holiday {color: #b2b2b2 !important; }
@@ -2350,7 +2351,7 @@ p.clearfix.br {
     color: #4bc0c0;
 }
 
-/* 평가 슬라이드 */
+/* 占쎈즸揶쏉옙 占쎈뮩占쎌뵬占쎌뵠占쎈굡 */
 .stage_prev {
 	position: absolute;
 	top: 13%;
@@ -2368,7 +2369,7 @@ p.clearfix.br {
 	height: auto;
 }
 
-/* 자료실 슬라이드 */
+/* 占쎌쁽�뙴�슣�뼄 占쎈뮩占쎌뵬占쎌뵠占쎈굡 */
 .reference_prev {
 	position: absolute;
 	top: 50%;

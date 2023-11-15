@@ -627,7 +627,4 @@ $(document).ready(function() {
             modal.style.display = "none";
         }
     }
-
-    // pdf.js의 worker 설정
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdfjs-2.2.228-dist/build/pdf.worker.js';
 });

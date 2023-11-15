@@ -195,8 +195,13 @@ public class FileService extends BaseService {
         return file;
     }
     
+    public Map viewSampleFile(Map params) {
+        Map file = (Map)dao.view("File.viewSampleFile", params);
+        return file;
+    }
+    
     public int getMaxFileNo(Map params) {
-    	int fileNo = (int) dao.view("File.getMaxFileNo", params);
+    	int fileNo = (Integer) dao.view("File.getMaxFileNo", params);
     	return fileNo;
     }
 }

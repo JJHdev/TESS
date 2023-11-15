@@ -19,6 +19,134 @@
 	
 	<script language="javascript"  type="text/javascript" src='<c:url value="/js/pdfjs-2.2.228-dist/build/pdfobject.min.js"/>'></script>
 	
+	
+	
+	
+<style>
+.node {
+    margin-left: 20px;
+}
+/* 전체 테이블 스타일 */
+.evtdss-form-table {
+    width: 100%;
+    border-collapse: collapse; /* 셀 간격 없애기 */
+}
+
+.evtdss-form-table th,
+.evtdss-form-table td {
+    border: 1px solid #ddd; /* 경계선 스타일 */
+    padding: 8px; /* 패딩 설정 */
+    text-align: left; /* 왼쪽 정렬 */
+}
+
+/* 제목 및 점수 스타일 */
+.evtdss-form-table th {
+    color: #000;
+    font-weight: bold; /* 굵은 글씨 */
+}
+
+/* 판단의견과 개선사항을 위한 스타일 */
+.content-box td {
+    background-color: #f9f9f9; /* 배경색 */
+    padding: 15px; /* 패딩 설정 */
+    line-height: 1.6; /* 줄 간격 */
+}
+
+/* 판단의견과 개선사항의 제목 스타일 */
+.content-title {
+    font-weight: bold; /* 굵은 글씨 */
+    margin-bottom: 10px; /* 아래쪽 마진 */
+    display: block; /* 블록 요소로 표시 */
+}
+</style>
+<style>
+
+.content-container {
+  display: flex; /* Flexbox를 사용하여 PDF와 테이블을 나란히 배치 */
+  width: 100%; /* 모달 컨텐츠의 전체 너비를 사용 */
+}
+
+.pdf-viewer {
+  flex: auto; /* 반을 차지하도록 유연성 부여 */
+  overflow: hidden; /* PDF가 컨테이너를 넘어가지 않도록 함 */
+  height: inherit;
+}
+
+#pdf-viewer {
+  width: 100%;
+  overflow-y: scroll;
+  background: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#pdf-viewer canvas {
+  width: 100%; /* 캔버스 너비를 컨테이너에 맞춥니다. */
+  border-bottom: 1px solid #ccc; /* 페이지 간 구분선 추가 */
+  margin-bottom: 20px; /* 페이지 간 간격 추가 */
+  page-break-after: always; /* 인쇄 시 페이지 구분 */
+}
+canvas {
+  width: 100%; /* 캔버스 너비를 컨테이너에 맞춥니다. */
+  border-bottom: 1px solid #ccc; /* 페이지 간 구분선 추가 */
+  margin-bottom: 20px; /* 페이지 간 간격 추가 */
+}
+.modal-content{
+  border-radius: 26px;
+}
+#pdfModal {
+    /* 기존 스타일 유지 */
+    position: fixed;
+    top: 530px;
+    left: 30px;
+    width: 45%;
+    height: 70%;
+    z-index: 100;
+    
+    /* Transition 추가 */
+    transition: top 0.4s ease; /* 'top' 속성에 대한 전환을 0.5초 동안 부드럽게 적용 */
+/* } */
+
+</style>
+					
+<script>
+function adjustModalPosition() {
+    var pdfModal = document.getElementById('pdfModal');
+    var windowHeight = window.innerHeight;
+    var scrollY = window.scrollY;
+    var documentHeight = document.documentElement.scrollHeight;
+
+    // 화면 중앙까지의 거리 계산
+    var distanceToCenter = (windowHeight / 2) - (pdfModal.offsetHeight / 2);
+
+    // 스크롤이 맨 아래에 도달했는지 확인
+    var scrollBottom = documentHeight - windowHeight;
+    var nearBottom = scrollBottom - 100; // 100px은 조정 가능
+
+    if (scrollY >= scrollBottom) {
+        pdfModal.style.top = '-20%';
+    } else if (scrollY > nearBottom) {
+        var newTop = distanceToCenter - ((scrollY - nearBottom) * (100 / (scrollBottom - nearBottom)));
+        pdfModal.style.top = newTop + 'px';
+    } else if (scrollY > 450) {
+        var newTop = Math.min(distanceToCenter, scrollY - 530 + 530);
+        pdfModal.style.top = newTop + 'px';
+    } else {
+        var newTop = Math.max(0, 530 - scrollY);
+        pdfModal.style.top = newTop + 'px';
+    }
+}
+
+// 스크롤 이벤트 리스너
+window.addEventListener('scroll', adjustModalPosition);
+
+// 창 크기 변경 이벤트 리스너
+window.addEventListener('resize', adjustModalPosition);
+</script>
+	
+
+	
+</head>
 <body id="top">
 <div class="wrap">
 
@@ -64,7 +192,7 @@
     
     <input type="hidden" name="regiEvaluCommId"     id="regiEvaluCommId"/>
     
-    <div class="contents-wrap">
+    <div class="contents-wrap" style="background-color:white; margin-bottom: -70px;">
 	    <div class="wrapper sub"> <!-- 메인페이지 : 'main', 서브페이지 : 'sub' 클래스 추가 -->
 	        <div class="container">
 	            <div class="evtdss-breadcrumb">
@@ -95,7 +223,6 @@
 	                    <div class="back-list"><a href="/busi/listEvaluBusi.do" title="목록으로"><</a></div>
 	                </div>
 	            </div>
-
 	<!------------------------------------------------------------------->
 	<!------------------------------------------------------------------->
 	<!----------------------------- 평가위원 ------------------------------->
@@ -118,11 +245,164 @@
 	                                <li class=""><a onclick="goStep(4);" title="평가종료">평가종료</a></li>
 	                            </ul>
 	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+	    var pdfViewer = document.querySelector('.modal-content');
+	    var table = document.querySelector('.evtdss-form-table');
+	    var pdfPreviewCell = document.getElementById('pdfPreviewCell');
+	    var opinionCell = document.getElementById('opinionCell');
+	
+	    // PDF미리보기 클릭 이벤트
+	    document.getElementById('pdfPreviewLink').addEventListener('click', function(event) {
+	        event.preventDefault();
+	        pdfViewer.style.display = 'block'; // PDF 뷰어 표시
+	        table.style.display = 'none'; // 테이블 숨김
+	        pdfPreviewCell.style.backgroundColor = '#38b6ab'; // 배경색 변경
+	        pdfPreviewCell.firstElementChild.style.color = 'white'; // 글꼴 색상 변경
+	        opinionCell.style.backgroundColor = ''; // 다른 셀 배경색 제거
+	        opinionCell.firstElementChild.style.color = ''; // 다른 셀 글꼴 색상 제거
+	    });
+	
+	    // 평가의견서 클릭 이벤트
+	    document.getElementById('opinionLink').addEventListener('click', function(event) {
+	        event.preventDefault();
+	        pdfViewer.style.display = 'none'; // PDF 뷰어 숨김
+	        table.style.display = 'table'; // 테이블 표시
+	        opinionCell.style.backgroundColor = '#38b6ab'; // 배경색 변경
+	        opinionCell.firstElementChild.style.color = 'white'; // 글꼴 색상 변경
+	        pdfPreviewCell.style.backgroundColor = ''; // 다른 셀 배경색 제거
+	        pdfPreviewCell.firstElementChild.style.color = ''; // 다른 셀 글꼴 색상 제거
+	    });
+	});
+    </script>
+    
+	<div style="display:flex;">	
+    	<div class="contents-wrap" style="width:50%">
+			<div class="wrapper sub" style="max-width:100%; background-color: #EDEEEE;"> <!-- 메인페이지 : 'main', 서브페이지 : 'sub' 클래스 추가 -->
+				<table border="1" style="width: 100%; text-align: center;">
+				    <tr>
+				        <td colspan="2" style="background-color:#38b6ab;"><a href="#" title="평가위원 A" style="color:white;">평가위원 A (홍길동)</a></td>
+				        <td colspan="2"><a href="#" title="평가위원 B">평가위원 B (강감찬)</a></td>
+				        <td colspan="2"><a href="#" title="평가위원 C">평가위원 C (유관순)</a></td>
+				    </tr>
+				    <tr>
+				        <td colspan="3" id="pdfPreviewCell" style="background-color:#38b6ab;"><a href="#" id="pdfPreviewLink" style="color:white;" title="평가위원 A">PDF미리보기</a></td>
+				        <td colspan="3" id="opinionCell"><a href="#" id="opinionLink" title="평가위원 B">평가의견서</a></td>
+				    </tr>
+				</table>
+				
+				<table class="evtdss-form-table" style="margin-top:50px;  display: none;">
+				    <!-- 테이블 헤더 -->
+					<tr>
+				        <th rowspan="2">진단항목</th>
+				        <th rowspan="2">진단지표</th>
+				        <th rowspan="2">진단기준</th>
+				        <th colspan="5">배점</th>
+				        <th rowspan="2">점수</th>
+				    </tr>
+					<tr>
+				        <th style="width:10%; text-align:center;">미흡</th>
+				        <th style="width:10%; text-align:center;">다소미흡</th>
+				        <th style="width:10%; text-align:center;">보통</th>
+				        <th style="width:10%; text-align:center;">다소우수</th>
+				        <th style="width:10%; text-align:center;">우수</th>
+				    </tr>
+				    <tr>
+				        <td rowspan="2">사업 준비도 (50)</td>
+				        <td rowspan="2">사전행정 절차 이행여부 (10)</td>
+				        <td>부지확보 계획의 타당성 (5)</td>
+				        <td colspan="2" style="text-align:center;">3</td>
+				        <td style="text-align:center;">4</td>
+				        <td colspan="2" style="text-align:center;">5</td>
+				        <td rowspan="2" style="text-align:center;">(7)</td>
+				    </tr>
+				    <tr>
+				        <td>관련 인허가 계획의 타당성 (5)</td>
+				        <td style="text-align:center;">1</td>
+				        <td style="text-align:center;">2</td>
+				        <td style="text-align:center;">3</td>
+				        <td style="text-align:center;">4</td>
+				        <td style="text-align:center;">5</td>
+				    </tr>
+				    <!-- 다른 진단항목 및 지표에 대한 행들 추가 -->
+				    <!-- ... -->
+				    <tr>
+				        <td>감점 항목</td>
+				        <td>중복여부</td>
+				        <td>타 사업과의 중복 검토 여부</td>
+					    <td colspan="2" style="text-align:center;">-3</td> <!-- 2칸 차지 -->
+					    <td style="text-align:center;">-2</td>
+					    <td style="text-align:center;">-1</td>
+					    <td style="text-align:center;">0</td>
+					    <td style="text-align:center;">(-1)</td>
+				    </tr>
+				    <tr>
+				        <td colspan="8">합계</td>
+				        <td style="text-align:center;">( 66 )</td>
+				    </tr>
+				    <!-- 다른 행 추가 -->
+				    <!-- ... -->
+				
+				    <!-- 판정결과 행 -->
+				    <tr>
+				        <td colspan="6">적 합 (80점 이상)</td>
+				        <td colspan="3">사업의 타당성이 인정되고 정상적인 사업 추진 가능</td>
+				    </tr>
+				    <tr>
+				        <td colspan="6">조건부 적합 (79~60점)</td>
+				        <td colspan="3">사업의 타당성은 인정되나 필요조건이 충족되어야 사업 추진 가능</td>
+				    </tr>
+				    <tr>
+				        <td colspan="6">부적합 (60점 미만)</td>
+				        <td colspan="3">사업의 타당성 결여로 사업추진이 불합리한 경우</td>
+				    </tr>
+				</table>
+				
+				<!-- --------------------------------------------------------------------------------------------------------------------------- -->
+                
+   				<div class="container">
+					<div class="modal-content" style="margin: 3% auto;">
+						<div class="content-container">
+							<div class="pdf-viewer">
+								<object data='/1/Week01/data/download01/01.pdf#pagemode=thumbs&scrollbar=1&toolbar=1&statusbar=1&messages=1&navpanes=1'  type='application/pdf' width='100%' height='100%'>
+									<p>This browser does not support inline PDFs. Please download the PDF to view it: <a href="/1/Week01/data/download01/01.pdf">Download PDF</a></p>
+								</object>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				
+				
+				
+			</div>
+		</div>
+		
+		
+		
+    	<div class="contents-wrap" style="width:50%">
+			<div class="wrapper sub" style="max-width:100%"> <!-- 메인페이지 : 'main', 서브페이지 : 'sub' 클래스 추가 -->
+   				<div class="container">
+    
+    
+	<!------------------------------------------------------------------->
+	<!----------------------------- 평가위원 ------------------------------->
+	<!------------------------------------------------------------------->
+	<!------------------------------------------------------------------->
+	            <div class="container b-section" style="margin-top: 10px;">
+	                <div class="row">
+	                    <div class="col-md-12">
 	                        <!-- Contents -->
 	
 	                        <p class="section-title">종합결과서 제출<small class="silent">제출 전 첨부파일을 확인하시기 바랍니다.</small></p>
 	
-	                        <!-- 관리자 전용 -->
+	                       <%--  <!-- 관리자 전용 -->
 	                        <div class="select-committee">
 	                            <ul>
 	                                <li class="active"><a href="#" title="평가위원 A">평가위원 A (홍길동)</a></li>
@@ -159,7 +439,7 @@
 	                                    </div>
 	                                </td>
 	                            </tr>
-	                        </table>
+	                        </table> --%>
 	                        
 	                        <table class="evtdss-form-table">
 	                            <tr>
@@ -324,6 +604,7 @@
 .pdf-viewer {
   flex: auto; /* 반을 차지하도록 유연성 부여 */
   overflow: hidden; /* PDF가 컨테이너를 넘어가지 않도록 함 */
+  height: 560px;
 }
 
 th, td {
@@ -355,7 +636,7 @@ th {
   padding: 20px;
   border: 1px solid #888;
   width: 95%; /* 대부분의 화면을 차지 */
-  height: 50%;
+  height: 90%;
 }
 
 /* 닫기 버튼 스타일 */

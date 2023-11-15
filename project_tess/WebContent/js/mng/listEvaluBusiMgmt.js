@@ -45,9 +45,10 @@ $(document).ready(function () {
     // 그리드 조회
     grid_data(0, null);
     // 연도 생성
-    getYearList();
+    //getYearList();
     // 시군구 데이터 조회
-    getSidoGunguList('i-search-sido');
+    getSidoGunguList('i-search-sido1');
+	getSidoGunguList('i-search-sido2');
 
     // 조회조건 입력항목에서 엔터를 했을 때 조회수행되는 이벤트연결
     $('#search-busiName, #search-busiCode').keypress(function(e){
@@ -504,9 +505,9 @@ function grid() {
         },
         columns: [
 			{key: "idx", label: "번호", align: "center", width: 60},
-			{key: "evaluBusiNo", label: "사업코드", align: "left", width: 200},
-			{key: "busiAddr", label: "시행주체", align: "left", width: 160},
-			{key: "evaluBusiNm", label: "사업명", align: "left", width: 450},
+			{key: "busiMbyAddr", label: "시행주체", align: "left", width: 170},
+			{key: "busiAddr", label: "대상지역", align: "left", width: 170},
+			{key: "evaluBusiNm", label: "사업명", align: "left", width: 530},
 			{key: "regiDate", label: "등록일", align: "left", width: 100},
             //{key: "money", label: "사업비(백만원)", formatter: "money", align: "right", width: 123},
             //{key: "startYear", label: "시작연도", align: "center", width: 80},
@@ -575,14 +576,11 @@ function grid_data(page, params) {
             	
                 list.push({
                     idx: index,									// 번호
-					evaluBusiSn: result.rows[i].evaluBusiSn,
-                    evaluBusiNo: result.rows[i].evaluBusiNo,	// 사업코드
+					evaluBusiSn: result.rows[i].evaluBusiSn,	// 키값
 					evaluBusiNm: result.rows[i].evaluBusiNm,	// 사업명
-                    busiAddr: result.rows[i].busiAddr,			// 지역
+                    busiMbyAddr: result.rows[i].busiMbyAddr,	// 시행주체
+					busiAddr: result.rows[i].busiAddr,			// 대상지역
 					regiDate: result.rows[i].regiDate,			// 등록일
-                    //money: result.rows[i].planBusiExps,		// 사업비
-                    //startYear: sttYear,						// 시작연도
-                    //endYear: endYear							// 종료연도
                 });
             }
 

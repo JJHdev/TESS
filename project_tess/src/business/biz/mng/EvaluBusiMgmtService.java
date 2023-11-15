@@ -45,9 +45,6 @@ public class EvaluBusiMgmtService extends BaseService {
     public static final String FL_AREA_ATTH_TYPE_05 = "A05";  // 위성사진(개발현황도)
     public static final String FL_AREA_ATTH_TYPE_06 = "A06";  // 현장사진
     
-    // 사업코드 변수
-    public static final String BS_CODE				= "EV"; // EVTDSS 사업 공통 부여 코드
-    
     
     @Autowired
     private CommonDAOImpl dao;
@@ -213,13 +210,6 @@ public class EvaluBusiMgmtService extends BaseService {
     
     // 평가사업 등록
     public int regiEvaluBusiMgmt(Map paramMap) throws Exception {
-    	paramMap.put("bsCode", BS_CODE);
-    	
-    	String busiSttDate = CommUtils.isEmpty(paramMap.get("busiSttDate").toString()) ? "--" : paramMap.get("busiSttDate").toString();
-    	String busiEndDate = CommUtils.isEmpty(paramMap.get("busiEndDate").toString()) ? "--" : paramMap.get("busiEndDate").toString();
-    	paramMap.put("busiSttDate", busiSttDate);
-    	paramMap.put("busiEndDate", busiEndDate);
-    	
     	int result = (Integer) dao.update("MngEvalu.regiEvaluBusiMgmt", paramMap);
     	return result;
     }
@@ -241,7 +231,48 @@ public class EvaluBusiMgmtService extends BaseService {
     
     // 평가사업 이력 등록
     public int regiEvaluBusiMgmtHist(Map paramMap) throws Exception {
+    	// 사업코드 채번
+    	String evaluHistNo = (String) dao.view("MngEvalu.getEvaluBusiMgmtHistNo", paramMap);
+    	paramMap.put("evaluHistNo", evaluHistNo);
+    	
+    	
     	int result = (Integer) dao.update("MngEvalu.regiEvaluBusiMgmtHist", paramMap);
+    	
+    	if (result > 0) {
+    		// 로그 등록
+    		dao.update("MngEvalu.regiEvaluBusiMgmtHistLog", paramMap);
+    	}
+    	
+    	return result;
+    }
+    
+    // 평가사업 이력 로그 목록
+    public List listEvaluBusiMgmtHistLog(Map paramMap) throws Exception {
+    	return dao.list("MngEvalu.listEvaluBusiMgmtHistLog", paramMap);
+    }
+    
+    // 평가사업 이력 로그 기록
+    public int regiEvaluBusiMgmtHistLog(Map paramMap) throws Exception {
+    	int result = (Integer) dao.update("MngEvalu.regiEvaluBusiMgmtHistLog", paramMap);
+    	return result;
+    }
+    
+    // 사업관리 > 개발사업 개요 수정
+    public int saveEvaluBusiMgmtGuide(Map paramMap) throws Exception {
+    	// TODO 사업유형은 orgHist의 값을 그대로 사용해야 함
+    	/*
+    	paramMap.put("busiMbyAddr1",	orgHist.get("busiMbyAddr1"));
+    	paramMap.put("busiMbyAddr2",	orgHist.get("busiMbyAddr2"));
+    	paramMap.put("busiTypeLevel1",	orgHist.get("busiTypeLevel1"));
+    	paramMap.put("busiTypeLevel2",	orgHist.get("busiTypeLevel2"));
+    	paramMap.put("busiCate",		orgHist.get("busiCate"));
+    	*/
+    	
+    	int result = (Integer) dao.update("MngEvalu.saveEvaluBusiMgmtGuide", paramMap);
+    	if (result > 0) {
+    		// 로그 등록
+    		dao.update("MngEvalu.regiEvaluBusiMgmtHistLog", paramMap);
+    	}
     	return result;
     }
 }

@@ -4751,6 +4751,7 @@ $.extend(Datepicker.prototype, {
 		inst["selected" + (period === "M" ? "Month" : "Year")] =
 		inst["draw" + (period === "M" ? "Month" : "Year")] =
 			parseInt(select.options[select.selectedIndex].value,10);
+		inst["period"] = period;
 
 		this._notifyChange(inst);
 		this._adjustDate(target);

@@ -14,7 +14,7 @@
 	<link rel="stylesheet" type="text/css" href="${contextPath}/css/main.css">
 	<link rel="stylesheet" type="text/css" href="${contextPath}/css/layout.css">
 		
-	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery-1.11.0.min.js"></script>		<!-- jQuery Script-->
+	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery-3.4.1.min.js"></script>		<!-- jQuery Script-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery.xml2json.js"></script>		<!-- jQuery XML TO JSON-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery.json-2.3.js"></script>		<!-- jQuery JSON Plugin-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/ui/jquery-ui-1.10.4.custom.js"></script>		<!-- jQueryUI Script-->
@@ -68,7 +68,7 @@
 	<link rel="stylesheet" type="text/css" href="${contextPath}/jquery/slick/slick-theme.css">
 	
 
-	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery-1.11.0.min.js"></script>		<!-- jQuery Script-->
+	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery-3.4.1.min.js"></script>		<!-- jQuery Script-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery.xml2json.js"></script>		<!-- jQuery XML TO JSON-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery.json-2.3.js"></script>		<!-- jQuery JSON Plugin-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/ui/jquery-ui-1.10.4.custom.js"></script>		<!-- jQueryUI Script-->
@@ -107,7 +107,7 @@
 	<link rel="stylesheet" type="text/css" href="${contextPath}/jquery/alert/jquery.alerts.css">
 	<link rel="stylesheet" type="text/css" href="${contextPath}/jquery/jqplot/jquery.jqplot.min.css">
 
-	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery-1.11.0.min.js"></script>		<!-- jQuery Script-->
+	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery-3.4.1.min.js"></script>		<!-- jQuery Script-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery.xml2json.js"></script>		<!-- jQuery XML TO JSON-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery.json-2.3.js"></script>		<!-- jQuery JSON Plugin-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/ui/jquery-ui-1.10.4.custom.js"></script>		<!-- jQueryUI Script-->
@@ -144,7 +144,7 @@
 	<link rel="stylesheet" type="text/css" href="${contextPath}/jquery/jqgrid/ui.jqgrid-4.6.css">
 	<link rel="stylesheet" type="text/css" href="${contextPath}/jquery/alert/jquery.alerts.css">
 
-	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery-1.11.0.min.js"></script>		<!-- jQuery Script-->
+	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery-3.4.1.min.js"></script>		<!-- jQuery Script-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery.xml2json.js"></script>		<!-- jQuery XML TO JSON-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery.json-2.3.js"></script>		<!-- jQuery JSON Plugin-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/ui/jquery-ui-1.10.4.custom.js"></script>		<!-- jQueryUI Script-->
@@ -168,7 +168,7 @@
 	<link rel="stylesheet" type="text/css" href="${contextPath}/css/common.css">
 	<link rel="stylesheet" type="text/css" href="${contextPath}/jquery/alert/jquery.alerts.css">
 
-	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery-1.11.0.min.js"></script>		<!-- jQuery Script-->
+	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery-3.4.1.min.js"></script>		<!-- jQuery Script-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/alert/jquery.alerts.js"></script>		<!-- jQueryAlert Script-->
 	<script language="javascript"  type="text/javascript" src="${contextPath}/jquery/jquery.meio.mask.min.js"></script>
 

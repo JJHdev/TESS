@@ -77,6 +77,21 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'd2coding-regular';
+    src: url('../fonts/D2Coding.woff2') format('woff2'),
+    url('../fonts/D2Coding.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'd2coding-bold';
+    src: url('../fonts/D2CodingBold.woff2') format('woff2'),
+    url('../fonts/D2CodingBold.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 /*!
  *  Font Awesome 4.5.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)

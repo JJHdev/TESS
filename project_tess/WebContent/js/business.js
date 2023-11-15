@@ -26,6 +26,7 @@ comutils.changeCityAuth = function( args ) {
     var sidoid = args.citysido;
     var authid = args.cityauth;
     var initid = args.initcity;//지자체 최초 선택값 ID
+	var initid2 = args.initcity2;
     var initfn = args.init;    //지자체 최초 선택시 실행함수
     var prntCd = "COMM.CITYAUTH";
 
@@ -64,6 +65,7 @@ comutils.changeCityAuth = function( args ) {
                         sidoObj.trigger('change');
                         initSidoVal = false;
                     }
+					
 
                 }
             }
@@ -82,8 +84,8 @@ comutils.changeCityAuth = function( args ) {
                 fn: function(result) {
                     if(result != null) {
                         cityObj.loadSelect(result);
-
-                        if (initid) {
+						
+						if (initid) {
                             if (!isEmpty($("#"+initid).val())) {
                                 cityObj.val($("#"+initid).val());
                                 $("#"+initid).val("");
@@ -120,12 +122,21 @@ comutils.changeCityBjd = function( args ) {
     var loading = args.loading;//초기로딩여부
     var sidoid = args.citysido;
     var authid = args.cityauth;
+	var sidoidorg = args.citySidoI;	// INPUT에 담긴 기본값
+	var authidorg = args.cityAuthI;	// INPUT에 담긴 기본값
+
     var initid = args.initcity;//지자체 최초 선택값 ID
     var initfn = args.init;    //지자체 최초 선택시 실행함수
     var prntCd = "COMM.CITYAUTH";
 
     var sidoObj = $("#"+sidoid);
     var cityObj = $("#"+authid);
+
+	var sidoValue = sidoObj.data('value');
+	var cityValue = cityObj.data('value');
+
+	var callbackFn = args.callback;
+	var firstTime = true;
 
     //시도 초기선택값
     var initSidoVal = false;
@@ -160,6 +171,11 @@ comutils.changeCityBjd = function( args ) {
                         initSidoVal = false;
                     }
 
+					if (sidoValue) {
+						sidoObj.val(sidoValue);
+                        sidoObj.trigger('change');
+					}
+
                 }
             }
         });
@@ -169,7 +185,6 @@ comutils.changeCityBjd = function( args ) {
     sidoObj.change(function() {
         var sidoVal = $(this).val();
         cityObj.emptySelect();
-
         if (!isEmpty(sidoVal)){
             //공통코드 AJAX
             bizutils.findBjd({
@@ -184,6 +199,11 @@ comutils.changeCityBjd = function( args ) {
                                 $("#"+initid).val("");
                             }
                         }
+
+						if (cityValue) {
+							cityObj.val(cityValue);
+						}
+
                         if (initfn)
                             initfn();
                     }
@@ -195,6 +215,10 @@ comutils.changeCityBjd = function( args ) {
     if (!isEmpty(sidoObj.val())) {
         sidoObj.trigger('change');
     }
+
+	if (callbackFn) {
+		callbackFn();
+	}
 };
 
 /**
@@ -368,3 +392,32 @@ comutils.fileDownload = function(args) {
     }
 
 };
+
+/*
+ * 2023.11.14 LHB 접기 공통 기능 구현
+ * 접기 버튼으로 사용할 엘리먼트에 collapsable-btn 클래스 추가, data-clapsid 값 삽입
+ * 접힐 엘리먼트에 clapsid 값으로 뒤에 -trgt 접미사 붙이기
+ */
+
+comutils.enableCollapse = function(args) {
+	
+	const openText	= (args && args.openText)  ? args.openText  : '펼치기';
+	const closeText	= (args && args.closeText) ? args.closeText : '접기';
+	
+	$(".collapsable-btn").on('click', function() {
+		const clapsid	= $(this).data('clapsid');
+		const trgt		= $("[data-clapsid='" + clapsid + "-trgt']");
+		const trgtStat	= trgt.data('clapStat');
+		console.log(clapsid, trgt, trgtStat);
+		
+		if (trgtStat == 'on') {
+			trgt.slideDown();
+			$(this).text(closeText);
+			trgt.data('clapStat', '');
+		} else {
+			trgt.slideUp();
+			$(this).text(openText);
+			trgt.data('clapStat', 'on');
+		}
+	});
+}

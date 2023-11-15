@@ -877,20 +877,24 @@
     
     <!-- 평가사업 컬럼 -->
     <sql id="columns">
-		EVALU_BUSI_SN							AS "evaluBusiSn"
-	  , EVALU_BUSI_NO							AS "evaluBusiNo"
-	  , EVALU_BUSI_NM							AS "evaluBusiNm"
-	  , BUSI_ADDR1								AS "busiAddr1"
-	  , BUSI_ADDR2								AS "busiAddr2" 
-	  , BUSI_ADDR5								AS "busiAddr5"
-	  , FN_GET_BJDNM(BUSI_ADDR1||BUSI_ADDR2)		AS "busiAddr"
-	  , FN_FMT_STRTODATE(BUSI_STT_DATE, '-')		AS "busiSttDate"
-	  , FN_FMT_STRTODATE(BUSI_END_DATE, '-')		AS "busiEndDate"
-	  , BUSI_TYPE								AS "busiType"
-	  , FN_GET_CODENM('BUSI_TYPE', BUSI_TYPE)	AS "busiTypeNm"
-	  , BUSI_CATE								AS "busiCate"
-	  , FN_GET_CODENM('BUSI_CATE', BUSI_CATE)	AS "busiCateNm"
-	  , REGI_ID									AS "regiId"
+		EVALU_BUSI_SN											AS "evaluBusiSn"
+	  , EVALU_BUSI_NO											AS "evaluBusiNo"
+	  , EVALU_BUSI_NM											AS "evaluBusiNm"
+	  , BUSI_MBY_ADDR1											AS "busiMbyAddr1"
+	  , BUSI_MBY_ADDR2											AS "busiMbyAddr2"
+	  , FN_GET_BJDNM(BUSI_MBY_ADDR1||BUSI_MBY_ADDR2)			AS "busiMbyAddr"
+	  , BUSI_ADDR1												AS "busiAddr1"
+	  , BUSI_ADDR2												AS "busiAddr2" 
+	  , BUSI_ADDR3												AS "busiAddr3"
+	  , FN_GET_BJDNM(BUSI_ADDR1||BUSI_ADDR2)					AS "busiAddr"
+	  , BUSI_TYPE_LEVEL1										AS "busiTypeLevel1"
+	  , FN_GET_CODENM('BUSI_TYPE_LEVEL', BUSI_TYPE_LEVEL1)		AS "busiTypeLevel1Nm"
+	  , BUSI_TYPE_LEVEL2										AS "busiTypeLevel2"
+	  , FN_GET_CODENM(BUSI_TYPE_LEVEL1, BUSI_TYPE_LEVEL1)		AS "busiTypeLevel2Nm"
+	  , BUSI_CATE												AS "busiCate"
+	  , FN_GET_CODENM(NVL(BUSI_TYPE_LEVEL2, BUSI_TYPE_LEVEL1), BUSI_CATE)	AS "busiCateNm"
+	  , BUSI_NOTE												AS "busiNote"
+	  , REGI_ID													AS "regiId"
 	  , FN_FMT_STRTODATE(TO_CHAR(REGI_DATE, 'YYYYMMDD'), '-')	AS "regiDate"
     </sql>
     
@@ -936,17 +940,14 @@
 			 ( EVALU_BUSI_SN
 			 , EVALU_BUSI_NO
 			 , EVALU_BUSI_NM
-			 , REQ_CITYAUTH_CD
+			 , BUSI_MBY_ADDR1
+			 , BUSI_MBY_ADDR2
 			 , BUSI_ADDR1
 			 , BUSI_ADDR2
-			 , BUSI_ADDR5
-			 , BUSI_STT_DATE
-			 , BUSI_END_DATE
-			 , BUSI_TYPE
+			 , BUSI_ADDR3
+			 , BUSI_TYPE_LEVEL1
+			 , BUSI_TYPE_LEVEL2
 			 , BUSI_CATE
-			 , TOT_BUSI_EXPS
-			 , BUSI_NOTE
-			 , MAIN_FCLT
 			 , REGI_ID
 			 , REGI_DATE
     	     )
@@ -954,80 +955,85 @@
     	     ( SEQ_EVALU_DESTI_BUSI_INFO_SN.NEXTVAL
     	     , #bsCode#||#busiAddr1#||#busiAddr2#||FN_FMT_DATA('NUM',#busiType#)||FN_FMT_DATA('NUM',#busiCate#)||SUBSTR(FN_FMT_STRTODATE(#busiSttDate#, ''), 3, 2)||SUBSTR(FN_FMT_STRTODATE(#busiEndDate#, ''), 3, 2)||LPAD(SEQ_EVALU_BUSI_NO.NEXTVAL, 4, 0)
     	     , #evaluBusiNm#
-    	     , #busiAddr1#
+    	     , #busiMbyAddr1#
+    	     , #busiMbyAddr2#
     	     , #busiAddr1#
     	     , #busiAddr2#
-    	     , #busiAddr5#
-    	     , FN_FMT_STRTODATE(#busiSttDate#, '')
-    	     , FN_FMT_STRTODATE(#busiEndDate#, '')
-    	     , #busiType#
+    	     , #busiAddr3#
+    	     , #busiTypeLevel1#
+    	     , #busiTypeLevel2#
     	     , #busiCate#
-    	     , #totBusiExps#
-    	     , #busiNote#
-    	     , #mainFclt#
-    		 , #userId#
+    		 , #gsUserId#
     		 , sysdate
     	     )
     </insert>
     
+    
+    
+    <sql id="columns-hist">
+    	A.EVALU_HIST_SN								AS "evaluHistSn"
+	  , A.EVALU_HIST_NO								AS "evaluHistNo"
+      , A.EVALU_BUSI_SN								AS "evaluBusiSn"
+	  , B.EVALU_BUSI_NO								AS "evaluBusiNo"
+	  , A.EVALU_YEAR								AS "evaluYear"
+	  , A.EVALU_STAGE								AS "evaluStage"
+	  , FN_GET_CODENM('EVALU_STAGE', A.EVALU_STAGE)	AS "evaluStageNm"
+	  , FN_FMT_STRTODATE(A.BUSI_STT_DATE, '-')		AS "busiSttDate"
+	  , FN_FMT_STRTODATE(A.BUSI_END_DATE, '-')		AS "busiEndDate"
+	  , A.BUSI_ADDR1								AS "busiAddr1"
+	  , A.BUSI_ADDR2								AS "busiAddr2"
+	  , A.BUSI_ADDR3								AS "busiAddr3"
+	  , A.TOT_BUSI_EXPS1							AS "totBusiExps1"
+	  , A.TOT_BUSI_EXPS2							AS "totBusiExps2"
+	  , A.TOT_BUSI_EXPS3							AS "totBusiExps3"
+	  , A.BUSI_NOTE									AS "busiNote"
+	  , A.MAIN_FCLT									AS "mainFclt"
+	  , A.PRGR_GUBUN								AS "prgrGubun"
+	  , FN_GET_CODENM('PRGR_GUBUN', A.PRGR_GUBUN)	AS "prgrGubunNm"
+	  , A.REGI_DATE									AS "regiDate"
+	  , A.REGI_ID									AS "regiId"
+    </sql>
+    
     <!-- 평가사업 이력 목록 -->
     <select id="listEvaluBusiMgmtHist" parameterClass="map"  resultClass="hashmap">
-		SELECT B.EVALU_HIST_SN								AS "evaluHistSn"
-		     , B.EVALU_BUSI_SN								AS "evaluBusiSn"
-		     , A.EVALU_BUSI_NO								AS "evaluBusiNo"
-		     , B.EVALU_YEAR									AS "evaluYear"
-		     , B.EVALU_STAGE								AS "evaluStage"
-		     , (SELECT EVALU_INDICAT_NM
-		          FROM TB_EVALU_INDICAT
-		         WHERE EVALU_INDICAT_CD = B.EVALU_STAGE)	AS "evaluStageNm"
-		     , B.BUSI_NOTE									AS "busiNote"
-		     , B.MAIN_FCLT									AS "mainFclt"
-		     , B.TOT_BUSI_EXPS								AS "totBusiExps"
-		     , B.REGI_DATE									AS "regiDate"
-		     , B.REGI_ID									AS "regiId"
-		     , B.PRGR_GUBUN									AS "prgrGubun"
-		     , FN_GET_CODENM('PRGR_GUBUN', B.PRGR_GUBUN)	AS "prgrGubunNm"
-          FROM TB_EVALU_DESTI_BUSI_INFO A
+		SELECT <include refid="columns-hist"/>
+          FROM TB_EVALU_DESTI_BUSI_HIST A
          INNER
-          JOIN TB_EVALU_DESTI_BUSI_HIST B
+          JOIN TB_EVALU_DESTI_BUSI_INFO B
             ON A.EVALU_BUSI_SN = B.EVALU_BUSI_SN
          WHERE (1=1)
-           AND A.EVALU_BUSI_SN = #evaluBusiSn#
+           AND B.EVALU_BUSI_SN = #evaluBusiSn#
          ORDER
-            BY EVALU_YEAR DESC
+            BY A.EVALU_YEAR DESC
     </select>
     
     <!-- 평가사업 이력 확인 -->
     <select id="chckEvaluBusiMgmtHist" parameterClass="map" resultClass="int">
 		SELECT COUNT(*)
-          FROM TB_EVALU_DESTI_BUSI_HIST
-         WHERE EVALU_BUSI_SN	= #evaluBusiSn#
-           AND EVALU_STAGE	= #evaluStage#
+          FROM TB_EVALU_DESTI_BUSI_HIST A
+         INNER
+          JOIN TB_EVALU_DESTI_BUSI_INFO B
+            ON A.EVALU_BUSI_SN	= B.EVALU_BUSI_SN
+         WHERE A.EVALU_BUSI_SN	= #evaluBusiSn#
+           AND A.EVALU_STAGE	= #evaluStage#
     </select>
     
     <!-- 평가사업 이력 상세 -->
     <select id="viewEvaluBusiMgmtHist" parameterClass="map" resultClass="hashmap">
-		SELECT EVALU_HIST_SN								AS "evaluHistSn"
-		     , A.EVALU_BUSI_SN								AS "evaluBusiSn"
-		     , A.EVALU_YEAR									AS "evaluYear"
-		     , A.EVALU_STAGE								AS "evaluStage"
-		     , (SELECT EVALU_INDICAT_NM
-		          FROM TB_EVALU_INDICAT
-		         WHERE EVALU_INDICAT_CD = A.EVALU_STAGE)	AS "evaluStageNm"
-		     , A.BUSI_STT_DATE
-		     , A.BUSI_END_DATE
-		     , A.BUSI_NOTE									AS "busiNote"
-		     , A.MAIN_FCLT									AS "mainFclt"
-		     , A.TOT_BUSI_EXPS								AS "totBusiExps"
-		     , A.REGI_DATE									AS "regiDate"
-		     , A.REGI_ID									AS "regiId"
-		     , A.PRGR_GUBUN									AS "prgrGubun"
-		     , FN_GET_CODENM('PRGR_GUBUN', A.PRGR_GUBUN)	AS "prgrGubunNm"
+		SELECT <include refid="columns-hist"/>
           FROM TB_EVALU_DESTI_BUSI_HIST A
+         INNER
+          JOIN TB_EVALU_DESTI_BUSI_INFO B
+            ON A.EVALU_BUSI_SN = B.EVALU_BUSI_SN
          WHERE (1=1)
            AND A.EVALU_HIST_SN = #evaluHistSn#
-         ORDER
-            BY A.EVALU_HIST_SN DESC
+    </select>
+    
+    <!-- 평가사업 이력 사업코드 채번 -->
+    <select id="getEvaluBusiMgmtHistNo" parameterClass="map" resultClass="java.lang.String">
+		SELECT #bsCode#||BUSI_MBY_ADDR1||BUSI_MBY_ADDR2||BUSI_CATE||'----'||LPAD(SEQ_EVALU_BUSI_NO.NEXTVAL, 4, 0) as "evaluHistNo"
+          FROM TB_EVALU_DESTI_BUSI_INFO
+         WHERE EVALU_BUSI_SN = #evaluBusiSn#
     </select>
     
     <!-- 평가사업 이력등록 -->
@@ -1035,24 +1041,104 @@
 		INSERT
     	  INTO TB_EVALU_DESTI_BUSI_HIST
 			 ( EVALU_HIST_SN
+			 , EVALU_HIST_NO
 			 , EVALU_BUSI_SN
 			 , EVALU_YEAR
 			 , EVALU_STAGE
+			 , BUSI_ADDR1
+			 , BUSI_ADDR2
+			 , BUSI_ADDR3
 			 , PRGR_GUBUN
 			 , REGI_ID
 			 , REGI_DATE
     	     )
     	VALUES
     	     ( SEQ_EVALU_DESTI_BUSI_HIST_SN.NEXTVAL
+    	     , #evaluHistNo#
     	     , #evaluBusiSn#
     	     , #evaluYear#
     	     , #evaluStage#
+    	     , (SELECT BUSI_ADDR1
+    	          FROM TB_EVALU_DESTI_BUSI_INFO
+    	         WHERE EVALU_BUSI_SN = #evaluBusiSn#)
+    	     , (SELECT BUSI_ADDR2
+    	          FROM TB_EVALU_DESTI_BUSI_INFO
+    	         WHERE EVALU_BUSI_SN = #evaluBusiSn#)
+    	     , (SELECT BUSI_ADDR3
+    	          FROM TB_EVALU_DESTI_BUSI_INFO
+    	         WHERE EVALU_BUSI_SN = #evaluBusiSn#)
     	     , 'PG10'
-    	     , #userId#
+    	     , #gsUserId#
     	     , SYSDATE
     	     )
     </insert>
     
+    <!-- 평가사업 이력 로그 목록 -->
+    <select id="listEvaluBusiMgmtHistLog" parameterClass="map"  resultClass="hashmap">
+    	SELECT *
+    	  FROM
+    	     (SELECT LOG_SN			AS "logSn"
+				   , EVALU_HIST_SN	AS "evaluHistSn"
+				   , ECT				AS "ect"
+				   , (SELECT USER_NM
+				        FROM TREDSUSER.VW_USER
+				       WHERE USER_ID = A.UPDT_ID
+				     )				AS "userNm"
+				   , (SELECT USCM_NM
+				        FROM TREDSUSER.VW_USER
+				       WHERE USER_ID = A.UPDT_ID
+				     )				AS "uscmNm"
+				   , (SELECT NVL(DEPT_NM, '')
+				        FROM TREDSUSER.VW_USER
+				       WHERE USER_ID = A.UPDT_ID
+				     )				AS "deptNm"
+				   , UPDT_ID			AS "updtId"
+				   , UPDT_DATE		AS "updtDate"
+		        FROM TB_EVALU_DESTI_BUSI_HIST_LOG A
+		       WHERE (1=1)
+		         AND A.EVALU_HIST_SN = #evaluHistSn#
+		       ORDER
+		          BY A.LOG_SN DESC
+             )
+         WHERE ROWNUM <![CDATA[<=]]> 10
+    </select>
     
+    <!-- 평가사업 이력 로그 기록 -->
+    <insert id="regiEvaluBusiMgmtHistLog" parameterClass="map">
+		INSERT
+    	  INTO TB_EVALU_DESTI_BUSI_HIST_LOG
+			 ( LOG_SN
+			 , EVALU_HIST_SN
+			 , ECT
+			 , UPDT_ID
+			 , UPDT_DATE
+    	     )
+    	VALUES
+    	     ( SEQ_EVALU_DESTI_BUSI_HIST_LOG_SN.NEXTVAL
+    	     , #evaluHistSn#
+    	     , #ect#
+    	     , #gsUserId#
+    	     , SYSDATE
+    	     )
+    </insert>
+    
+    <!-- 평가사업상세 > 사업관리 > 개발사업 개요 수정 -->
+    <update id="saveEvaluBusiMgmtGuide" parameterClass="java.util.Map">
+    	UPDATE TB_EVALU_DESTI_BUSI_HIST
+    	   SET EVALU_HIST_NO	= SUBSTR(EVALU_HIST_NO, 1, 11)||
+    	                          SUBSTR(FN_FMT_STRTODATE(#busiSttDate#, ''), 3, 2)||SUBSTR(FN_FMT_STRTODATE(#busiEndDate#, ''), 3, 2)||
+    	                          SUBSTR(EVALU_HIST_NO, 16)
+    	     , BUSI_STT_DATE	= FN_FMT_STRTODATE(#busiSttDate#, '')
+    	     , BUSI_END_DATE	= FN_FMT_STRTODATE(#busiEndDate#, '')
+    	     , BUSI_ADDR1		= #busiAddr1#
+    	     , BUSI_ADDR2		= #busiAddr2#
+    	     , BUSI_ADDR3		= #busiAddr3#
+    	     , MAIN_FCLT		= #mainFclt#
+    	     , BUSI_NOTE		= #busiNote#
+    	     , TOT_BUSI_EXPS1	= #totBusiExps1#
+    	     , TOT_BUSI_EXPS2	= #totBusiExps2#
+    	     , TOT_BUSI_EXPS3	= #totBusiExps3#
+    	 WHERE EVALU_HIST_SN = #evaluHistSn#
+    </update>
 
 </sqlMap>

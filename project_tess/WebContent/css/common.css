@@ -9,12 +9,12 @@ body {
 }
 
 .wrap {
-	min-width: 1300px; /* �솕硫� 以꾩씠怨� �뒪�겕濡� �뻽�쓣 寃쎌슦 諛⑹� �궗�씠利� 	overflow-y:auto;*/
+	min-width: 1300px; /* 占쎌넅筌롳옙 餓κ쑴�뵠�⑨옙 占쎈뮞占쎄쾿嚥∽옙 占쎈뻥占쎌뱽 野껋럩�뒭 獄쎻뫗占� 占쎄텢占쎌뵠筌앾옙 	overflow-y:auto;*/
 }
 
-.container { width: 1170px; } /* �궗�씠利� 怨좎젙 */
+.container { width: 1170px; } /* 占쎄텢占쎌뵠筌앾옙 �⑥쥙�젟 */
 
-/* 肄쒕읆 �꽭濡� 留욎땄 */
+/* �굜�뮆�쓥 占쎄쉭嚥∽옙 筌띿쉸�븘 */
 #leftMenu {
     background-color: #FFFFFF;
     padding-bottom: 10000px;
@@ -254,7 +254,7 @@ select.input-sm { height: 26px; line-height: 26px; padding:2px 10px !important; 
 .file_input_textbox390 { float:left; width:390px; resize:none; line-height:14px;}
 
 .file_input_div { position:relative; right:0; height:24px; } 
-.file_input_div input[type="button"] { font-family: 'TDSS' ; color:#fff; } /* �궗�뙆由� �빐寃� FontAwesome */
+.file_input_div input[type="button"] { font-family: 'TDSS' ; color:#fff; } /* 占쎄텢占쎈솁�뵳占� 占쎈퉸野껓옙 FontAwesome */
 .file_input_button { position:absolute; right:-100px;}
 .file_input_hidden { font-size:16px; position:absolute; top:1px; right:-100px; width:88px; opacity:0; filter:alpha(opacity=0); -ms-filter:"alpha(opacity=0)"; -khtml-opacity:0; -moz-opacity:0; } 
 
@@ -265,7 +265,7 @@ select.input-sm { height: 26px; line-height: 26px; padding:2px 10px !important; 
 .file_input_textbox2 { float:left; width:565px; resize:none; line-height:14px;}
 
 .file_input_div2 { position:relative; right:0; height:24px; } 
-.file_input_div2 input[type="button"] { font-family: 'TDSS' ; color:#fff; } /* �궗�뙆由� �빐寃� FontAwesome */
+.file_input_div2 input[type="button"] { font-family: 'TDSS' ; color:#fff; } /* 占쎄텢占쎈솁�뵳占� 占쎈퉸野껓옙 FontAwesome */
 .file_input_button2 { position:absolute; right:0px;}
 .file_input_hidden2 { font-size:16px; position:absolute; top:1px; right:0px; width:88px; opacity:0; filter:alpha(opacity=0); -ms-filter:"alpha(opacity=0)"; -khtml-opacity:0; -moz-opacity:0; } 
 
@@ -401,7 +401,7 @@ pre {
     display: block;
 }
 .dropdown .dropdown-menu {
-	top: 58px; 媛꾧꺽 �뿰寃�
+	top: 58px; 揶쏄쑨爰� 占쎈염野껓옙
 	left: -15px;
 	min-width: 200px;
 	padding: 0;
@@ -413,7 +413,7 @@ pre {
           box-shadow: none;
 }
 .dropdown .dropdown-menu ul {
-	margin-top:23px; 媛꾧꺽 �뿰寃�
+	margin-top:23px; 揶쏄쑨爰� 占쎈염野껓옙
 	padding: 8px 12px 0;
 	background: #fff;
 }
@@ -436,7 +436,7 @@ pre {
 }
 .dropdown .dropdown-menu ul li a:hover:before {
 	position:absolute;
-	top:5px; 媛꾧꺽 �뿰寃�
+	top:5px; 揶쏄쑨爰� 占쎈염野껓옙
 	left:0px;
 	font-family:'FontAwesome';
 	color: #ff7200;
@@ -444,7 +444,7 @@ pre {
  	font-size: 8px;
 }
 
- �꽌釉뚮찓�돱
+ 占쎄퐣�뇡�슢李볩옙�뤀
 .dropdown-submenu {
 	position:relative;
 }
@@ -692,8 +692,8 @@ pre {
     	box-shadow: none;	 
 }
 .menu #menuAccordion .panel-heading {
-	padding:10px 0 0; /* 20160204 �닔�젙 */
-	/*  border-bottom: 1px solid #d1d3d4; �궘�젣 */
+	padding:10px 0 0; /* 20160204 占쎈땾占쎌젟 */
+	/*  border-bottom: 1px solid #d1d3d4; 占쎄텣占쎌젫 */
 }
 .menu #menuAccordion .panel-heading > a {
  	position:relative;
@@ -702,8 +702,8 @@ pre {
 	font-weight:700;
 	color: #73787a;
 	padding-left:18px;
-	padding-bottom:10px; /* 20160204 異붽� */
-	border-bottom: 1px solid #d1d3d4; /* 20160204 異붽� */
+	padding-bottom:10px; /* 20160204 �빊遺쏙옙 */
+	border-bottom: 1px solid #d1d3d4; /* 20160204 �빊遺쏙옙 */
 }
 .menu #menuAccordion .panel-heading > a.noArrow:after {
 	content: " ";
@@ -738,7 +738,7 @@ pre {
 .menu #menuAccordion .panel-heading > a:focus,
 .menu #menuAccordion .panel-heading > a.active {
 	color: #ff7200;
-	border-bottom: 1px solid #ff7200; /* 20160204 異붽� */
+	border-bottom: 1px solid #ff7200; /* 20160204 �빊遺쏙옙 */
 }
 
 .menu #menuAccordion ul {
@@ -750,7 +750,7 @@ pre {
 	padding:10px;
 	border-bottom: 1px solid #ff7200;
 }
-/* 20160204 �궘�젣 : html �뙆�씪�뿉�꽌�룄 li.line �븘�슂�뾾�뼱吏�
+/* 20160204 占쎄텣占쎌젫 : html 占쎈솁占쎌뵬占쎈퓠占쎄퐣占쎈즲 li.line 占쎈툡占쎌뒄占쎈씨占쎈선筌욑옙
 .menu #menuAccordion ul > li.line {
 	border-top: 1px solid #ff7200;
 }
@@ -1403,7 +1403,7 @@ a.topUp i { font-size: 34px; }
 
 
 
-/* [2016.02.07] 異붽�, jqGrid�쓽 paging �엯�젰 input 媛앹껜 width 議곗젙 */
+/* [2016.02.07] �빊遺쏙옙, jqGrid占쎌벥 paging 占쎌뿯占쎌젾 input 揶쏆빘猿� width 鈺곌퀣�젟 */
 .ui-jqgrid .ui-pg-input { width:30px; }
 .ui-jqgrid .ui-pg-selbox{ width:45px; }
 
@@ -1472,6 +1472,8 @@ a.topUp i { font-size: 34px; }
 
 .special-dot { margin: 3px; color: red; font-weight: bold; font-size: 16px; }
 
+.ft-code	{ font-family: 'd2coding-bold'; }
+
 .wd-10p		{ width: 10% !important; }
 .wd-20p		{ width: 20% !important; }
 .wd-30p		{ width: 30% !important; }
@@ -1490,3 +1492,27 @@ a.topUp i { font-size: 34px; }
 .w-180px	{ width: 180px !important; }
 .w-200px	{ width: 200px !important; }
 .w-220px	{ width: 220px !important; }
+
+.mt-5px		{ margin-top: 5px; }
+.mt-10px	{ margin-top: 10px; }
+.mt-15px	{ margin-top: 15px; }
+.mt-20px	{ margin-top: 20px; }
+
+.mr-5px		{ margin-right: 5px; }
+.mr-10px	{ margin-right: 10px; }
+.mr-15px	{ margin-right: 15px; }
+.mr-20px	{ margin-right: 20px; }
+
+.mb-5px		{ margin-bottom: 5px; }
+.mb-10px	{ margin-bottom: 10px; }
+.mb-15px	{ margin-bottom: 15px; }
+.mb-20px	{ margin-bottom: 20px; }
+
+.ml-5px		{ margin-left: 5px; }
+.ml-10px	{ margin-left: 10px; }
+.ml-15px	{ margin-left: 15px; }
+.ml-20px	{ margin-left: 20px; }
+
+.ta-left	{ text-align: left; }
+.ta-center	{ text-align: center; }
+.ta-right	{ text-align: right; }

@@ -406,5 +406,111 @@ public class FileController extends BaseController {
     	logger.info(">>>>> NoticeManageService.fileupload END <<<<<");
 		return new ModelAndView("redirect:/se2/popup/quick_photo/callback.jsp?callback_func="+callback_func+"&bNewLine=true&sFileName="+saveFileName+"&sFileURL=/editorImg/"+saveFileName+"&nWidth="+nWidth+"&nHeight="+nHeight);
 	}
-}
+	
+	
+	//################################################################
+    //SUNDOSOFT 평가사업관리 > 평가사업등록
+    //################################################################
+	
+	/**
+	 * 2023.11.15 LHB
+     * 샘플 및 양식 FILE DOWNLOAD (SYS_CODE)
+     * @param request
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping("/comm/fileDownloadSample.do")
+    public void fileDownloadSample(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String fileNo = request.getParameter("fileNo");
 
+        Map params = new HashMap();
+        params.put("fileNo", fileNo);
+
+        String saveFileName  = "";
+        String serverDirPath = "";
+        String orgFileName   = "";
+
+        Map fileInfo = fileService.viewSampleFile(params);
+
+        fileSampleDownloadDetail(request, response, fileInfo);
+    }
+    
+    /**
+     * 파일 다운로드 상세내용 (파일정보를 map 객체로 전달받아 처리.
+     * @param request
+     * @param response
+     * @param fileInfo
+     * @throws Exception
+     */
+	public void fileSampleDownloadDetail(HttpServletRequest request, HttpServletResponse response, Map fileInfo) throws Exception {
+
+        String saveFileName  = "";
+        String serverDirPath = "";
+        String orgFileName   = "";
+        
+        // 실제  디렉토리
+        String realDir = ApplicationProperty.get("formfile.dir");
+
+        if (fileInfo != null) {
+            saveFileName  = (String)fileInfo.get("fileSvrNm");
+            serverDirPath = realDir;
+            orgFileName   = (String)fileInfo.get("fileOrgNm");
+        } else {
+            System.out.println("$$$$$$$$$$$$$$$$$ SAMPLE FILE DOWNLOAD ERROR : Not Server File.");
+            throw new EgovBizException("첨부파일이 존재하지 않습니다. 관리자에게 문의바랍니다.");
+        }
+
+        //파일 풀경로 가져옴
+        String fullFileName = serverDirPath + "/" + saveFileName;
+
+        logger.info("fullFileName : " + fullFileName);
+        logger.info("orgFileName : " + orgFileName);
+
+        //파일을  orgFileName의 이름으로 다운로드 함
+        File f = new File(fullFileName);
+
+        if (f.exists()) {
+            logger.info("response charset : " + response.getCharacterEncoding());
+
+            String userAgent = request.getHeader("User-Agent");
+
+            // 파일명 인코딩 처리	(MSIE -> Trident)
+            String downFilename = "";
+            if (userAgent.toLowerCase().indexOf("msie") + userAgent.toLowerCase().indexOf("trident") > -1) {	// IE
+            	downFilename = URLEncoder.encode(orgFileName, "UTF-8").replaceAll("\\+", "%20");;
+            } else if (userAgent.toLowerCase().indexOf("chrome") > -1) {
+            	downFilename = new String(orgFileName.getBytes(), "8859_1");
+            } else if (userAgent.toLowerCase().indexOf("firefox") > -1) {
+            	downFilename = new String(orgFileName.getBytes(), "8859_1");
+            } else {
+            	downFilename = new String(orgFileName.getBytes(), "8859_1");
+            }
+            logger.info("disposition filename : " + downFilename);
+
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + downFilename + "\"");
+            response.setHeader("Content-Transfer-Encoding", "binary;");
+
+            byte[] buffer = new byte[1024];
+            BufferedInputStream ins = new BufferedInputStream(new FileInputStream(f));
+            BufferedOutputStream outs = new BufferedOutputStream(response.getOutputStream());
+
+            try {
+                int read = 0;
+                while ((read = ins.read(buffer)) != -1) {
+                    outs.write(buffer, 0, read);
+                }
+                outs.close();
+                ins.close();
+            } catch (IOException e) {
+                System.out.println("$$$$$$$$$$$$$$$$$ : SAMPLE FILE DOWNLOAD ERROR : $$$$$$$$$$$$$$$$$$");
+            } finally {
+                  if(outs!=null) outs.close();
+                  if(ins!=null) ins.close();
+            }
+        } else {
+            System.out.println("$$$$$$$$$$$$$$$$$ SAMPLE FILE DOWNLOAD ERROR : Not Server File.");
+            throw new EgovBizException("첨부파일이 존재하지 않습니다. 관리자에게 문의바랍니다..");
+        }
+    }
+}

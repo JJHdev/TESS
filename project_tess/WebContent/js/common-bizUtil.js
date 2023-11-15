@@ -54,7 +54,7 @@ var BIZComm = {
         }
         
         var formObj = $('#'+formId);
-        if(formObj.size() == 1) {
+        if(formObj.length == 1) {
             
             // upser param을 구성한다.
             // 기존 여러개 존재하는 항목을 설정했으면 오류 처리함.
@@ -138,18 +138,18 @@ var BIZComm = {
         if(tagObj && userParam) {
             
             // 해당 tag 객체 내에 child가 없으면 임시로 span를 삽입
-            if(tagObj.find(":first-child").size() == 0){
+            if(tagObj.find(":first-child").length == 0){
                 tagObj.html("<span></span>");
             }
             // hidden tag로 삽입.
             for (var prm in userParam) {
                 var inputObj = tagObj.find(":input[name="+prm+"]");
                 // 이미 객체가 존재하면 해당 값으로 변경.
-                if(inputObj.size() == 1) {
+                if(inputObj.length == 1) {
 //                    inputObj.remove(); //제거
                     inputObj.val(userParam[prm]);
                 }
-                else if(inputObj.size() > 1) {
+                else if(inputObj.length > 1) {
                     alert( "[ERROR-BIZComm.dyInsertUserParam] '"+prm+"' 항목이 여러개 존재합니다. 확인바랍니다.");
                     return false;
                 }
@@ -435,7 +435,7 @@ var BIZComm = {
             alert("[ERROR-sumInputForms] : argument 오류");
             return;
         }
-        if(areaObj == null || areaObj.size() == 0) {
+        if(areaObj == null || areaObj.length == 0) {
             alert("[ERROR-sumInputForms] : 대상을 포함하는 영역 오류");
             return;
         }

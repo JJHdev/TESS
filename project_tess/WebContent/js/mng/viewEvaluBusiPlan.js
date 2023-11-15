@@ -909,7 +909,6 @@ function fn_onSelectRow(rowid) {
 
 
 function modal_open() {
-	
 	$("#myModal").bPopup({
 		modalClose: false
 	});
