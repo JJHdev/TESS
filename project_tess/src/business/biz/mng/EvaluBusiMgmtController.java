@@ -39,21 +39,17 @@ import common.util.properties.ApplicationProperty;
 import egovframework.rte.fdl.cmmn.exception.EgovBizException;
 
 /**
- *  Evalu Busi Mgmt Controller Class
- * @author lsz
- * @since 2018.11.26
- * @version 1.0
- * @see
+ * [관리자] - 평가사업관리 클래스
+ * 
+ * @class   : EvaluBusiMgmtController
+ * @author  : LHB
+ * @since   : 2023.11.17
+ * @version : 1.0
  *
- * <pre>
- * << Modification Information >>
- *    Date	         Name          	       Desc
- * ----------      --------    ---------------------------
- *  2018.11.26      lsz      	Init.
- *
- * </pre>
+ *   수정일       수정자             수정내용
+ *  --------   --------    ---------------------------
+ *  23.11.17     LHB        코드 수정 시작.
  */
-
 @Controller
 @SuppressWarnings({ "rawtypes", "unused"})
 public class EvaluBusiMgmtController extends BaseController {
@@ -1072,17 +1068,6 @@ public class EvaluBusiMgmtController extends BaseController {
                 finlRestlSel.add(srchType4Map);
             }
             request.setAttribute("finlRestlSelComboList", finlRestlSel);
-        }
-        
-        // 평가이력 화면
-        else if(method.equalsIgnoreCase("viewEvaluBusiHist")) {
-        	
-        	// 평가단계 조회
-        	paramMap.put("useYn", "Y");
-        	List evaluStageList = evaluEnvService.listEvaluEnvStep(paramMap);
-        	
-        	request.setAttribute("evaluStageList", evaluStageList);
-        	
         }
         // 2023.11.10 LHB [관리자] 평가사업관리 > 평가이력
         else if(method.equalsIgnoreCase("viewEvaluBusiMgmtHist")) {

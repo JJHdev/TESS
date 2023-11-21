@@ -37,13 +37,10 @@
 	            <%-- 공통 필수 --%>
 	            <input type="hidden" name="mode" id="mode"/>
 	            <input type="hidden" name="page" id="page" value='<c:out value="${paramMap.page }"/>'/>
-	            
 	            <input type="hidden" name="srchEvaluCommitNm" id="srchEvaluCommitNm" value="${paramMap.srchEvaluCommitNm}"/>
-	
 	            <%-- pk --%>
 	            <input type="hidden" name="evaluBusiNo" id="evaluBusiNo"/>
 	            <input type="hidden" name="evaluStage" id="evaluStage" value="${paramMap.evaluStage}"/>
-	
 	            <%-- 검색조건 --%>
 	            <div id="srchCondArea">
 	                <input type="hidden" name="srchBusiAddr1" id="srchBusiAddr1"
@@ -75,7 +72,7 @@
 	                            <ul>
 	                                <li>홈</li>
 	                                <li>평가사업조회</li>
-	                                <li>2019 평가사업</li>
+	                                <li>평가사업</li>
 	                            </ul>
 	                        </div>
 	                        <div class="row">

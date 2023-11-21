@@ -1,4 +1,6 @@
 
+var fileMaxSize = 50 * 1024 * 1024;
+
 /**
  *  toUpperCase()
  *  onkeyup="doUpper(this)"

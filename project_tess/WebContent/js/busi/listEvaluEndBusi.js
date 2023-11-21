@@ -485,7 +485,7 @@ function grid() {
             align: "center",
             columnHeight: 28,
             onClick: function () {
-            	goView(this.item.evalBusiNo, this.item.stageCode, this.item.evalYear);
+            	goView(this.item.evaluHistSnHist, this.item.evaluStageHist, this.item.evaluYearHist);
             },
             onDBLClick: function () {
             }
@@ -503,17 +503,16 @@ function grid() {
             }
         },
         columns: [
-	          {key: "evalYear", label: "평가연도", align: "center", width: 80},
-	          {key: "stageName", label: "평가단계", align: "left"},
-	          {key: "busiType", label: "회계", align: "left", width: 100},
-	          {key: "busiCate", label: "사업유형", align: "left", width: 125},
-	          {key: "startYear", label: "시작연도", align: "center", width: 80},
-	          {key: "endYear", label: "종료연도", align: "center", width: 80},
-	          {key: "locale", label: "지역", align: "left", width: 125},
-	          {key: "title", label: "사업명", align: "left", width: 260},
-	          {key: "committee", label: "평가위원", align: "left", width: 168}
-	          /*{key: "money", label: "사업비(백만원)", formatter: "money", align: "right", width: 123},*/
-	    ]
+            {key: "evaluYearHist", label: "평가연도", align: "center", width: 80},
+            {key: "evaluStageNmHist", label: "평가단계", align: "left"},
+            {key: "busiTypeLevel1NmInfo", label: "회계", align: "left", width: 170},
+            {key: "busiCateNmInfo", label: "사업유형", align: "left", width: 195},
+            {key: "busiSttDateHist", label: "시작연도", align: "center", width: 80},
+            {key: "busiEndDateHist", label: "종료연도", align: "center", width: 80},
+            {key: "busiAddr1Hist", label: "지역", align: "left", width: 125},
+            {key: "evaluBusiNmInfo", label: "사업명", align: "left", width: 220},
+            {key: "prgrGubunNmHist", label: "평가진행 현황", align: "left", width: 100}
+        ]
     });
 
 }
@@ -577,20 +576,24 @@ function grid_data(page, params) {
             		endYear = result.rows[i].convBusiEndDate.substring(0,5);
             	}
 
-            	list.push({
-                	evalYear: result.rows[i].evaluGubun,
-                	stageCode: result.rows[i].evaluStage,
-                	stageName: result.rows[i].evaluStageNm,
-                	locale: result.rows[i].busiAddr12,
-                	title: result.rows[i].todeBusiNm,
-                	money: result.rows[i].planTotalExps,
-                	startYear: result.rows[i].convBusiSttDate,
-                	endYear: result.rows[i].convBusiEndDate,
-                	committee: null,
-                	evalBusiNo: result.rows[i].todeBusiNo,
-                	committee: result.rows[i].commitList,
-                	busiType: result.rows[i].busiTypeNm,
-                	busiCate: result.rows[i].busiCateNm
+                list.push({
+                	evaluYearHist: result.rows[i].evaluYearHist,
+                	evaluStageHist: result.rows[i].evaluStageHist,
+                    evaluStageNmHist: result.rows[i].evaluStageNmHist,
+                	busiTypeLevel1Info: result.rows[i].busiTypeLevel1Info,
+                    busiTypeLevel1NmInfo: result.rows[i].busiTypeLevel1NmInfo,
+                	busiCateInfo: result.rows[i].busiCateInfo,
+                    busiCateNmInfo: result.rows[i].busiCateNmInfo,
+                	busiSttDateHist: result.rows[i].busiSttDateHist,
+                	busiEndDateHist: result.rows[i].busiEndDateHist,
+                	busiAddr1Hist: result.rows[i].busiAddr1Hist,
+                    busiAddr2Hist: result.rows[i].busiAddr2Hist,
+                    busiAddr3Hist: result.rows[i].busiAddr3Hist,
+                    evaluBusiNmInfo: result.rows[i].evaluBusiNmInfo,
+                    prgrGubunHist: result.rows[i].prgrGubunHist,
+                    prgrGubunNmHist: result.rows[i].prgrGubunNmHist,
+                    evaluHistNoHist: result.rows[i].evaluHistNoHist,
+                    evaluHistSnHist: result.rows[i].evaluHistSnHist
                 });
             }
 
@@ -658,14 +661,13 @@ function search_btn(page) {
 ////////////////////////////////////////////////////////////////////////////////
 
 //상세페이지 화면으로 이동
-function goView(evaluBusiNo, evaluStage, evaluGubun) {
-	
+function goView(evaluHistSnHist, evaluStageHist, evaluYearHist) {
     BIZComm.submit({
         url: VIEW_URL,
         userParam: {
-            evaluBusiNo: evaluBusiNo,
-            evaluStage: evaluStage,
-            evaluGubun: evaluGubun
+            evaluHistSnHist: evaluHistSnHist,
+            evaluStageHist: evaluStageHist,
+            evaluYearHist: evaluYearHist
         }
     });
 }

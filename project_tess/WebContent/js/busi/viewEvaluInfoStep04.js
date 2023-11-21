@@ -51,15 +51,19 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 //글로벌 변수
 ////////////////////////////////////////////////////////////////////////////////
+var UPLOAD_URL		= ROOT_PATH+"/busi/evaluFileUpload.do" ;
+var REMOVE_URL		= ROOT_PATH+"/busi/evaluFileDelete.do" ;
+var PAGE_STEP		= "STEP4" ;
+var EVALU_STAGE		= "PG90" ;
 
 var LIST_URL 		= ROOT_PATH+"/busi/listEvaluBusi.do" ;
 var VIEW_URL 		= ROOT_PATH+"/busi/viewEvaluInfoStep01.do" ;
 var UPDT_URL		= ROOT_PATH+"/busi/updtEvaluCommitReview.do" ;
 var CHCK_URL		= ROOT_PATH+"/busi/viewEvaluCommitStatus.do" ;
 var EVALU_URL		= ROOT_PATH+"/busi/viewEvaluInfoStep01.do" ;
-var UPLOAD_URL		= ROOT_PATH+"/busi/evaluFileUpload.do" ;
 var FILE_DELETE_URL = ROOT_PATH+"/busi/evaluFileDelete.do" ;
 var APV_URL			= ROOT_PATH+"/busi/updtEvaluCommitReviewApv.do" ;
+
 
 var STEP01_URL		= ROOT_PATH+"/busi/viewEvaluInfoStep01.do" ;
 var STEP02_URL		= ROOT_PATH+"/busi/viewEvaluInfoStep02.do" ;
@@ -73,21 +77,6 @@ var END_URL 		= ROOT_PATH+"/busi/listEvaluEndBusi.do" ;
 ////////////////////////////////////////////////////////////////////////////////
 //초기화 함수
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * 컴포넌트를 초기화한다.
- */
-function initComp() {
-	
-};
-
-/**
- * 데이터를 로드한다.
- */
-function loadData() {
-	
-}
-
 /**
  * 이벤트를 바인딩한다.
  */
@@ -149,22 +138,39 @@ function load_check() {
 	}
 	
 }
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
-//그리드 이벤트 함수
+//페이지 이동 함수
 ////////////////////////////////////////////////////////////////////////////////
-
+//목록으로 이동 
+function goList(){
+    BIZComm.submit({
+        url : ROOT_PATH + LIST_URL
+    });
+}
 // 평가 대상 화면으로 이동
 function goView(evaluBusiNo, evaluStage, evaluUserId){
-    
     BIZComm.submit({
         url : ROOT_PATH+ REGI_URL,
         userParam : {
             evaluBusiNo : evaluBusiNo,
             evaluStage : evaluStage,
             evaluUserId : evaluUserId
+        }
+    });
+}
+function goBusiInfo() {
+	var evaluBusiNo = $("input[name=evaluBusiNo]").val();
+	var evaluStage = $("input[name=evaluStage]").val();
+	var evaluGubun = $("input[name=evaluGubun]").val();
+	var userId = $("input[name=userId]").val();
+	
+	BIZComm.submit({
+        url: ROOT_PATH + "/busi/viewEvaluBusi.do",
+        userParam: {
+            evaluBusiNo: evaluBusiNo,
+            evaluStage: evaluStage,
+            evaluGubun: evaluGubun,
+            userId: userId
         }
     });
 }
@@ -184,42 +190,17 @@ function onClickButton( id ) {
             break;
     }
 }
-
 //기능 버튼 클릭이벤트 연결
 function bindFuncBtnEvent(){
-    
     // ID가 'prcBtn'으로 시작하는 기능버튼에 클릭이벤트 연결.
-    $("[id^=prcBtn]").click(function(){
-    	
+    $("[id^=prcBtn]").click(function(){    	
         onClickButton($(this).attr("id"));
     });
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //서비스 함수
 ////////////////////////////////////////////////////////////////////////////////
-
-//목록으로 이동 
-function goList(){
-    BIZComm.submit({
-        url : ROOT_PATH + LIST_URL
-    });
-}
-
-//평가정보 이동
-function fn_goEvaluInfo() {
-	
-	BIZComm.submit({
-        url : EVALU_URL
-        /*userParam : {
-            evaluBusiNo : evaluBusiNo,
-            evaluStage : evaluStage,
-            evaluUserId : evaluUserId
-        }*/
-    });
-}
 
 // 첨부파일 저장
 function doc_save(type) {
@@ -422,10 +403,18 @@ function fn_finalApv() {
 
 function goStep(index) {
 	
-	var evaluBusiNo = $("input[name=evaluBusiNo]").val();
-	var evaluStage = $("input[name=evaluStage]").val();
-	var evaluGubun = $("input[name=evaluGubun]").val();
-	var userId = $("input[name=userId]").val();
+    // 일반 객체 생성
+    let dataObject = {};
+    let userParam = {};
+
+    // Hidden 필드 데이터 추가
+    let hiddenInputs = document.querySelectorAll('#model input[type="hidden"], #fileContentArea input[type="hidden"]');
+    hiddenInputs.forEach(input => {
+        dataObject[input.name] = input.value;
+    });
+
+    userParam['evaluHistNoHist'] = dataObject['evaluHistNoHist'];
+    userParam['evaluStageHist']  = dataObject['evaluStageHist'];
 	
 	var step_url = "";
 	
@@ -443,24 +432,6 @@ function goStep(index) {
 	
 	BIZComm.submit({
         url: step_url,
-        userParam: {
-            evaluBusiNo: evaluBusiNo,
-            evaluStage: evaluStage,
-            evaluGubun: evaluGubun,
-            userId: userId
-        }
-    });
-}
-
-function goBusiInfo() {
-	
-	var evaluBusiNo = $("input[name=evaluBusiNo]").val();
-	var evaluStage = $("input[name=evaluStage]").val();
-	var evaluGubun = $("input[name=evaluGubun]").val();
-	var userId = $("input[name=userId]").val();
-	
-	BIZComm.submit({
-        url: ROOT_PATH + "/busi/viewEvaluBusi.do",
         userParam: {
             evaluBusiNo: evaluBusiNo,
             evaluStage: evaluStage,

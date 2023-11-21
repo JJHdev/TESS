@@ -452,45 +452,85 @@
         </isNotEmpty> -->
     </sql>
     
-    
-
-	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++
-          TB_Evalu_BUSI     (관광사업정보) 작업
-         +++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
-	<!-- <select id="listEvaluBusi" parameterClass="map"  resultClass="hashmap">
-        SELECT
-				<include refid="TodeMgmt-columns"/>
-				 ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)||'~'||FN_CONV_VDATEYM(A.BUSI_END_DATE) as "convBusiPeriod"
-         FROM TREDSUSER.TB_TODE_BUSI A, TB_EVALU_DESTI_BUSI_STAGE B
-         WHERE (0=0)
-         AND A.TODE_BUSI_NO = B.EVALU_BUSI_NO
-         AND B.EVALU_FINAL_YN != 'Y'
-           <include refid="TodeMgmt-condition"/>
-         ORDER BY A.TODE_BUSI_NM
-    </select> -->
-    
-    <!-- <select id="listEvaluBusi" parameterClass="map"  resultClass="hashmap">
-        SELECT
-				A.TODE_BUSI_NO     as "todeBusiNo",
-            	A.TODE_BUSI_NM     as "todeBusiNm",
-				B.EVALU_STAGE		as "evaluStage",
-	    		B.EVALU_GUBUN		as "evaluGubun",
-				A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2 as "busiAddr12",
-				(select EVALU_INDICAT_NM from TB_EVALU_INDICAT where EVALU_INDICAT_CD = B.EVALU_STAGE) as "evaluStageNm",
-				NVL(A.PLAN_GOV_EXPS,0)+NVL(A.PLAN_CITY_EXPS,0)+NVL(A.PLAN_DO_EXPS,0)+NVL(A.PLAN_PRVT_EXPS,0) as "planTotalExps",
-				FN_CONV_VDATEYM(A.BUSI_STT_DATE)                    as "convBusiSttDate",
-            	FN_CONV_VDATEYM(A.BUSI_END_DATE)                    as "convBusiEndDate"
-         FROM TREDSUSER.TB_TODE_BUSI A, TB_EVALU_DESTI_BUSI_STAGE B
-         WHERE (0=0)
-         AND A.TODE_BUSI_NO = B.EVALU_BUSI_NO
-         AND B.EVALU_FINAL_YN != 'Y'
-         AND B.EVALU_GUBUN = 2019
-           <include refid="TodeMgmt-condition"/>
-         ORDER BY A.TODE_BUSI_NM
-    </select> -->
-    
     <select id="listEvaluBusi" parameterClass="map"  resultClass="hashmap">
+    
+    	SELECT 
+	    	A.EVALU_BUSI_SN       		AS "evaluBusiSnInfo",
+		    A.EVALU_BUSI_NO       		AS "evaluBusiNoInfo",
+		    A.EVALU_BUSI_NM       		AS "evaluBusiNmInfo",
+		    A.BUSI_MBY_ADDR1      		AS "busiMbyAddr1Info",
+		    A.BUSI_MBY_ADDR2      		AS "busiMbyAddr2Info",
+		    A.BUSI_ADDR1          		AS "busiAddr1Info",
+		    A.BUSI_ADDR2          		AS "busiAddr2Info",
+		    A.BUSI_ADDR3          		AS "busiAddr3Info",
+		    A.GPS_X               		AS "gpsXInfo",
+		    A.GPS_Y               		AS "gpsYInfo",
+		    A.BUSI_TYPE_LEVEL1    		AS "busiTypeLevel1Info",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = A.BUSI_TYPE_LEVEL1) AS "busiTypeLevel1NmInfo",
+		      
+		    A.BUSI_TYPE_LEVEL2   		AS "busiTypeLevel2Info",
+		    A.BUSI_CATE           		AS "busiCateInfo",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = A.BUSI_CATE) AS "busiCateNmInfo",
+		    (select CODE_NM 
+			       from SYS_CODE 
+			      where CODE = A.BUSI_TYPE_LEVEL2) 						AS "busiTypeLevel2NmInfo",
+			(select CODE_NM 
+			       from SYS_CODE 
+			      where CODE = A.BUSI_TYPE_LEVEL1) 						AS "busiTypeLevel1NmInfo",
+		    
+		    A.BUSI_NOTE           		AS "busiNoteInfo",
+		    A.REGI_ID             		AS "regiIdInfo",
+		    A.REGI_DATE           		AS "regiDateInfo",
+		    A.UPDT_ID             		AS "updtIdInfo",
+		    A.UPDT_DATE           		AS "updtDateInfo",
+				
+			B.EVALU_HIST_SN       		AS "evaluHistSnHist",
+		    B.EVALU_HIST_NO       		AS "evaluHistNoHist",
+		    B.EVALU_BUSI_SN       		AS "evaluBusiSnHist",
+		    B.EVALU_YEAR          		AS "evaluYearHist",
+		    B.EVALU_STAGE         		AS "evaluStageHist",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = B.EVALU_STAGE) AS "evaluStageNmHist",
+		    
+		    B.BUSI_STT_DATE       		AS "busiSttDateHist",
+		    B.BUSI_END_DATE       		AS "busiEndDateHist",
+		    B.BUSI_ADDR1          		AS "busiAddr1Hist",
+		    B.BUSI_ADDR2          		AS "busiAddr2Hist",
+		    B.BUSI_ADDR3          		AS "busiAddr3Hist",
+		    B.MAIN_FCLT           		AS "mainFcltHist",
+		    B.BUSI_NOTE           		AS "busiNoteHist",
+		    B.TOT_BUSI_EXPS1      		AS "totBusiExps1Hist",
+		    B.TOT_BUSI_EXPS2      		AS "totBusiExps2Hist",
+		    B.TOT_BUSI_EXPS3      		AS "totBusiExps3Hist",
+		    (B.TOT_BUSI_EXPS1 + B.TOT_BUSI_EXPS2 + B.TOT_BUSI_EXPS3) AS "totalBusiExpsHist",
+		    B.PRGR_GUBUN          		AS "prgrGubunHist",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = B.PRGR_GUBUN) AS "prgrGubunNmHist",
+		    
+		    B.REGI_ID             		AS "regiIdHist",
+		    B.REGI_DATE           		AS "regiDateHist",
+		    B.UPDT_ID             		AS "updtIdHist",
+		    B.UPDT_DATE           		AS "updtDateHist"
+		FROM TESSUSER.TB_EVALU_DESTI_BUSI_INFO A
+		JOIN TESSUSER.TB_EVALU_DESTI_BUSI_HIST B ON A.EVALU_BUSI_SN = B.EVALU_BUSI_SN
+		WHERE (0=0)  
+			AND B.PRGR_GUBUN != 'PG90' 
+   	    <isNotEmpty property="srchEvaluCommitNm">
+         	AND (
+                B.EVALU_STAGE in (select EVALU_STAGE from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%') AND
+                B.EVALU_GUBUN in (select EVALU_GUBUN from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%') AND
+                B.EVALU_BUSI_NO in (select EVALU_BUSI_NO from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%')
+            )
+         </isNotEmpty>
+         <include refid="PlanEvaluMgmt-condition"/>
+    
+    <!-- 
         SELECT
 				A.PLANEVAL_BUSI_NO		as "todeBusiNo",
             	A.PLANEVAL_BUSI_NAME    as "todeBusiNm",
@@ -515,7 +555,7 @@
          FROM TREDSUSER.TB_PLANEVAL_BUSI A, TB_EVALU_DESTI_BUSI_STAGE B
          WHERE (0=0)
          AND A.PLANEVAL_BUSI_NO = B.EVALU_BUSI_NO
-         <!-- AND B.EVALU_FINAL_YN != 'Y' -->
+         AND B.EVALU_FINAL_YN != 'Y'
          AND B.EVALU_GUBUN = 2019
          
          <isNotEmpty property="srchEvaluCommitNm">
@@ -527,27 +567,26 @@
          </isNotEmpty>
          
            <include refid="PlanEvaluMgmt-condition"/>
-         ORDER BY A.PLANEVAL_BUSI_NAME
+         ORDER BY A.PLANEVAL_BUSI_NAME -->
     </select>
     
     <select id="listEvaluBusiCount" parameterClass="map"  resultClass="int">
     	SELECT count(*)
-    	FROM TREDSUSER.TB_PLANEVAL_BUSI A, TB_EVALU_DESTI_BUSI_STAGE B
-    	WHERE (0=0)
-    	AND A.PLANEVAL_BUSI_NO = B.EVALU_BUSI_NO
-        <!-- AND B.EVALU_FINAL_YN != 'Y' -->
-        AND B.EVALU_GUBUN = 2019
-        
-        <isNotEmpty property="srchEvaluCommitNm">
+    	FROM TESSUSER.TB_EVALU_DESTI_BUSI_INFO A
+		JOIN TESSUSER.TB_EVALU_DESTI_BUSI_HIST B ON A.EVALU_BUSI_SN = B.EVALU_BUSI_SN
+		WHERE (0=0)  
+			AND B.PRGR_GUBUN != 'PG90' 
+   	    <isNotEmpty property="srchEvaluCommitNm">
          	AND (
                 B.EVALU_STAGE in (select EVALU_STAGE from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%') AND
                 B.EVALU_GUBUN in (select EVALU_GUBUN from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%') AND
                 B.EVALU_BUSI_NO in (select EVALU_BUSI_NO from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%')
             )
          </isNotEmpty>
-        
-        	<include refid="PlanEvaluMgmt-condition"/>
+         <include refid="PlanEvaluMgmt-condition"/>
     </select>
+    
+    
     
     <!-- <select id="listEvaluEndBusi" parameterClass="map"  resultClass="hashmap">
         SELECT
@@ -599,57 +638,107 @@
     </select> -->
     
     <select id="listEvaluEndBusi" parameterClass="map"  resultClass="hashmap">
-        SELECT
-				A.PLANEVAL_BUSI_NO     	as "todeBusiNo",
-            	A.PLANEVAL_BUSI_NAME    as "todeBusiNm",
-				B.EVALU_STAGE			as "evaluStage",
-	    		B.EVALU_GUBUN			as "evaluGubun",
-				A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2 as "busiAddr12",
-				(select EVALU_INDICAT_NM from TB_EVALU_INDICAT where EVALU_INDICAT_CD = B.EVALU_STAGE) as "evaluStageNm",
-				A.PLAN_BUSI_EXPS 		as "planTotalExps",
-				FN_CONV_VDATEYM(A.BUSI_STT_DATE)                    as "convBusiSttDate",
-            	FN_CONV_VDATEYM(A.BUSI_END_DATE)                    as "convBusiEndDate",
-            	(select CODE_NM from SYS_CODE where CODE = A.BUSI_TYPE) as "busiTypeNm",
-            	(select CODE_NM from SYS_CODE where CODE = A.BUSI_CATE) as "busiCateNm",
-            	(
-            		SELECT 	LISTAGG(tu.USER_NM, ',') WITHIN GROUP(ORDER BY tu.USER_NM)
-                	FROM	TREDSUSER.TB_USER tu, TB_EVALU_DESTI_BUSI_COMMIT bc 
-                	WHERE 	tu.USER_ID = bc.USER_ID 
-                	AND 	bc.EVALU_BUSI_NO = B.EVALU_BUSI_NO
-                	AND 	bc.EVALU_STAGE = B.EVALU_STAGE
-                	AND 	bc.EVALU_GUBUN = B.EVALU_GUBUN
-                ) as "commitList",
-                B.EVALU_FINAL_YN		as "evaluFinalYn"
-         FROM TREDSUSER.TB_PLANEVAL_BUSI A, TB_EVALU_DESTI_BUSI_STAGE B
-         WHERE (0=0)
-         AND A.PLANEVAL_BUSI_NO = B.EVALU_BUSI_NO
-         AND B.EVALU_FINAL_YN = 'Y'
-         <isNotEmpty property="srchEvaluCommit">
+        SELECT 
+	    	A.EVALU_BUSI_SN       		AS "evaluBusiSnInfo",
+		    A.EVALU_BUSI_NO       		AS "evaluBusiNoInfo",
+		    A.EVALU_BUSI_NM       		AS "evaluBusiNmInfo",
+		    A.BUSI_MBY_ADDR1      		AS "busiMbyAddr1Info",
+		    A.BUSI_MBY_ADDR2      		AS "busiMbyAddr2Info",
+		    A.BUSI_ADDR1          		AS "busiAddr1Info",
+		    A.BUSI_ADDR2          		AS "busiAddr2Info",
+		    A.BUSI_ADDR3          		AS "busiAddr3Info",
+		    A.GPS_X               		AS "gpsXInfo",
+		    A.GPS_Y               		AS "gpsYInfo",
+		    A.BUSI_TYPE_LEVEL1    		AS "busiTypeLevel1Info",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = A.BUSI_TYPE_LEVEL1) AS "busiTypeLevel1NmInfo",
+		      
+		    A.BUSI_TYPE_LEVEL2   		AS "busiTypeLevel2Info",
+		    A.BUSI_CATE           		AS "busiCateInfo",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = A.BUSI_CATE) AS "busiCateNmInfo",
+		    (select CODE_NM 
+			       from SYS_CODE 
+			      where CODE = A.BUSI_TYPE_LEVEL2) 						AS "busiTypeLevel2NmInfo",
+			(select CODE_NM 
+			       from SYS_CODE 
+			      where CODE = A.BUSI_TYPE_LEVEL1) 						AS "busiTypeLevel1NmInfo",
+		    
+		    A.BUSI_NOTE           		AS "busiNoteInfo",
+		    A.REGI_ID             		AS "regiIdInfo",
+		    A.REGI_DATE           		AS "regiDateInfo",
+		    A.UPDT_ID             		AS "updtIdInfo",
+		    A.UPDT_DATE           		AS "updtDateInfo",
+				
+			B.EVALU_HIST_SN       		AS "evaluHistSnHist",
+		    B.EVALU_HIST_NO       		AS "evaluHistNoHist",
+		    B.EVALU_BUSI_SN       		AS "evaluBusiSnHist",
+		    B.EVALU_YEAR          		AS "evaluYearHist",
+		    B.EVALU_STAGE         		AS "evaluStageHist",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = B.EVALU_STAGE) AS "evaluStageNmHist",
+		    
+		    B.BUSI_STT_DATE       		AS "busiSttDateHist",
+		    B.BUSI_END_DATE       		AS "busiEndDateHist",
+		    B.BUSI_ADDR1          		AS "busiAddr1Hist",
+		    B.BUSI_ADDR2          		AS "busiAddr2Hist",
+		    B.BUSI_ADDR3          		AS "busiAddr3Hist",
+		    B.MAIN_FCLT           		AS "mainFcltHist",
+		    B.BUSI_NOTE           		AS "busiNoteHist",
+		    B.TOT_BUSI_EXPS1      		AS "totBusiExps1Hist",
+		    B.TOT_BUSI_EXPS2      		AS "totBusiExps2Hist",
+		    B.TOT_BUSI_EXPS3      		AS "totBusiExps3Hist",
+		    (B.TOT_BUSI_EXPS1 + B.TOT_BUSI_EXPS2 + B.TOT_BUSI_EXPS3) AS "totalBusiExpsHist",
+		    B.PRGR_GUBUN          		AS "prgrGubunHist",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = B.PRGR_GUBUN) AS "prgrGubunNmHist",
+		    
+		    B.REGI_ID             		AS "regiIdHist",
+		    B.REGI_DATE           		AS "regiDateHist",
+		    B.UPDT_ID             		AS "updtIdHist",
+		    B.UPDT_DATE           		AS "updtDateHist"
+		FROM TESSUSER.TB_EVALU_DESTI_BUSI_INFO A
+		JOIN TESSUSER.TB_EVALU_DESTI_BUSI_HIST B ON A.EVALU_BUSI_SN = B.EVALU_BUSI_SN
+		WHERE (0=0)  
+			AND B.PRGR_GUBUN = 'PG90' 
+   	    <isNotEmpty property="srchEvaluCommitNm">
          	AND (
-                B.EVALU_STAGE in (select EVALU_STAGE from TB_EVALU_DESTI_BUSI_COMMIT where USE_YN = 'Y' and USER_ID = #srchEvaluCommit#) AND
-                B.EVALU_GUBUN in (select EVALU_GUBUN from TB_EVALU_DESTI_BUSI_COMMIT where USE_YN = 'Y' and USER_ID = #srchEvaluCommit#) AND
-                B.EVALU_BUSI_NO in (select EVALU_BUSI_NO from TB_EVALU_DESTI_BUSI_COMMIT where USE_YN = 'Y' and USER_ID = #srchEvaluCommit#)
+                B.EVALU_STAGE in (select EVALU_STAGE from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%') AND
+                B.EVALU_GUBUN in (select EVALU_GUBUN from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%') AND
+                B.EVALU_BUSI_NO in (select EVALU_BUSI_NO from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%')
             )
          </isNotEmpty>
-         
          <include refid="PlanEvaluMgmt-condition"/>
-         ORDER BY A.PLANEVAL_BUSI_NAME
     </select>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     <select id="listEvaluEndBusiCount" parameterClass="map"  resultClass="int">
     	SELECT count(*)
-    	FROM TREDSUSER.TB_PLANEVAL_BUSI A, TB_EVALU_DESTI_BUSI_STAGE B
-    	WHERE (0=0)
-    	AND A.PLANEVAL_BUSI_NO = B.EVALU_BUSI_NO
-        AND B.EVALU_FINAL_YN = 'Y'
-       	<isNotEmpty property="srchEvaluCommit">
+    	FROM TESSUSER.TB_EVALU_DESTI_BUSI_INFO A
+		JOIN TESSUSER.TB_EVALU_DESTI_BUSI_HIST B ON A.EVALU_BUSI_SN = B.EVALU_BUSI_SN
+		WHERE (0=0)  
+			AND B.PRGR_GUBUN = 'PG90' 
+   	    <isNotEmpty property="srchEvaluCommitNm">
          	AND (
-                B.EVALU_STAGE in (select EVALU_STAGE from TB_EVALU_DESTI_BUSI_COMMIT where USE_YN = 'Y' and USER_ID = #srchEvaluCommit#) AND
-                B.EVALU_GUBUN in (select EVALU_GUBUN from TB_EVALU_DESTI_BUSI_COMMIT where USE_YN = 'Y' and USER_ID = #srchEvaluCommit#) AND
-                B.EVALU_BUSI_NO in (select EVALU_BUSI_NO from TB_EVALU_DESTI_BUSI_COMMIT where USE_YN = 'Y' and USER_ID = #srchEvaluCommit#)
+                B.EVALU_STAGE in (select EVALU_STAGE from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%') AND
+                B.EVALU_GUBUN in (select EVALU_GUBUN from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%') AND
+                B.EVALU_BUSI_NO in (select EVALU_BUSI_NO from TB_EVALU_DESTI_BUSI_COMMIT a, TREDSUSER.TB_USER b where a.USER_ID = b.USER_ID and a.USE_YN = 'Y' and b.USER_NM like '%'||#srchEvaluCommitNm#||'%')
             )
-        </isNotEmpty>
-       	<include refid="PlanEvaluMgmt-condition"/>
+         </isNotEmpty>
+         <include refid="PlanEvaluMgmt-condition"/>
     </select>
     
     <!-- <select id="listEvaluEndBusi" parameterClass="map"  resultClass="hashmap">
@@ -807,6 +896,37 @@
     	AND		USER_ID = #userId#
     </update>
     
+    <!-- 지자체 사업개요 수정 -->
+    <update id="updtEvaluHist" parameterClass="map">
+    	UPDATE 	TB_EVALU_DESTI_BUSI_HIST
+    	SET		 BUSI_NOTE 			= #busiNoteHist#
+
+    			,BUSI_ADDR1 		= #busiAddr1Hist#
+    			,BUSI_ADDR2 		= #busiAddr2Hist#
+    			,BUSI_ADDR3 		= #busiAddr3Hist#
+
+    			,MAIN_FCLT 			= #mainFcltHist#
+
+    			,BUSI_STT_DATE 		= REPLACE(#busiSttDateHist#, '-', '')
+    			,BUSI_END_DATE 		= REPLACE(#busiEndDateHist#, '-', '')
+    			
+    			,TOT_BUSI_EXPS1 	= #totBusiExps1Hist#
+    			,TOT_BUSI_EXPS2 	= #totBusiExps2Hist#
+    			,TOT_BUSI_EXPS3 	= #totBusiExps3Hist#
+
+    			
+    			,UPDT_ID 			= #gsUserId#
+    			,UPDT_DATE 			= sysdate
+    	WHERE	EVALU_HIST_SN  		= #evaluHistSnHist#
+    </update>
+    
+    <!-- 평가위원 파일 다운로드 업데이트-->
+    <update id="updtPrgrGubun" parameterClass="map">
+    	UPDATE 	TB_EVALU_DESTI_BUSI_HIST
+    	SET		 PRGR_GUBUN 			= #prgrGubun#
+    	WHERE	EVALU_HIST_SN  			= #rootNo#
+    </update>
+    
     <!-- 평가사업정보 첨부파일 조회 -->
     <select id="listEvaluBusiAtthFile" parameterClass="map"  resultClass="hashmap">
     	SELECT  A.CODE_NM,
@@ -856,6 +976,7 @@
     	SELECT  
 		        EVALU_FILE_NO,
 		        ROOT_NO,
+		        ROOT_SEQ,
 		        ATTH_TYPE,
 		        FILE_ORG_NM,
 		        FILE_SVR_NM,
@@ -865,13 +986,15 @@
 		        EVALU_STAGE,
 		        EVALU_STAGE_YEAR
 		FROM    TB_EVALU_DESTI_FILE
-		WHERE   EVALU_FILE_NO = #fileNo#
+		WHERE   ROOT_NO = #evaluHistSnHist#
+		  AND   ATTH_TYPE = #atthType# 
     </select>
     
     <!-- 파일 삭제 -->
     <delete id="deptEvaluAtthFile" parameterClass="map">
     	DELETE FROM TB_EVALU_DESTI_FILE 
-    	WHERE  EVALU_FILE_NO = #fileNo#
+    	WHERE   ROOT_NO 	= #evaluHistSnHist#
+		  AND   ATTH_TYPE 	= #atthType# 
     </delete>
     
     <!-- 평가정보 평가위원 리스트 -->
@@ -924,9 +1047,9 @@
 		        AGREE_YN,
 		        AGREE_DATE
 		from 	TB_EVALU_DESTI_BUSI_COMMIT A
-		WHERE	A.EVALU_BUSI_NO = #evaluBusiNo#
-		AND		A.EVALU_STAGE = #evaluStage#
-		AND		A.EVALU_GUBUN = #evaluGubun#
+		WHERE	A.EVALU_BUSI_NO = #evaluHistNoHist#
+		AND		A.EVALU_STAGE = #evaluStageHist#
+		AND		A.EVALU_GUBUN = #evaluYearHist#
     </select>
     
     <!-- 평가진행현황 서면검토서 평가위원 리스트 -->
@@ -940,9 +1063,9 @@
 		        REVIEW_APV_DATE,
 		        REVIEW_APV_YN
 		from 	TB_EVALU_DESTI_BUSI_COMMIT A
-		WHERE	A.EVALU_BUSI_NO = #evaluBusiNo#
-		AND		A.EVALU_STAGE = #evaluStage#
-		AND		A.EVALU_GUBUN = #evaluGubun#
+		WHERE	A.EVALU_BUSI_NO = #evaluHistNoHist#
+		AND		A.EVALU_STAGE = #evaluStageHist#
+		AND		A.EVALU_GUBUN = #evaluYearHist#
     </select>
     
     <!-- 평가진행현황 평가의견서 평가위원 리스트 -->
@@ -956,9 +1079,9 @@
 		        OPINION_APV_DATE,
 		        OPINION_APV_YN
 		from 	TB_EVALU_DESTI_BUSI_COMMIT A
-		WHERE	A.EVALU_BUSI_NO = #evaluBusiNo#
-		AND		A.EVALU_STAGE = #evaluStage#
-		AND		A.EVALU_GUBUN = #evaluGubun#
+		WHERE	A.EVALU_BUSI_NO = #evaluHistNoHist#
+		AND		A.EVALU_STAGE = #evaluStageHist#
+		AND		A.EVALU_GUBUN = #evaluYearHist#
     </select>
     
     <!-- 평가위원 서면검토서 승인 상태 변경 -->
@@ -1208,6 +1331,164 @@
 		WHERE 	EVALU_GUBUN = '2018'
 		AND		EVALU_FINAL_YN = 'Y'
     </select>
+    
+    
+    
+    
+    <select id="viewTodeEndMast" parameterClass="map"  resultClass="hashmap">
+        SELECT 
+			    A.EVALU_BUSI_SN       					AS "evaluBusiSnInfo",
+			    A.EVALU_BUSI_NO       					AS "evaluBusiNoInfo",
+			    A.EVALU_BUSI_NM       					AS "evaluBusiNmInfo",
+			    A.BUSI_MBY_ADDR1      					AS "busiMbyAddr1Info",
+			    A.BUSI_MBY_ADDR2      					AS "busiMbyAddr2Info",
+			    A.BUSI_ADDR1          					AS "busiAddr1Info",
+			    A.BUSI_ADDR2          					AS "busiAddr2Info",
+			    A.BUSI_ADDR3          					AS "busiAddr3Info",
+			    A.GPS_X               					AS "gpsXInfo",
+			    A.GPS_Y               					AS "gpsYInfo",
+			    A.BUSI_TYPE_LEVEL1    					AS "busiTypeLevel1Info",
+			    (select CODE_NM 
+			       from SYS_CODE 
+			      where CODE = A.BUSI_TYPE_LEVEL1) 		AS "busiTypeLevel1NmInfo",
+			    A.BUSI_TYPE_LEVEL2   					AS "busiTypeLevel2Info",
+			    (select CODE_NM 
+			       from SYS_CODE 
+			      where CODE = A.BUSI_TYPE_LEVEL2) 		AS "busiTypeLevel2NmInfo",
+			    A.BUSI_CATE           					AS "busiCateInfo",
+			    (select CODE_NM 
+			       from SYS_CODE 
+			      where CODE = A.BUSI_CATE) 			AS "busiCateNmInfo",
+			    A.BUSI_NOTE           					AS "busiNoteInfo",
+			    A.REGI_ID             					AS "regiIdInfo",
+			    A.REGI_DATE           					AS "regiDateInfo",
+			    A.UPDT_ID             					AS "updtIdInfo",
+			    A.UPDT_DATE           					AS "updtDateInfo"
+          FROM TESSUSER.TB_EVALU_DESTI_BUSI_INFO A
+         WHERE (0=0)
+           AND A.EVALU_BUSI_SN   =  (SELECT  B.EVALU_BUSI_SN
+         						   	   FROM  TB_EVALU_DESTI_BUSI_HIST B
+         						  	  WHERE  EVALU_HIST_SN = #evaluHistSnHist#)
+    </select>
+    
+    <select id="viewEvaluStageEndInfo" parameterClass="map"  resultClass="hashmap">
+    	SELECT
+   			A.EVALU_HIST_SN       										AS "evaluHistSnHist",
+		    A.EVALU_HIST_NO       										AS "evaluHistNoHist",
+		    A.EVALU_BUSI_SN       										AS "evaluBusiSnHist",
+		    A.EVALU_YEAR          										AS "evaluYearHist",
+		    A.EVALU_STAGE         										AS "evaluStageHist",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = A.EVALU_STAGE) 								AS "evaluStageNmHist",
+		    TO_CHAR(SUBSTR(A.BUSI_STT_DATE, 1, 4) || '-' || SUBSTR(A.BUSI_STT_DATE, 5, 2)) AS "busiSttDateHist",
+    		TO_CHAR(SUBSTR(A.BUSI_END_DATE, 1, 4) || '-' || SUBSTR(A.BUSI_END_DATE, 5, 2)) AS "busiEndDateHist",
+		    
+		    A.BUSI_ADDR1 												AS "busiAddr1Hist",
+			    CASE 
+			        WHEN A.BUSI_ADDR1 IS NOT NULL THEN
+			            (SELECT SD AS "codeNm"
+			             FROM TREDSUSER.TB_BJD_CODE
+			             WHERE BJD_CODE LIKE '__00000000'
+			             AND SUBSTR(BJD_CODE, 0, 2) = A.BUSI_ADDR1)
+			        ELSE NULL
+			    END 													AS "busiAddr1NmHist",
+			
+			    A.BUSI_ADDR2 											AS "busiAddr2Hist",
+			    CASE
+			        WHEN A.BUSI_ADDR2 IS NOT NULL THEN
+			            (SELECT SGG AS "codeNm"
+			             FROM TREDSUSER.TB_BJD_CODE
+			             WHERE SGG IS NOT NULL
+			             AND BJD_CODE LIKE '_____00000'
+			             AND BJD_CODE LIKE A.BUSI_ADDR1 || '%'
+			             AND SUBSTR(BJD_CODE, 3, 3) = A.BUSI_ADDR2)
+			        ELSE NULL
+			    END 													AS "busiAddr2NmHist",
+		    
+		    A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2   						AS "busiAddr12Hist",
+		    A.BUSI_ADDR3          										AS "busiAddr3Hist",
+		    A.MAIN_FCLT           										AS "mainFcltHist",
+		    A.BUSI_NOTE           										AS "busiNoteHist",
+		    A.TOT_BUSI_EXPS1      										AS "totBusiExps1Hist",
+		    A.TOT_BUSI_EXPS2      										AS "totBusiExps2Hist",
+		    A.TOT_BUSI_EXPS3      										AS "totBusiExps3Hist",
+		    (A.TOT_BUSI_EXPS1 + A.TOT_BUSI_EXPS2 + A.TOT_BUSI_EXPS3) 	AS "totalBusiExpsHist",
+		    A.PRGR_GUBUN          										AS "prgrGubunHist",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = A.PRGR_GUBUN) 								AS "prgrGubunNmHist",
+		    A.REGI_ID             										AS "regiIdHist",
+		    A.REGI_DATE           										AS "regiDateHist",
+		    A.UPDT_ID             										AS "updtIdHist",
+		    A.UPDT_DATE           										AS "updtDateHist"
+		FROM 	TESSUSER.TB_EVALU_DESTI_BUSI_HIST A
+		WHERE	(1=1)
+		AND	 	A.EVALU_HIST_SN   = #evaluHistSnHist#
+    </select>
+    
+    <!-- sys 참조파일 리스트 조회 -->
+    <select id="getSysRrencFileProgList" parameterClass="map"  resultClass="hashmap">
+    	   SELECT
+		        CODE,
+		        CODE_NM,
+		        (SELECT
+		            B.CODE_NM        
+		        FROM
+		            SYS_CODE B        
+		        WHERE
+		            B.CODE = A.ADD_COL2) AS "addColNm2"   
+			 FROM
+        SYS_CODE A   
+		 WHERE (0=0)
+		   AND A.PARENT_CODE 	= 'FILE_TYPE'
+		   AND A.ADD_COL2 		=  #evaluStageHist#
+    </select>
+    
+    <!-- sys 참조파일 리스트 조회 -->
+    <select id="getsysUldFileProgList" parameterClass="map"  resultClass="hashmap">
+    	   SELECT
+			        CODE,
+			        PARENT_CODE,
+			        CODE_NM
+			FROM   	SYS_CODE A   
+		 WHERE (0=0)
+		   AND A.PARENT_CODE 	= 'ATTH_TYPE'
+		order by CODE ASC
+    </select>
+    
+    <!-- 사업설명서 참조리스트 조회 -->
+    <select id="getupFileProgList" parameterClass="map"  resultClass="hashmap">
+    	   SELECT
+			A.EVALU_FILE_NO       			AS "evaluFileNo"
+			,A.ROOT_NO						AS "rootNo"
+			,A.ROOT_SEQ						AS "rootSeq"
+			,A.DOCU_TYPE					AS "docuType"
+			,A.ATTH_TYPE					AS "atthType"
+			,A.FILE_ORG_NM					AS "fileOrgNm"
+			,A.FILE_SVR_NM					AS "fileSvrNm"
+			,A.FILE_PATH					AS "filePath"
+			,A.FILE_SIZE					AS "fileSize"
+			,A.ATTH_RMK						AS "atthRmk"
+			,A.REGI_ID						AS "regiId"
+			,A.REGI_DATE					AS "regiDate"
+			,A.EVALU_STAGE					AS "evaluStage"
+			,A.EVALU_STAGE_YEAR				AS "evaluStageYear"
+			,(SELECT B.CODE_NM
+			    FROM SYS_CODE B
+			   WHERE A.ATTH_TYPE = B.CODE) 	AS "rootName"
+		FROM
+			TB_EVALU_DESTI_FILE A
+		WHERE   ROOT_NO 	= #evaluHistSnHist#
+    </select>
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     

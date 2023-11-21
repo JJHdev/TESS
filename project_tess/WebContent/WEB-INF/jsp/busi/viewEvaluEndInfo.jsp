@@ -14,8 +14,73 @@
 	
 	<!-- jstree 추가 js -->
 	<script type="text/javascript" src="/jquery/jstree/jquery.jstree.js"></script>
-	<script type="text/javascript" src="/jquery/jstree/jquery.hotkeys.js"></script>
-	<script type="text/javascript" src="/jquery/jstree/jquery.cookie.js"></script>
+	<script type="text/javascript" src="/jquery/jstree/_lib/jquery.hotkeys.js"></script>
+	<script type="text/javascript" src="/jquery/jstree/_lib/jquery.cookie.js"></script>
+<style>
+.tab {
+  overflow: hidden;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+}
+
+/* 탭 버튼 스타일 */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+  border-radius: 8px 8px 0 0;
+}
+
+/* 탭 버튼 - 마우스 오버 스타일 */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* 탭 버튼 - 활성화된 탭의 스타일 */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* 탭 내용 스타일 */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+  background-color: #fff;
+  border-radius: 0 0 8px 8px;
+}
+
+/* 탭 내용의 제목 스타일 */
+.tabcontent h3 {
+  margin-top: 0;
+}
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+/* 탭 버튼 스타일 */
+.tablinks {
+  background-color: inherit;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+
+.tablinks:hover {
+  background-color: #ddd;
+}
+</style>
 	
 </head>
 
@@ -58,6 +123,14 @@
         <input type="hidden" name="srchBusiStage"  id="srchBusiStage"  value='<c:out value="${paramMap.srchBusiStage}"/>'/>
         <input type="hidden" name="srchEvaluDate"  id="srchEvaluDate"  value='<c:out value="${paramMap.srchEvaluDate}"/>'/>
     </div>
+   	<div id="fileContentArea">
+    	<c:forEach var="entry1" items="${evaluInfo}">
+		    <input type="hidden" name="${entry1.key}" value="${entry1.value}" />
+		</c:forEach>
+		<c:forEach var="entry2" items="${mastMap}">
+		    <input type="hidden" name="${entry2.key}" value="${entry2.value}" />
+		</c:forEach>
+    </div>
     
     <input type="hidden" name="regiEvaluCommId"     id="regiEvaluCommId"/>
 
@@ -69,7 +142,7 @@
 	                    <li>홈</li>
 	                    <li>평가사업조회</li>
 	                    <li>평가완료사업</li>
-	                    <li>${evaluInfo.PLANEVAL_BUSI_NAME}</li>
+	                    <li>${mastMap.evaluBusiNmInfo}</li>
 	                </ul>
 	            </div>
 	            <div class="row">
@@ -81,8 +154,8 @@
 	            <div class="project-header" style="background-image:url(/img/storage/project-theme.jpg)">
 	                <div class="shade"></div>
 	                <div class="project-title">
-	                    <h2>${evaluInfo.PLANEVAL_BUSI_NAME}</h2>
-	                    <p>${evaluInfo.busiAddress1} / ${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM}</p>
+	                    <h2>${mastMap.evaluBusiNmInfo}</h2>
+	                    <p>${evaluInfo.busiAddr1NmHist} / ${evaluInfo.prgrGubunNmHist} ${evaluInfo.evaluStageNmHist}</p>
 	                </div>
 	                <div class="local-menu">
 	                    <ul>
@@ -92,6 +165,8 @@
 	                    <div class="back-list"><a href="/busi/listEvaluEndBusi.do" title="목록으로"><</a></div>
 	                </div>
 	            </div>
+	
+	
 	
 	            <div class="container b-section">
 	                <div class="row">
@@ -104,185 +179,147 @@
 	
 	                        <p class="section-title">평가의견서<small class="silent">평가진행현황입니다.</small></p>
 	                        <!-- 관리자 전용 -->
-	                        <div class="select-committee">
-	                            <ul>
-	                            	<c:forEach items="${evaluCommitList}" varStatus="status" var="comlist">
-	                            		<c:if test="${status.first}">
-	                            			<li class="active"><a href="#" title="평가위원 A">평가위원 (<c:out value="${comlist.USER_NM}"/>)</a></li>
-	                            		</c:if>
-	                            		<c:if test="${!status.first}">
-	                            			<li><a href="#" title="평가위원 A">평가위원 (<c:out value="${comlist.USER_NM}"/>)</a></li>
-	                            		</c:if>
-	                            	</c:forEach>
-	                                <!-- <li class="active"><a href="#" title="평가위원 A">평가위원 A (홍길동)</a></li> 이름은 관리자만 표시됨
-	                                <li class=""><a href="#" title="평가위원 B">평가위원 B (강감찬)</a></li>
-	                                <li class=""><a href="#" title="평가위원 C">평가위원 C (유관순)</a></li> -->
-	                            </ul>
-	                        </div>
-	                        <!-- /관리자 전용 -->
-	                        <div id="commit_table_list">
 	                        
-	                        	<c:forEach items="${evaluCommitList}" varStatus="status" var="comlist">
-	                        	
-	                        		<c:if test="${status.first}">
-	                        			<table class="evtdss-form-table">
-	                        		</c:if>
-	                        		<c:if test="${!status.first}">
-	                        			<table class="evtdss-form-table" style="display:none;">
-	                        		</c:if>
-			                            <tr>
-			                                <th>구분</th>
-			                                <th>내용</th>
-			                            </tr>
-			                            <tr>
-			                                <td class="fix-width title">
-			                                    	서면검토서
-			                                </td>
-			                                <td>
-			                                	<c:if test="${comlist.REVIEW_FILE_NO != null}">
-			                                		<c:forTokens var="token" items="${comlist.REVIEW_FILE_NM}" delims="." varStatus="status">
-			                                			<c:if test="${status.last}">
-			                                				<c:choose>
-			                                					<c:when test="${token eq 'hwp'}">
-			                                						<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${comlist.REVIEW_FILE_NO}" title="서면검토서"><img src="../../../images/icon_file_hwp.jpg"> <div class="regi-file-inline">${comlist.REVIEW_FILE_NM}</div></a>
-			                                					</c:when>
-			                                					<c:when test="${token eq 'pdf'}">
-			                                						<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${comlist.REVIEW_FILE_NO}" title="서면검토서"><img src="../../../images/icon_file_pdf.jpg"> <div class="regi-file-inline">${comlist.REVIEW_FILE_NM}</div></a>
-			                                					</c:when>
-			                                					<c:when test="${token eq 'zip'}">
-			                                						<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${comlist.REVIEW_FILE_NO}" title="서면검토서"><img src="../../../images/icon_file_zip.jpg"> <div class="regi-file-inline">${comlist.REVIEW_FILE_NM}</div></a>
-			                                					</c:when>
-			                                					<c:otherwise>
-			                                						<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${comlist.REVIEW_FILE_NO}" title="서면검토서"><img src="../../../images/icon_file_hwp.jpg"> <div class="regi-file-inline">${comlist.REVIEW_FILE_NM}</div></a>
-			                                					</c:otherwise>
-			                                				</c:choose>
-			                                			</c:if>
-			                                		</c:forTokens>
-			                                	</c:if>
-			                                </td>
-			                            </tr>
-			                            <tr>
-			                                <td class="fix-width title">
-			                                   	 	평가의견서
-			                                </td>
-			                                <td>
-			                                	<c:if test="${comlist.OPINION_FILE_NO != null}">
-			                                		<c:forTokens var="token" items="${comlist.OPINION_FILE_NM}" delims="." varStatus="status">
-			                                			<c:if test="${status.last}">
-			                                				<c:choose>
-			                                					<c:when test="${token eq 'hwp'}">
-			                                						<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${comlist.OPINION_FILE_NO}" title="평가의견서"><img src="../../../images/icon_file_hwp.jpg"> <div class="regi-file-inline">${comlist.OPINION_FILE_NM}</div></a>
-			                                					</c:when>
-			                                					<c:when test="${token eq 'pdf'}">
-			                                						<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${comlist.OPINION_FILE_NO}" title="평가의견서"><img src="../../../images/icon_file_pdf.jpg"> <div class="regi-file-inline">${comlist.OPINION_FILE_NM}</div></a>
-			                                					</c:when>
-			                                					<c:when test="${token eq 'zip'}">
-			                                						<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${comlist.OPINION_FILE_NO}" title="평가의견서"><img src="../../../images/icon_file_zip.jpg"> <div class="regi-file-inline">${comlist.OPINION_FILE_NM}</div></a>
-			                                					</c:when>
-			                                					<c:otherwise>
-					                                				<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${comlist.OPINION_FILE_NO}" title="평가의견서"><img src="../../../images/icon_file_hwp.jpg"> <div class="regi-file-inline">${comlist.OPINION_FILE_NM}</div></a>
-			                                					</c:otherwise>
-			                                				</c:choose>
-			                                			</c:if>
-			                                		</c:forTokens>
-			                                	</c:if>
-			                                </td>
-			                            </tr>
-			                        </table>
-	                        	
-	                        	</c:forEach>
+	                        <!-- 탭 버튼 -->
+							<div class="tab">
+							  <button class="tablinks" onclick="openTab(event, 'TabA')">평가위원 A</button>
+							  <button class="tablinks" onclick="openTab(event, 'TabB')">평가위원 B</button>
+							  <button class="tablinks" onclick="openTab(event, 'TabC')">평가위원 C</button>
+							</div>
+							
+							<!-- 탭 내용 -->
+							<div id="TabA" class="tabcontent" style="display:black;">
+							  <h3>평가위원 A</h3>
+							  <p>평가위원 A의 내용입니다.</p>
+							</div>
+							
+							<div id="TabB" class="tabcontent">
+							  <h3>평가위원 B</h3>
+							  <p><div id="test"></div></p>
+							</div>
+							
+							<div id="TabC" class="tabcontent">
+							  <h3>평가위원 C</h3>
+							  <p>평가위원 C의 평가의견서 입니다.</p>
+							</div>
 	                        
-	                        </div>
+	                        
+							<table class="evtdss-form-table">
+							    <tr>
+							        <th>구분</th>
+							        <th>내용</th>
+							    </tr>
+							    <tr>
+							        <td class="fix-width title">
+							            <c:if test="${viewCommitStatus.OPINION_NOTE_DATE == null}">
+							       	종합의견
+							       	<div class="save-date"><span class="txt-heightlight"></span> 저장되지 않음</div>
+							       </c:if>
+							       <c:if test="${viewCommitStatus.OPINION_NOTE_DATE != null}">
+							       	종합의견
+							       	<div class="save-date"><span class="txt-heightlight">${viewCommitStatus.OPINION_NOTE_DATE}</span> 저장</div>
+							       </c:if>
+							   </td>
+							   <td>
+							       <div class="incell-textarea">
+							           <textarea id="opinionNote">${viewCommitStatus.OPINION_NOTE}</textarea>
+							           <div class="incell-btn button-set ver">
+							               <button type="button" class="inline-button green"><a onclick="saveNote();" title="저장">저장</a></button>
+							               <button type="button" class="inline-button green"><a onclick="deltNote();" title="삭제">삭제</a></button>
+							            </div>
+							        </div>
+							    </td>
+							</tr>
+							<tr>
+							    <td class="fix-width title">
+							    	<c:if test="${viewCommitStatus.IPM_NOTE_DATE == null}">
+							       	개선사항
+							       	<div class="save-date"><span class="txt-heightlight"></span> 저장되지 않음</div>
+							       </c:if>
+							  	 	<c:if test="${viewCommitStatus.IPM_NOTE_DATE != null}">
+							       	개선사항
+							       	<div class="save-date"><span class="txt-heightlight">${viewCommitStatus.IPM_NOTE_DATE}</span> 저장</div>
+							       </c:if>
+							   </td>
+							   <td>
+							       <div class="incell-textarea">
+							           <textarea id="ipmNote">${viewCommitStatus.IPM_NOTE}</textarea>
+							           <div class="incell-btn button-set ver">
+							               <button type="button" class="inline-button green"><a onclick="saveIpm();" title="저장">저장</a></button>
+							               <button type="button" class="inline-button green"><a onclick="deltIpm();" title="삭제">삭제</a></button>
+							            </div>
+							        </div>
+							    </td>
+							</tr>
+							<tr>
+							    <td class="fix-width title">
+							        	평가결과
+							    </td>
+							    <td>
+							        <strong class="txt-heightlight">[${evaluInfo.EVALU_STAGE_NM}]</strong> <!-- 해당 평가단계 -->
+							       <!-- 평가사업관리 > 평가지표 설정 > 평가결과 항목 에서 지정한 배열로 내용구성 -->
+							       <label class="incell-radio radio-inline" title="적합">
+							       	<c:if test="${viewCommitStatus.OPINION_FND == 'P'}">
+							       		<input type="radio" name="opinionFnd" id="evalResult1" value="P" checked>적합
+							       	</c:if>
+							       	<c:if test="${viewCommitStatus.OPINION_FND != 'P'}">
+							       		<input type="radio" name="opinionFnd" id="evalResult1" value="P">적합
+							       	</c:if>
+							       </label>
+							       <label class="incell-radio radio-inline" title="조건부 적합">
+							       	<c:if test="${viewCommitStatus.OPINION_FND == 'C'}">
+								<input type="radio" name="opinionFnd" id="evalResult2" value="C" checked>조건부 적합
+							       	</c:if>
+							       	<c:if test="${viewCommitStatus.OPINION_FND != 'C'}">
+							       		<input type="radio" name="opinionFnd" id="evalResult2" value="C">조건부 적합
+							       	</c:if>
+							       </label>
+							       <label class="incell-radio radio-inline" title="부적합">
+							       	<c:if test="${viewCommitStatus.OPINION_FND == 'F'}">
+							       		<input type="radio" name="opinionFnd" id="evalResult3" value="F" checked>부적합
+							       	</c:if>
+							       	<c:if test="${viewCommitStatus.OPINION_FND != 'F'}">
+							       		<input type="radio" name="opinionFnd" id="evalResult3" value="F">부적합
+							       	</c:if>
+							            </label>
+							        </td>
+							    </tr>
+							</table>
 	
-	                        <p class="section-title">종합결과<small class="silent">제출 전 첨부파일을 확인하시기 바랍니다.</small></p>
-	                        <table class="evtdss-form-table" summary="평가의견을 취합한 평가결과의 종합의견서 첨부파일입니다.">
-								<caption class="sr-only">종합결과서</caption>
-								<colgroup><col /><col /></colgroup>
-								<thead>
-	                            <tr>
-	                                <th scope="col">구분</th>
-	                                <th scope="col">내용</th>
-	                            </tr>
-								</thead>
-								<tbody>
-								<tr>
-									<td class="fix-width title">
-                                    	종합의견
-                                	</td>
-									<td>
-										<div class="incell-text">
-                                        	${evaluInfo.FINAL_EVALU_FND_NOTE}
-                                    	</div>
-                                	</td>
-								</tr>
-								<tr>
-									<td class="fix-width title">
-                                    	평가결과
-                                	</td>
-									<td>
-	                                    <!-- <strong class="txt-heightlight">[사전평가]</strong> 해당 평가단계 -->
-	                                    <c:if test="${evaluInfo.FINAL_EVALU_FND == 'P'}">
-	                                    	적합
-	                                    </c:if>
-	                                    <c:if test="${evaluInfo.FINAL_EVALU_FND == 'C'}">
-	                                    	조건부적합
-	                                    </c:if>
-	                                    <c:if test="${evaluInfo.FINAL_EVALU_FND == 'F'}">
-	                                    	부적합
-	                                    </c:if>
-	                                </td>
-								</tr>
-	                            <tr>
-	                                <td class="fix-width title">종합결과서</td>
-	                                <td>
-	                                	<c:if test="${totaResultMap.EVALU_FILE_NO != null}">
-	                                		<c:forTokens var="token" items="${totaResultMap.FILE_ORG_NM}" delims="." varStatus="status">
-	                                			<c:if test="${status.last}">
-	                                				<c:choose>
-	                                					<c:when test="${token eq 'hwp'}">
-	                                						<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${totaResultMap.EVALU_FILE_NO}" title="종합결과서"><img alt="종합결과서" src="../../../images/icon_file_hwp.jpg"> <div class="regi-file-inline">${totaResultMap.FILE_ORG_NM}</div></a>
-	                                					</c:when>
-	                                					<c:when test="${token eq 'pdf'}">
-	                                						<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${totaResultMap.EVALU_FILE_NO}" title="종합결과서"><img alt="종합결과서" src="../../../images/icon_file_pdf.jpg"> <div class="regi-file-inline">${totaResultMap.FILE_ORG_NM}</div></a>
-	                                					</c:when>
-	                                					<c:when test="${token eq 'zip'}">
-	                                						<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${totaResultMap.EVALU_FILE_NO}" title="종합결과서"><img alt="종합결과서" src="../../../images/icon_file_zip.jpg"> <div class="regi-file-inline">${totaResultMap.FILE_ORG_NM}</div></a>
-	                                					</c:when>
-	                                					<c:otherwise>
-			                                				<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${totaResultMap.EVALU_FILE_NO}" title="종합결과서"><img alt="종합결과서" src="../../../images/icon_file_hwp.jpg"> <div class="regi-file-inline">${totaResultMap.FILE_ORG_NM}</div></a>
-	                                					</c:otherwise>
-	                                				</c:choose>
-	                                			</c:if>
-			                                </c:forTokens>
-	                                	</c:if>
-	                                </td>
-	                            </tr>
-								</tbody>
-	                        </table>
+	                        <p class="section-title" style="margin-top:100px;">종합결과</p>
+	                        <div id="test2"></div>
+	                        
 	
-	                        <p class="section-title">첨부파일<small class="silent">평가진행현황입니다.</small></p>
-	                        <table class="evtdss-form-table noMargin" summary="현재 평가단계 참고자료입니다.">
-								<caption class="sr-only">첨부파일</caption>
-								<colgroup><col /><col /><col /></colgroup>
-								<thead>
-	                            <tr>
-	                                <th scope="col">구분</th>
-	                                <th scope="col">첨부파일</th>
-	                                <th scope="col">등록일시</th>
-	                            </tr>
-								</thead>
-								<tbody>
-	                            <tr>
-	                                <td>${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM} 평가지침서</td>
-	                                <td class="fix-width file">
-	                                	<c:if test="${evaluDocA != null}">
-	                                		<a href="/evalu/evaluFileDownload.do?EvaluFileNo=${evaluDocA.EVALU_FILE_NO}"><img alt="${evaluDocA.FILE_ORG_NM}" src="../../../images/icon_file_hwp.jpg"></a>
-	                                	</c:if>
-	                                </td>
-	                                <td class="fix-width date"></td>
-	                            </tr>
-								</tbody>
-	                        </table>
+	                        <p class="section-title" style="display:flex; justify-content: space-between;">평가정보 첨부파일
+							</p>
+							<table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
+							    <thead>
+							        <tr>
+							            <th scope="col" style="width:70%;">구분</th>
+		                                <th scope="col" style="width:30%;" class="fix-width file">첨부파일</th>
+							        </tr>
+							    </thead>
+							    <tbody id="tableBody">
+							        <c:forEach items="${sysUldFileList}" var="fileType">
+							            <c:if test="${fileType.CODE eq 'AT06' or fileType.CODE eq 'AT07' or fileType.CODE eq 'AT08' or fileType.CODE eq 'AT09'}">
+							                <tr>
+							                    <td>
+								                    ${fileType.CODE_NM}
+								                </td>
+							                    <td class="fix-width file">
+							                        <c:forEach var="fileInfo" items="${upFileList}">
+							                            <c:if test="${fileInfo.atthType eq fileType.CODE}">
+							                                <a href="/busi/fileDownload.do?rootNo=${evaluInfo.evaluHistSnHist}&atthType=${fileType.CODE}">
+							                                    <c:out value="${fileInfo.fileOrgNm}"/>
+							                                </a>
+							                            </c:if>
+							                        </c:forEach>
+							                    </td>
+							                </tr>
+							            </c:if>
+							        </c:forEach>
+							   	 </tbody>
+							</table>
 	
 	                    </div>
 	                </div>

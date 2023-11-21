@@ -275,4 +275,17 @@ public class EvaluBusiMgmtService extends BaseService {
     	}
     	return result;
     }
+
+    // 사업관리 > 사업설명서 참조리스트 조회
+	public List getSysRrencFileProgList(Map paramMap) {
+		return dao.list("MngEvalu.getSysRrencFileProgList", paramMap);
+	}
+	// 사업관리 > 사업설명서 참조리스트 조회
+	public List getsysUldFileProgList(Map paramMap) {
+		return dao.list("MngEvalu.getsysUldFileProgList", paramMap);
+	}
+	// 사업관리 > 사업설명서 upload파일 리스트
+	public List getupFileProgList(Map paramMap) {
+		return dao.list("MngEvalu.getupFileProgList", paramMap);
+	}
 }

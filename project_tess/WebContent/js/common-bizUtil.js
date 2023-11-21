@@ -183,6 +183,7 @@ var BIZComm = {
     },
     rtnMsg : function() {
         if (PROC_FLAG != "" && PROC_FLAG != null && PROC_FLAG != "null")  {
+			console.log('getFuncObj :: ' + PROC_FLAG);
             msgAlert(PROC_FLAG);
         }
     },

@@ -165,85 +165,10 @@ public class EvaluEndBusiController extends BaseController {
         EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
         BeanUtils.copyProperties(evaluBusiDomain, paramMap);
         //---------------------------------------------
+        addBusinessEndDataToModel(model, request);
         
-        
-        Map commitMap01 = new HashMap();
-        Map commitMap02 = new HashMap();
-        Map commitMap03 = new HashMap();
-    	
-    	List areaFileList = null;
-        List areaFormList = null;
-        
-        System.out.println("paramMap : " + paramMap);
-        	
-		//----------------------
-        // 파일 리스트 조회
-        //----------------------
-        Map fpMap = new HashMap();
-        fpMap.put("rootNo", paramMap.get("evaluBusiNo"));
-        
-        // [사업대상지 정보] 부분 첨부파일 리스트 조회.
-        fpMap.put("docuType", evaluBusiMgmtService.FL_DOCU_TYPE_AREA);
-        areaFileList = evaluBusiMgmtService.listTodeFile(fpMap);
-        
-        System.out.println("areaFileList : " + areaFileList);
-        
-        // 사업 대상지 정보 form을 구성하는 list
-        areaFormList = new ArrayList();
-        Map a01Map = new HashMap();
-        Map a02Map = new HashMap();
-        Map a03Map = new HashMap();
-        Map a04Map = new HashMap();
-        Map a05Map = new HashMap();
-        Map a06Map = new HashMap();
-        a01Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_01);
-        a02Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_02);
-        a03Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_03);
-        a04Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_04);
-        a05Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_05);
-        a06Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_06);
-        a01Map.put("title"   , "조감도");
-        a02Map.put("title"   , "위치도(교통현황도)");
-        a03Map.put("title"   , "토지이용계획도");
-        a04Map.put("title"   , "시설배치도");
-        a05Map.put("title"   , "위성사진(개발현황도)");
-        a06Map.put("title"   , "현장사진");
-        areaFormList.add(a01Map);
-        areaFormList.add(a02Map);
-        areaFormList.add(a03Map);
-        areaFormList.add(a04Map);
-        areaFormList.add(a05Map);
-        areaFormList.add(a06Map);
-        
-        // 사업 정보
-        //Map mastMap = evaluBusiMgmtService.viewTodeMgmtMast(paramMap);
-        Map mastMap = evaluEndBusiService.viewEvaluEndBusiInfo(paramMap);
-        
-        Map rtnMap = null;
-        
-        rtnMap = evaluMgmtService.viewAllEvaluInfo(paramMap);
-        
-        model.addAttribute("model"   ,  evaluBusiDomain);
-        model.addAttribute("paramMap",  paramMap);
-        model.addAttribute("mastMap",  mastMap);
-        model.addAttribute("areaFileList" ,  areaFileList);
-        model.addAttribute("areaFormList" ,  areaFormList);
-        model.addAttribute("rtnMap", rtnMap);
-        model.addAttribute("commitMap01" ,  commitMap01);
-        model.addAttribute("commitMap02" ,  commitMap02);
-        model.addAttribute("commitMap03" ,  commitMap03);
-		
-        
-        // 평가정보 조회
-        Map evaluInfo = evaluBusiMgmtService.viewEvaluEndStageInfo(paramMap);
-        
-        // 첨부파일 조회
-        List fileList = evaluBusiService.listEvaluBusiAtthFile(paramMap);
-        
-        model.addAttribute("model"   ,  evaluBusiDomain);
-        model.addAttribute("paramMap",  paramMap);
-        model.addAttribute("fileList", fileList);
-        model.addAttribute("evaluInfo", evaluInfo);
+        model.addAttribute("model"   	,  evaluBusiDomain);
+        model.addAttribute("paramMap"	,  paramMap);
 
         return "busi/viewEvaluEndBusiInfo";
     }
@@ -268,30 +193,14 @@ public class EvaluEndBusiController extends BaseController {
         BeanUtils.copyProperties(evaluBusiDomain, paramMap);
         //---------------------------------------------
         
-        // 평가정보 조회
-        Map evaluInfo = evaluBusiMgmtService.viewEvaluStageInfo(paramMap);
+        // evaluStageHist, evaluHistNoHist, atthType
+        addBusinessEndDataToModel(model, request);
         
-        // 평가의견서 조회
-        List evaluCommitList = evaluEndBusiService.listEvaluCommitInfo(paramMap);
-        
-        // 종합결과서 조회
-        paramMap.put("userId", "admin");
-        paramMap.put("atthType", "A13");
-        Map totaResultMap = evaluBusiService.getEvaluBusiAtthFile(paramMap);
-        
-        model.addAttribute("model"   ,  evaluBusiDomain);
+    	model.addAttribute("model"   ,  evaluBusiDomain);
         model.addAttribute("paramMap",  paramMap);
-        model.addAttribute("evaluInfo", evaluInfo);
-        model.addAttribute("evaluCommitList", evaluCommitList);
-        model.addAttribute("totaResultMap", totaResultMap);
 
         return "busi/viewEvaluEndInfo";
     }
-
-
-
-
-
 
 
     //++++++++++++++++++++++++++++++++++++++++++++++
@@ -591,6 +500,33 @@ public class EvaluEndBusiController extends BaseController {
             request.setAttribute("finlRestlSelComboList", finlRestlSel);
         }
 
+    }
+    
+    // 사업관련 모든 내용 조회
+    public void addBusinessEndDataToModel(ModelMap model, HttpServletRequest request) throws Exception {
+        Map paramMap = new HashMap();
+        paramMap.put("evaluStageHist", request.getParameter("evaluStageHist"));
+        paramMap.put("evaluHistSnHist", request.getParameter("evaluHistSnHist"));
+        
+        System.out.println("기본 셋팅 파라미터 paramMap"+paramMap);
+        
+        Map mastMap 			= evaluEndBusiService.viewTodeEndMast(paramMap);
+        Map evaluInfo 			= evaluEndBusiService.viewEvaluStageEndInfo(paramMap);
+        List sysRrencFileList 	= evaluEndBusiService.getSysRrencFileProgList(paramMap);
+        List sysUldFileList 	= evaluEndBusiService.getSysUldFileProgEndList(paramMap);
+        List upFileList 		= evaluEndBusiService.getupFileProgEndList(paramMap);
+        
+        System.out.println("mastMap 의값은"+mastMap);
+        System.out.println("evaluInfo 의값은"+evaluInfo);
+        System.out.println("sysRrencFileList 의값은"+sysRrencFileList);
+        System.out.println("sysUldFileList 의값은"+sysUldFileList);
+        System.out.println("upFileList 의값은"+upFileList);
+
+        model.addAttribute("mastMap"			, mastMap);
+        model.addAttribute("evaluInfo"			, evaluInfo);
+        model.addAttribute("sysRrencFileList"	, sysRrencFileList);
+        model.addAttribute("sysUldFileList"		, sysUldFileList);
+        model.addAttribute("upFileList"			, upFileList);
     }
 
 }

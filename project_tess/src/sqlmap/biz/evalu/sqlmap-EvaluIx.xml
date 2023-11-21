@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# @Description : 평가 지표 관련
+# @author LHB
+# @version 1.0 2023.11.19
+# Used Table(주요) : TB_EVL_IX
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-->
+<sqlMap namespace="EvaluIx">
+
+	<!-- 평가지표 조회 -->
+	<select id="getEvlIxSn" parameterClass="map" resultClass="hashmap">
+		SELECT EVL_IX_SN	AS "evlIxSn"
+		  FROM TB_EVL_IX
+		 WHERE EVL_IX_YR	= #evaluYear#
+		   AND EVL_IX_STEP	= #evaluStage#
+	</select>
+
+	<!-- 평가지표 항목 목록 조회 -->
+    <select id="listEvlIx" parameterClass="map" resultClass="hashmap">
+        SELECT A.EVL_IX_ARTCL_SN		AS "evlIxArtclSn"
+		     , A.EVL_IX_SN				AS "evlIxSn"
+		     , A.UP_EVL_IX_ARTCL_SN		AS "upEvlIxArtclSn"
+		     , A.ARTCL_NM				AS "artclNm"
+		     , A.EVL_IX_LEVEL			AS "evlIxLevel" 
+		     , A.ADD_COL1				AS "addCol01"
+		     , A.ADD_COL2				AS "addCol02"
+		     , A.ADD_COL3				AS "addCol03"
+		     , A.ADD_COL4				AS "addCol04"
+		     , A.ADD_COL5				AS "addCol05"
+		     , A.USE_YN					AS "useYn"
+		     , A.ADUP_YN				AS "adupYn"
+		     , B.ALLOT_NM				AS "allotNm"
+		     , B.ALLOT_VL				AS "allotVl"
+		     , B.ALLOT_VL_MAX			AS "allotVlMax"
+		     , B.ALLOT_SN				AS "allotSn"
+		  FROM TB_EVL_IX_ARTCL A
+		  LEFT OUTER
+		  JOIN
+		     ( SELECT EVL_IX_ARTCL_SN
+				    , LISTAGG(COALESCE(ALLOT_NM, ' '), ',') WITHIN GROUP (ORDER BY EVL_IX_ARTCL_SN, ORDR) ALLOT_NM
+				    , LISTAGG(COALESCE(ALLOT_VL, 0), ',') WITHIN GROUP (ORDER BY EVL_IX_ARTCL_SN, ORDR) ALLOT_VL
+				    , LISTAGG(COALESCE(EVL_IX_ARTCL_ALLOT_SN,0),',') WITHIN GROUP (ORDER BY EVL_IX_ARTCL_SN,ORDR) ALLOT_SN
+				    , MAX(COALESCE(ALLOT_VL, 0)) ALLOT_VL_MAX
+				 FROM TB_EVL_IX_ARTCL_ALLOT
+				GROUP BY
+				      EVL_IX_ARTCL_SN
+		     ) B
+		    ON A.EVL_IX_ARTCL_SN = B.EVL_IX_ARTCL_SN
+		 WHERE A.EVL_IX_SN = #evlIxSn#
+		 ORDER BY
+		       A.EVL_IX_ARTCL_SN
+    </select>
+    
+    <!-- 평가위원 데이터 일괄 삭제 -->
+    <delete id="deltEvlMfcmmData">
+    	DELETE FROM
+    	       TB_EVL_MFCMM_DATA
+    	 WHERE EVALU_HIST_SN = #evaluHistSn#
+    	   AND RGTR_ID = #gsUserId#
+    </delete>
+    
+    <!-- 평가사업 작성 권한 확인 -->
+    <select id="chckEvlIxAuth" parameterClass="map" resultClass="String">
+        SELECT 1	AS "count"
+		  FROM TB_EVALU_DESTI_BUSI_HIST A
+		 INNER
+		  JOIN TB_EVALU_DESTI_BUSI_MAPPING B
+		    ON A.EVALU_HIST_SN = B.EVALU_HIST_SN
+		 WHERE A.PRGR_GUBUN = 'PG20'
+		   AND B.MFCMM_USER_ID = #gsUserId#
+    </select>
+
+</sqlMap>

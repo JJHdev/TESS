@@ -20,8 +20,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -107,6 +113,31 @@ public class FileController extends BaseController {
 		request.getSession().setAttribute("FILELIST", listFile);
 	}
 
+	@RequestMapping("/comm/pdfPreview.do")
+	public void pdfPreview(HttpServletResponse response, @RequestParam("fileNo") String fileNo) throws IOException {
+		Map paramMap = new HashMap();
+        paramMap.put("fileNo", fileNo);
+		
+		Map upFilePdf =  fileService.getupFileAT02(paramMap);
+		String pullPath = (String)upFilePdf.get("filePath") + (String)upFilePdf.get("fileSvrNm");
+	    File pdfFile = new File(pullPath);
+
+	    response.setContentType("application/pdf");
+	    response.setHeader("Content-Disposition", "inline; filename=\"" + pdfFile.getName() + "\"");
+
+	    BufferedInputStream inStream = new BufferedInputStream(new FileInputStream(pdfFile));
+	    BufferedOutputStream outStream = new BufferedOutputStream(response.getOutputStream());
+
+	    byte[] buffer = new byte[1024];
+	    int bytesRead = 0;
+	    while ((bytesRead = inStream.read(buffer)) != -1) {
+	        outStream.write(buffer, 0, bytesRead);
+	    }
+	    outStream.flush();
+	    inStream.close();
+	    outStream.close();
+	}
+	
 	/**
      * File Download
      * @param request

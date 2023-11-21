@@ -43,20 +43,6 @@ var EVALU_URL		= ROOT_PATH+"/busi/viewEvaluEndInfo.do" ;
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * 컴포넌트를 초기화한다.
- */
-function initComp() {
-	
-};
-
-/**
- * 데이터를 로드한다.
- */
-function loadData() {
-	
-}
-
-/**
  * 이벤트를 바인딩한다.
  */
 function bindEvent() {
@@ -118,22 +104,33 @@ function load_check() {
 	
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //그리드 이벤트 함수
 ////////////////////////////////////////////////////////////////////////////////
-
-// 평가 대상 화면으로 이동
-function goView(evaluBusiNo, evaluStage, evaluUserId){
-    
+//목록으로 이동 
+function goList(){
     BIZComm.submit({
-        url : ROOT_PATH+ REGI_URL,
-        userParam : {
-            evaluBusiNo : evaluBusiNo,
-            evaluStage : evaluStage,
-            evaluUserId : evaluUserId
-        }
+        url : ROOT_PATH + LIST_URL
+    });
+}
+function fn_goEvaluInfo() {
+    // 일반 객체 생성
+    let dataObject = {};
+    let userParam = {};
+
+    // Hidden 필드 데이터 추가
+    let hiddenInputs = document.querySelectorAll('#model input[type="hidden"], #fileContentArea input[type="hidden"]');
+    hiddenInputs.forEach(input => {
+        dataObject[input.name] = input.value;
+    });
+
+    userParam['evaluHistSnHist'] = dataObject['evaluHistSnHist'];
+    userParam['evaluStageHist']  = dataObject['evaluStageHist'];
+
+    // BIZComm.submit 호출
+    BIZComm.submit({
+        url: EVALU_URL,
+        userParam: userParam
     });
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -169,23 +166,23 @@ function bindFuncBtnEvent(){
 //서비스 함수
 ////////////////////////////////////////////////////////////////////////////////
 
-//목록으로 이동 
-function goList(){
-    BIZComm.submit({
-        url : ROOT_PATH + LIST_URL
-    });
-}
+// 지역 검색조건 combo loading
+function loadBusiAddrCombo() {
+	//시도 선택시 지자체(구군) 검색
+	comutils.changeCityBjd({
+		loading : true,
+		citysido: "busiAddr1Hist",
+		cityauth: "busiAddr2Hist",
 
-//평가정보 이동
-function fn_goEvaluInfo() {
-	
-	BIZComm.submit({
-        url : EVALU_URL/*,
-        userParam : {
-            evaluBusiNo : evaluBusiNo,
-            evaluStage : evaluStage,
-            evaluUserId : evaluUserId
-        }*/
-    });
+		callback: function() {
+		},
+		init    : function() {
+		}
+	});
 }
+$(document).ready(function(){
+    loadBusiAddrCombo();
+    $("#busiSttDate").toCalendarField( false );
+    $("#busiEndDate").toCalendarField( false );
+});
 

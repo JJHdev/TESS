@@ -39,7 +39,7 @@ public class EvaluBusiService extends BaseService {
     /******************* 평가사업관리 *******************/
     /************************************************/
     
-    // 2018 평가사업 리스트 조회.
+    // 평가사업 리스트 조회.
     public PaginatedArrayList listEvaluBusi(Map paramMap, int currPage, int pageSize) throws Exception {
     	return dao.pageList("Busi.listEvaluBusi", paramMap, currPage, pageSize);
     }
@@ -186,7 +186,7 @@ public class EvaluBusiService extends BaseService {
     	Map stgMap = viewEvaluStgMgmt(paramMap);
 	    	
 	    //평가결과 입력
-		int fndCnt =   Integer.parseInt( String.valueOf(stgMap.get("fndCnt")) );;
+		int fndCnt =   Integer.parseInt( String.valueOf(stgMap.get("fndCnt")) );
 		
 		System.out.println("CommUtils.empty(fndCnt) " + fndCnt);
 	
@@ -217,8 +217,20 @@ public class EvaluBusiService extends BaseService {
 		return rtnMap;
 	}
 	
+    
 	public Map viewEvaluStgMgmt(Map paramMap) throws Exception {
     	return (Map)dao.view("Busi.viewEvaluStgMgmt", paramMap);
     }
+
+	// 지자체 사업개요 수정
+	public int updtEvaluHist(Map paramMap) {
+		return dao.save("Busi.updtEvaluHist", paramMap);
+	}
+
+	// 평가위원 파일 다운로드 기록
+	public int updtPrgrGubun(Map params) {
+		return dao.save("Busi.updtPrgrGubun", params);
+		
+	}
     
 }

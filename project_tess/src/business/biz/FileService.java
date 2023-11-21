@@ -204,4 +204,14 @@ public class FileService extends BaseService {
     	int fileNo = (Integer) dao.view("File.getMaxFileNo", params);
     	return fileNo;
     }
+    public Map viewEvaluBusiFile(Map params) {
+        Map file = (Map)dao.view("File.viewEvaluBusiFile", params);
+        return file;
+    }
+
+    // PDF파일 미리보기용 조회
+	public Map getupFileAT02(Map paramMap) {
+		return (Map)dao.view("File.getupFileAT02", paramMap);
+	}
+    
 }

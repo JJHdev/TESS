@@ -58,6 +58,14 @@
         <input type="hidden" name="srchBusiStage"  id="srchBusiStage"  value='<c:out value="${paramMap.srchBusiStage}"/>'/>
         <input type="hidden" name="srchEvaluDate"  id="srchEvaluDate"  value='<c:out value="${paramMap.srchEvaluDate}"/>'/>
     </div>
+    <div id="fileContentArea">
+    	<c:forEach var="entry1" items="${evaluInfo}">
+		    <input type="hidden" name="${entry1.key}" value="${entry1.value}" />
+		</c:forEach>
+		<c:forEach var="entry2" items="${mastMap}">
+		    <input type="hidden" name="${entry2.key}" value="${entry2.value}" />
+		</c:forEach>
+    </div>
     
     <input type="hidden" name="regiEvaluCommId"     id="regiEvaluCommId"/>
 
@@ -69,7 +77,7 @@
 	                    <li>홈</li>
 	                    <li>평가사업조회</li>
 	                    <li>평가완료사업</li>
-	                    <li>${evaluInfo.PLANEVAL_BUSI_NAME}</li>
+	                    <li>${mastMap.evaluBusiNmInfo}</li>
 	                </ul>
 	            </div>
 	            <div class="row">
@@ -81,9 +89,8 @@
 	            <div class="project-header" style="background-image:url(/img/storage/project-theme.jpg)">
 	                <div class="shade"></div>
 	                <div class="project-title">
-	                    <h2>${evaluInfo.PLANEVAL_BUSI_NAME}</h2>
-	                    <p>${evaluInfo.busiAddress1} / ${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM}</p>
-	                </div>
+	                    <h2>${mastMap.evaluBusiNmInfo}</h2>
+	                    <p>${evaluInfo.busiAddr1NmHist} / ${evaluInfo.prgrGubunNmHist} ${evaluInfo.evaluStageNmHist}</p>   </div>
 	                <div class="local-menu">
 	                    <ul>
 	                        <li class="active"><a href="./evalProjectInfo.html" title="사업정보">사업정보</a></li>
@@ -100,139 +107,112 @@
 	                            <h4 class="page-title">사업정보</h4>
 								<a href="javascript:void(0);" class="body-print" title="인쇄하기"><span class="glyphicon glyphicon-print" aria-hidden="true"><span class="sr-only">인쇄하기</span></span></a>
 	                        </div>
-	                        <!-- Contents -->
-	
-	                        <p class="section-title">첨부 파일<small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
-	                        <table class="evtdss-form-table" summary="지자체에서 추가등록한 첨부파일입니다. 최종 개정내역을 포함하므로 화면과 다를 수 있습니다.">
-								<caption class="sr-only">첨부파일</caption>
-								<colgroup><col /><col /><col /></colgroup>
-								<thead>
-	                        	<tr>
-	                                <th scope="col">구분</th>
-	                                <th scope="col">첨부파일</th>
-	                                <th scope="col">등록일시</th>
-	                            </tr>
-								</thead>
-								<tbody>
-	                        	<c:forEach items="${fileList }" varStatus="status" var="flist">
-	                        		<tr>
-		                                <td><c:out value="${flist.CODE_NM}"/></td>
-		                                <td class="fix-width file">
-		                                    <a href="#" title="<c:out value="${flist.CODE_NM}"/>">
-												<label class="sr-only"><c:out value="${flist.CODE_NM}"/></label>
-		                                    	<!-- <img src="../../../images/icon_file_hwp.jpg"> -->
-		                                    	<c:out value="${flist.FILE_ORG_NM}"/>
-		                                    </a>
-		                                </td>
-		                                <td class="fix-width date"><c:out value="${flist.REGI_DATE}"/></td>
-		                            </tr>
-	                        	</c:forEach>
-								</tbody>
-	                            <!-- <tr>
-	                                <th>구분</th>
-	                                <th class="fix-width file">첨부파일</th>
-	                                <th class="fix-width date">등록일시</th>
-	                            </tr>
-	                            <tr>
-	                                <td>보조금 교부신청서</td>
-	                                <td class="fix-width file">
-	                                    <a href="#" class="보조금 교부신청서"><img src="../../../images/icon_file_hwp.jpg"></a>
-	                                </td>
-	                                <td class="fix-width date">2018-09-13 23:14:11</td>
-	                            </tr>
-	                            <tr>
-	                                <td>사업설명서</td>
-	                                <td class="fix-width file">
-	                                    <a href="#" class="사업설명서"><img src="../../../images/icon_file_pdf.jpg"></a>
-	                                </td>
-	                                <td class="fix-width date">2018-09-13 23:14:11</td>
-	                            </tr>
-	                            <tr>
-	                                <td>기본계획 수립용역 보고서</td>
-	                                <td class="fix-width file">
-	                                    <a href="#" class="기본계획 수립용역 보고서"><img src="../../../images/icon_file_hwp.jpg"></a>
-	                                </td>
-	                                <td class="fix-width date">2018-09-13 23:14:11</td>
-	                            </tr>
-	                            <tr>
-	                                <td>추가 첨부파일</td>
-	                                <td class="fix-width file">
-	                                    <a href="#" class="기본계획 수립용역 보고서"><img src="../../../images/icon_file_zip.jpg"></a>
-	                                </td>
-	                                <td class="fix-width date">2018-09-13 23:14:11</td>
-	                            </tr> -->
-	                        </table>
-	
-	                        <p class="section-title">관광개발사업 개요<small>최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
+	                        <!-- /Contents -->
+		                    <p class="section-title">관광개발사업 개요<small>최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
 	                        <table class="evtdss-form-table">
+	                        	<tr>
+	                                <td class="labeler">코드명</td>
+	                                <td colspan="3"><c:out value="${evaluInfo.evaluHistNoHist}"/></td>
+	                            </tr>
+	                            <tr>
+	                            	<td class="labeler">사업유형</td>
+	                                <td colspan="3"><c:out value="${mastMap.busiTypeLevel1NmInfo}"/> > <c:if test="${mastMap.busiTypeLevel2NmInfo ne null and mastMap.busiTypeLevel1NmInfo != ''}"> <c:out value="${mastMap.busiTypeLevel2NmInfo}" /> > </c:if> <c:out value="${mastMap.busiCateNmInfo}"/></td>
+	                            </tr>
 	                            <tr>
 	                                <td class="labeler">사업명</td>
-	                                <td><c:out value="${mastMap.planEvalBusiName}"/></td>
-	                                <%-- <td class="labeler">사업지유형</td>
-	                                <td><c:out value="${mastMap.busiFigureType}"/></td> --%>
-	                                <td class="labeler">사업유형</td>
-	                                <td><c:out value="${mastMap.busiCateNm}"/></td>
+	                                <td colspan="3"><c:out value="${mastMap.evaluBusiNmInfo}"/></td>
+	                            </tr>
+	                            <tr>
+	                                <td class="labeler">사업목적</td>
+	                                <td colspan="3"><c:out value="${evaluInfo.busiNoteHist}"/></td>
 	                            </tr>
 	                            <tr>
 	                                <td class="labeler">위치</td>
-	                                <td colspan="3"><c:out value="${mastMap.busiAddr12}"/> <c:out value="${mastMap.busiAddr5}"/></td>
-	                            </tr>
-	                            <tr>
-	                                <td class="labeler">총 사업기간</td>
-	                                <td colspan="3"><c:out value="${mastMap.convBusiSttDate}"/> ~ <c:out value="${mastMap.convBusiEndDate}"/></td>
-	                            </tr>
-	                            <tr>
-	                                <td class="labeler">사업개발주체</td>
-	                                <td><c:out value="${mastMap.busiDevEnty}"/></td>
-                                    <td class="labeler">사업운영주체</td>
-                                    <td><c:out value="${mastMap.busiMgtEnty}"/></td>
-	                            </tr>
-	                            <tr>
-	                                <td class="labeler">개발사업 법적근거</td>
-                                    <td><c:out value="${mastMap.busiLeglBass}"/></td>
-                                    <td class="labeler">계획수립일자</td>
-                                    <td><c:out value="${mastMap.convBusiPlanDate}"/></td>
-	                            </tr>
-	                            <tr>
-	                                <td class="labeler">사업 내용</td>
-	                                <td colspan="3"><c:out value="${mastMap.busiNote}"/></td>
-	                            </tr>
-	                            <tr>
-	                                <td class="labeler">부지면적</td>
-	                                <td>
-                                    	<c:if test="${not empty mastMap.totSiteArea }">
-											<fmt:formatNumber value="${mastMap.totSiteArea}" type="number"/>㎡
-										</c:if>
+	                                <td colspan="3">
+                                    	<select id="busiAddr1Hist"  name="busiAddr1Hist" disabled class="input-sm wd-20p" data-value="<c:out value='${evaluInfo.busiAddr1Hist}'/>"><option value="">선택</option></select>
+                                    	<select id="busiAddr2Hist"  name="busiAddr2Hist" disabled class="input-sm wd-20p" data-value="<c:out value='${evaluInfo.busiAddr2Hist}'/>"><option value="000">본청</option></select>
+                                    	<br/><c:out value="${evaluInfo.busiAddr3Hist}"/>
                                     </td>
-                                    <td class="labeler">전체시설면적</td>
-                                    <td>
-                                    	<c:if test="${not empty mastMap.totSiteArea }">
-											<fmt:formatNumber value="${mastMap.totFcltArea}" type="number"/>㎡
-										</c:if>
-                                    </td>
+	                            </tr>
+	                            <tr>
+	                                <td class="labeler">주요시설</td>
+	                                <td colspan="3">
+		                                <c:out value="${evaluInfo.mainFcltHist}"/>
+	                                </td>
+	                            </tr>
+	                            <tr>
+	                                <td class="labeler">사업기간</td>
+	                                <td colspan="3">
+		                                <input type="month" name="updtBusiSttDateHist" disabled id="updtBusiSttDateHist" style="width: auto;" value='<c:out value="${evaluInfo.busiSttDateHist}"/>'/>~
+										<input type="month" name="updtBusiEndDateHist" disabled id="updtBusiEndDateHist" style="width: auto;" value='<c:out value="${evaluInfo.busiEndDateHist}"/>'/>
+                                 	</td>
+	                            </tr>
+	                            <tr>
+                                	<td class="labeler">사업비</td>
+	                                <td colspan="3">
+	                                	<c:out value="${evaluInfo.totalBusiExpsHist}"/> 백만원 <br/>
+	                                	<c:out value="${evaluInfo.totBusiExps1Hist}"/> (국비) 백만원 	<br/>
+	                                	<c:out value="${evaluInfo.totBusiExps2Hist}"/> (지방비)백만원	<br/>
+	                                	<c:out value="${evaluInfo.totBusiExps3Hist}"/> (민자) 백만원	<br/>
+                                	</td>
 	                            </tr>
 	                        </table>
-	
-	                        <%-- <p class="section-title">사업대상지 정보<small class="silent">최종본이 아닐 수 있으므로 사업계획서를 참조하시기 바랍니다.</small></p>
-	                        <table class="evtdss-form-table noMargin">
-	                            <c:forEach items="${areaFormList }" varStatus="status" var="areaForm">
-									<tr>
-										<td class="labeler"><c:out value="${areaForm.title }"/></td>
-										<td colspan="3">
-								            <c:forEach items="${areaFileList }" varStatus="idx" var="areaF">
-								                <c:if test="${areaF.atthType == areaForm.atthType }">
-							                        이미지 부분을 이미지가 표시되게 한 부분
-							                        <a href="#down" _todeFileNo='<c:out value="${areaF.todeFileNo }"/>'>
-							                        	<img class="ev-thumb" src='<c:url value="https://tdss.kr/tode/todeFileDownload.do?todeFileNo="/><c:out value="${areaF.todeFileNo }"/>' width="200" alt='<c:out value="${areaF.fileOrgNm }"/>' title='<c:out value="${areaF.fileOrgNm }"/>'>
-							                        </a>
-								                </c:if>
-								            </c:forEach>
-								            </div>
-										</td>
-									</tr>
-							    </c:forEach>
-	                        </table> --%>
-	                        <!-- /Contents -->
+	                        
+	                        <p class="section-title">참조파일<small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
+	                        <table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
+								<caption class="sr-only">참조파일</caption>
+								<colgroup><col/><col/><col/></colgroup>
+		                        <thead>
+		                        	<tr>
+		                                <th scope="col" style="width:70%;">구분</th>
+		                                <th scope="col" style="width:30%;" class="fix-width file">첨부파일</th>
+		                            </tr>
+		                        </thead>
+		                        
+		                        <c:forEach items="${sysRrencFileList}" varStatus="status" var="flist">
+								    <c:if test="${fn:substring(flist.CODE, 3, 4) eq '0' or  fn:substring(flist.CODE, 3, 4) eq '1'}">
+								        <tr>
+								            <td><c:out value="${flist.addColNm2} ${flist.CODE_NM}"/></td>
+								            <td class="fix-width file">
+								                <a href="<c:out value='/comm/fileDownloadSample.do?fileNo=${flist.CODE}'/>">
+								                    <c:out value="${flist.CODE_NM}"/>
+								                </a>
+								            </td>
+								        </tr>
+								    </c:if>
+								</c:forEach>
+                           	</table>
+                           	
+                           	<p class="section-title" style="display:flex; justify-content: space-between;">첨부 파일</p>
+							<table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
+						    	<caption class="sr-only">첨부 파일</caption>
+							    <thead>
+							        <tr>
+							            <th scope="col" style="width:70%;">구분</th>
+		                                <th scope="col" style="width:30%;" class="fix-width file">첨부파일</th>
+							        </tr>
+							    </thead>
+							    <tbody id="tableBody">
+							        <c:forEach items="${sysUldFileList}" var="fileType">
+							            <c:if test="${fileType.CODE eq 'AT01' or fileType.CODE eq 'AT02' or fileType.CODE eq 'AT03' or fileType.CODE eq 'AT04' or fileType.CODE eq 'AT05'}">
+							                <tr>
+							                    <td>
+								                    ${fileType.CODE_NM}
+								                </td>
+							                    <td class="fix-width file">
+							                        <c:forEach var="fileInfo" items="${upFileList}">
+							                            <c:if test="${fileInfo.atthType eq fileType.CODE}">
+							                                <a href="/busi/fileDownload.do?rootNo=${evaluInfo.evaluHistSnHist}&atthType=${fileType.CODE}">
+							                                    <c:out value="${fileInfo.fileOrgNm}"/>
+							                                </a>
+							                            </c:if>
+							                        </c:forEach>
+							                    </td>
+							                </tr>
+							            </c:if>
+							        </c:forEach>
+							   	 </tbody>
+							</table>
 	                    </div>
 	                </div>
 	            </div> <!-- /.container -->

@@ -5,7 +5,7 @@
 	max-width: 580px; /* Dialog will wrap after this width */
 	background: #FFF;
 	/*border: solid 5px #808040;*/
-	border: solid 1px #9A8A66;			/* [20141117 LCS 수정] 디자인 변경 */
+	border: solid 1px #9A8A66;			/* [20141117 LCS �닔�젙] �뵒�옄�씤 蹂�寃� */
 	color: #000;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
@@ -19,11 +19,11 @@
 	text-align: center;
 	line-height: 1.75em;
 	/*color: #666;*/
-	color: #6B5A48;                                                        /* [20141120 LCS 수정] 디자인 변경 */
+	color: #6B5A48;                                                        /* [20141120 LCS �닔�젙] �뵒�옄�씤 蹂�寃� */
 	/*background: #e0e0c0 url(/images/alert/title.gif) top repeat-x;*/
-	background: #EFEBE2 url(/images/alert/title.gif) top repeat-x;         /* [20141120 LCS 수정] 디자인 변경 */            
-	/*border: solid 1px #FFF;*/                                            /* [20141117 LCS 수정] 디자인 변경 */
-	border-bottom: solid 1px #9A8A66;	                                   /* [20141120 LCS 수정] 디자인 변경 */
+	background: #EFEBE2 url(/images/alert/title.gif) top repeat-x;         /* [20141120 LCS �닔�젙] �뵒�옄�씤 蹂�寃� */            
+	/*border: solid 1px #FFF;*/                                            /* [20141117 LCS �닔�젙] �뵒�옄�씤 蹂�寃� */
+	border-bottom: solid 1px #9A8A66;	                                   /* [20141120 LCS �닔�젙] �뵒�옄�씤 蹂�寃� */
 	cursor: default;
 	padding: 0em;
 	margin: 0em;
@@ -47,9 +47,11 @@
 	background-image: url(/images/alert/help.gif);
 }
 
+/*
 #popup_message {
 	padding-left: 48px;
 }
+*/
 
 #popup_panel {
 	text-align: center;

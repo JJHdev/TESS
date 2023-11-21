@@ -45,6 +45,7 @@
 			   a.ADD_COL3               AS "addCol3",
 			   a.ADD_COL4               AS "addCol4",
 			   a.ADD_COL5               AS "addCol5",
+			   a.CODE_ODR				AS "codeOdr",
 			   a.USE_YN               	AS "useYn"
 		FROM   SYS_CODE a
 		WHERE  (0=0)

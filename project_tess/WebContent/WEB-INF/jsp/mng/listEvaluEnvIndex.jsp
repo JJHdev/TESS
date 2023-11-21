@@ -98,8 +98,9 @@
 	                    <h3 class="page-title">평가환경설정</h3>
 	                    <!-- Contents -->
 	                    <ul class="page-tabs">
-	                        <li class="page-tab"><a href="/mng/listEvaluEnvStep.do">평가단계관리</a></li>
-	                        <li class="page-tab active"><a href="/mng/listEvaluEnvIndex.do">평가지표관리</a></li>
+	                        <li class="page-tab w33"><a href="/mng/listEvaluEnvStep.do">평가단계관리</a></li>
+	                        <li class="page-tab w33 active"><a href="/mng/listEvaluEnvIndex.do">평가지표관리</a></li>
+	                        <li class="page-tab w33"><a href="/mng/listEvaluEnvFile.do">참조파일관리</a></li>
 	                    </ul>
 	                    
 	                    <form>

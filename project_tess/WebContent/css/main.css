@@ -555,6 +555,12 @@ html, body, footer, .gnb {
     padding: 12px;
     min-height: 475px;
 }
+.wrapper-2 {
+	position: relative;
+    margin: 0 auto;
+    padding: 12px;
+    min-height: 475px;
+}
 .wrapper.sub { background-color: #fff; }
 .wrapper.main { background-color: transparent; }
 .contents-wrap .container{
@@ -564,7 +570,9 @@ html, body, footer, .gnb {
     margin-top: 195px;
 }
 .contents-wrap > .wrapper > .container,
-.contents-wrap > .wrapper > .container > .row {
+.contents-wrap > .wrapper > .container > .row,
+.contents-wrap > .wrapper-2 > .container,
+.contents-wrap > .wrapper-2 > .container > .row {
     font-size: 1em;
     font-family: 'notokr-regular', sans-serif;
     word-break: keep-all;
@@ -624,7 +632,7 @@ html, body, footer, .gnb {
     border-right: none;
 }
 .page-tabs .page-tab.w33 {
-    width: 33.3%
+    width: 33.333333%
 }
 .page-tabs .page-tab a {
     display: block;
@@ -1093,6 +1101,7 @@ h3.page-title {
 }
 
 .project-header {
+	background-origin: content-box;
     height: 190px;
     position: absolute;
     width: 100%;
@@ -1104,15 +1113,16 @@ h3.page-title {
     vertical-align: bottom;
 }
 .project-header .shade{
+	margin-left: 3.4%;
     position: absolute;
     display: block;
     left: 0;
     top: 0;
-    width: 100%;
+    width: 93%;
     height: 100%;
     background-color: #111;
     opacity: .4;
-    z-index:11;
+    z-index: 11;
 }
 .project-header .project-title {
     position: relative;

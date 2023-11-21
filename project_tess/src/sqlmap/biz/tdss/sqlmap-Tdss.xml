@@ -104,29 +104,31 @@
     </sql>
     
     <!-- 기획평가사업  -->
-    <sql id="PlanEvaluMgmt-columns">
-	     A.PLANEVAL_BUSI_NO     	as "planEvalBusiNo"
-	    ,A.PLANEVAL_BUSI_NAME     	as "planEvalBusiName"
-	    ,A.BUSI_ADDR1       		as "busiAddr1"
-	    ,A.BUSI_ADDR2       		as "busiAddr2"
-	    ,A.BUSI_ADDR5       		as "busiAddr5"
-	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   			as "busiAddr12"
-	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2 ||' '|| A.BUSI_ADDR5 		as "busiAddress1"
-	    ,A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2                   			as "cityauthNm"
-	    ,A.BUSI_STT_DATE    as "busiSttDate"
-	    ,FN_CONV_VDATEYM(A.BUSI_STT_DATE)                    as "convBusiSttDate"
-	    ,A.BUSI_END_DATE    as "busiEndDate"
-	    ,FN_CONV_VDATEYM(A.BUSI_END_DATE)                    as "convBusiEndDate"
-	    ,A.BUSI_DEV_EVTY	   as "busiDevEnty"
-	    ,A.BUSI_TYPE        as "busiType"
-	    ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_TYPE)             as "busiTypeNm"
-	    ,A.BUSI_CATE        as "busiCate"
-	    ,FN_GET_CODENM('BUSI_TYPE', A.BUSI_CATE)             as "busiCateNm"                                                                 
-	    ,A.PLAN_BUSI_EXPS    as "planBusiExps"
-	    ,A.REGI_ID          as "regiId"
-	    ,A.REGI_DATE        as "regiDate"
-	    ,A.UPDT_ID          as "updtId"
-	    ,A.UPDT_DATE        as "updtDate"
+    <sql id="EvaluDestiBusiHist-columns">
+	    A.EVALU_HIST_SN       		AS "evaluHistSnHist",
+	    A.EVALU_HIST_NO       		AS "evaluHistNoHist",
+	    A.EVALU_BUSI_SN       		AS "evaluBusiSnHist",
+	    A.EVALU_YEAR          		AS "evaluYearHist",
+	    A.EVALU_STAGE         		AS "evaluStageHist",
+	    (select CODE_NM 
+	       from SYS_CODE 
+	      where CODE = A.EVALU_STAGE) AS "evaluStageNmHist",
+	    A.BUSI_STT_DATE       		AS "busiSttDateHist",
+	    A.BUSI_END_DATE       		AS "busiEndDateHist",
+	    A.BUSI_ADDR1          		AS "busiAddr1Hist",
+	    A.BUSI_ADDR2          		AS "busiAddr2Hist",
+	    A.BUSI_ADDR3          		AS "busiAddr3Hist",
+	    A.MAIN_FCLT           		AS "mainFcltHist",
+	    A.BUSI_NOTE           		AS "busiNoteHist",
+	    A.TOT_BUSI_EXPS1      		AS "totBusiExps1Hist",
+	    A.TOT_BUSI_EXPS2      		AS "totBusiExps2Hist",
+	    A.TOT_BUSI_EXPS3      		AS "totBusiExps3Hist",
+	    (A.TOT_BUSI_EXPS1 + A.TOT_BUSI_EXPS2 + A.TOT_BUSI_EXPS3) AS "totalBusiExpsHist",
+	    A.PRGR_GUBUN          		AS "prgrGubunHist",
+	    A.REGI_ID             		AS "regiIdHist",
+	    A.REGI_DATE           		AS "regiDateHist",
+	    A.UPDT_ID             		AS "updtIdHist",
+	    A.UPDT_DATE           		AS "updtDateHist"
     </sql>
     
     
@@ -144,10 +146,39 @@
     </select> -->
     
     <select id="viewTodeMgmtMast" parameterClass="map"  resultClass="hashmap">
-        SELECT <include refid="PlanEvaluMgmt-columns"/>
-          FROM TREDSUSER.TB_PLANEVAL_BUSI A
+        SELECT 
+			    A.EVALU_BUSI_SN       					AS "evaluBusiSnInfo",
+			    A.EVALU_BUSI_NO       					AS "evaluBusiNoInfo",
+			    A.EVALU_BUSI_NM       					AS "evaluBusiNmInfo",
+			    A.BUSI_MBY_ADDR1      					AS "busiMbyAddr1Info",
+			    A.BUSI_MBY_ADDR2      					AS "busiMbyAddr2Info",
+			    A.BUSI_ADDR1          					AS "busiAddr1Info",
+			    A.BUSI_ADDR2          					AS "busiAddr2Info",
+			    A.BUSI_ADDR3          					AS "busiAddr3Info",
+			    A.GPS_X               					AS "gpsXInfo",
+			    A.GPS_Y               					AS "gpsYInfo",
+			    A.BUSI_TYPE_LEVEL1    					AS "busiTypeLevel1Info",
+			    (select CODE_NM 
+			       from SYS_CODE 
+			      where CODE = A.BUSI_TYPE_LEVEL1) 		AS "busiTypeLevel1NmInfo",
+			    A.BUSI_TYPE_LEVEL2   					AS "busiTypeLevel2Info",
+			    (select CODE_NM 
+			       from SYS_CODE 
+			      where CODE = A.BUSI_TYPE_LEVEL2) 		AS "busiTypeLevel2NmInfo",
+			    A.BUSI_CATE           					AS "busiCateInfo",
+			    (select CODE_NM 
+			       from SYS_CODE 
+			      where CODE = A.BUSI_CATE) 			AS "busiCateNmInfo",
+			    A.BUSI_NOTE           					AS "busiNoteInfo",
+			    A.REGI_ID             					AS "regiIdInfo",
+			    A.REGI_DATE           					AS "regiDateInfo",
+			    A.UPDT_ID             					AS "updtIdInfo",
+			    A.UPDT_DATE           					AS "updtDateInfo"
+          FROM TESSUSER.TB_EVALU_DESTI_BUSI_INFO A
          WHERE (0=0)
-           AND A.PLANEVAL_BUSI_NO   = #evaluBusiNo#
+           AND A.EVALU_BUSI_SN   =  (SELECT  B.EVALU_BUSI_SN
+         						   	   FROM  TB_EVALU_DESTI_BUSI_HIST B
+         						  	  WHERE  EVALU_HIST_SN = #evaluHistSnHist#)
     </select>
     
     <select id="listTodeFile" parameterClass="map"  resultClass="hashmap">

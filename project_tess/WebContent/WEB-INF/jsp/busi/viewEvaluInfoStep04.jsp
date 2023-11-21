@@ -61,31 +61,38 @@
         <input type="hidden" name="srchBusiStage"  id="srchBusiStage"  value='<c:out value="${paramMap.srchBusiStage}"/>'/>
         <input type="hidden" name="srchEvaluDate"  id="srchEvaluDate"  value='<c:out value="${paramMap.srchEvaluDate}"/>'/>
     </div>
-    
+	<div id="fileContentArea">
+	   	<c:forEach var="entry1" items="${evaluInfo}">
+		    <input type="hidden" name="${entry1.key}" value="${entry1.value}" />
+		</c:forEach>
+		<c:forEach var="entry2" items="${mastMap}">
+		    <input type="hidden" name="${entry2.key}" value="${entry2.value}" />
+		</c:forEach>
+	</div>
     <input type="hidden" name="regiEvaluCommId"     id="regiEvaluCommId"/>
     
     <div class="contents-wrap">
 	    <div class="wrapper sub"> <!-- 메인페이지 : 'main', 서브페이지 : 'sub' 클래스 추가 -->
 	        <div class="container">
-	            <div class="evtdss-breadcrumb">
+	          	<div class="evtdss-breadcrumb">
 	                <ul>
 	                    <li>홈</li>
 	                    <li>평가사업조회</li>
-	                    <li>${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM}</li>
-	                    <li>${evaluInfo.PLANEVAL_BUSI_NAME}</li>
+	                    <li>${evaluInfo.prgrGubunNmHist} ${evaluInfo.evaluStageNmHist}</li>
+	                    <li>${mastMap.evaluBusiNmInfo}</li>
 	                </ul>
-	            </div>
+	           	</div>
 	            <div class="row">
 	                <div class="col-md-12">
-	                    <h3 class="page-title">${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM}</h3>
+	                    <h3 class="page-title">${evaluInfo.prgrGubunNmHist} ${evaluInfo.evaluStageNmHist}</h3>
 	                </div>
 	            </div>
 	
 	            <div class="project-header" style="background-image:url(/img/storage/project-theme.jpg)">
 	                <div class="shade"></div>
 	                <div class="project-title">
-	                    <h2>${evaluInfo.PLANEVAL_BUSI_NAME}</h2>
-	                    <p>${evaluInfo.busiAddress1} / ${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM}</p>
+	                    <h2>${mastMap.evaluBusiNmInfo}</h2>
+	                    <p>${evaluInfo.busiAddr1NmHist} / ${evaluInfo.prgrGubunNmHist} ${evaluInfo.evaluStageNmHist}</p>
 	                </div>
 	                <div class="local-menu">
 	                    <ul>
@@ -95,7 +102,7 @@
 	                    <div class="back-list"><a href="/busi/listEvaluBusi.do" title="목록으로"><</a></div>
 	                </div>
 	            </div>
-	
+
 	            <div class="container b-section">
 	                <div class="row">
 	                    <div class="col-md-12">

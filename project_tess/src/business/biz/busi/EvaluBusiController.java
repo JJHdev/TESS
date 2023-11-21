@@ -1,20 +1,31 @@
 package business.biz.busi;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import business.biz.FileController;
@@ -147,7 +158,7 @@ public class EvaluBusiController extends BaseController {
     }
     
     /**
-     * [평가사업조회] 2018 평가사업 상세 화면.
+     * [평가사업조회] 2023 평가사업 상세 화면.
      * @param request
      * @param model
      * @return
@@ -165,184 +176,189 @@ public class EvaluBusiController extends BaseController {
         EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
         BeanUtils.copyProperties(evaluBusiDomain, paramMap);
         //---------------------------------------------
+        addBusinessDataToModel(model, request);
         
-        String url = "";
+        model.addAttribute("model"   	,  evaluBusiDomain);
+        model.addAttribute("paramMap"	,  paramMap);
+
+        return "busi/viewEvaluBusiInfo";
         
-        Map commitMap01 = new HashMap();
-        Map commitMap02 = new HashMap();
-        Map commitMap03 = new HashMap();
+    }
+    
+    /**
+     * [평가사업조회] 지자체 평가사업 개요 수정 ajax.
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/busi/updtEvaluHist.do")
+    public String updtEvaluHist(HttpServletRequest request, ModelMap model)
+            throws Exception {
     	
-    	List areaFileList = null;
-        List areaFormList = null;
+    	//---------------------------------------------
+        //Default Value Setting
+    	String method       = getMethodName(new Throwable());
+        Map paramMap = setMappingValues(request, method );
+        // default domain setting
+       
+        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
+        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
+    	
         
-        System.out.println("paramMap : " + paramMap);
+		int checkResult = evaluBusiService.updtEvaluHist(paramMap);
+        addBusinessDataToModel(model, request);
         
-        url = "busi/viewEvaluBusiInfo";
+        model.addAttribute("model"   	,  evaluBusiDomain);
+        model.addAttribute("paramMap"	,  paramMap);
         
-        if(String.valueOf(paramMap.get("gsRoleId")).equals("ROLE_AUTH_SYS")) {
-        	
-        	List commitAgreeList = evaluBusiService.listEvaluStageAgreeCommitList(paramMap);
-        	List commitReviewList = evaluBusiService.listEvaluStageReviewCommitList(paramMap);
-        	List commitOpinionList = evaluBusiService.listEvaluStageOpinionCommitList(paramMap);
-        	
-            //----------------------
-            // 파일 리스트 조회
-            //----------------------
-            Map fpMap = new HashMap();
-            fpMap.put("rootNo", paramMap.get("evaluBusiNo"));
-            
-            // [사업대상지 정보] 부분 첨부파일 리스트 조회.
-            fpMap.put("docuType", evaluBusiMgmtService.FL_DOCU_TYPE_AREA);
-            areaFileList = evaluBusiMgmtService.listTodeFile(fpMap);
-            
-            System.out.println("areaFileList : " + areaFileList);
-            
-            // 사업 대상지 정보 form을 구성하는 list
-            areaFormList = new ArrayList();
-            Map a01Map = new HashMap();
-            Map a02Map = new HashMap();
-            Map a03Map = new HashMap();
-            Map a04Map = new HashMap();
-            Map a05Map = new HashMap();
-            Map a06Map = new HashMap();
-            a01Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_01);
-            a02Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_02);
-            a03Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_03);
-            a04Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_04);
-            a05Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_05);
-            a06Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_06);
-            a01Map.put("title"   , "조감도");
-            a02Map.put("title"   , "위치도(교통현황도)");
-            a03Map.put("title"   , "토지이용계획도");
-            a04Map.put("title"   , "시설배치도");
-            a05Map.put("title"   , "위성사진(개발현황도)");
-            a06Map.put("title"   , "현장사진");
-            areaFormList.add(a01Map);
-            areaFormList.add(a02Map);
-            areaFormList.add(a03Map);
-            areaFormList.add(a04Map);
-            areaFormList.add(a05Map);
-            areaFormList.add(a06Map);
-            
-            // 사업 정보
-            Map mastMap = evaluBusiMgmtService.viewTodeMgmtMast(paramMap);
-            
-            Map rtnMap = null;
-            
-            rtnMap = evaluBusiService.viewAllEvaluInfo(paramMap);
-            
-            model.addAttribute("model"   ,  evaluBusiDomain);
-            model.addAttribute("paramMap",  paramMap);
-            model.addAttribute("mastMap",  mastMap);
-            model.addAttribute("areaFileList" ,  areaFileList);
-            model.addAttribute("areaFormList" ,  areaFormList);
-            model.addAttribute("rtnMap", rtnMap);
-            model.addAttribute("commitMap01" ,  commitMap01);
-            model.addAttribute("commitMap02" ,  commitMap02);
-            model.addAttribute("commitMap03" ,  commitMap03);
-            
-            model.addAttribute("commitAgreeList" ,  commitAgreeList);
-            model.addAttribute("commitReviewList" ,  commitReviewList);
-            model.addAttribute("commitOpinionList" ,  commitOpinionList);
-        	
-        	url = "busi/viewEvaluBusiInfo";
-        	
-        } else {
-        	
-        	Map viewCommitStatus = evaluBusiService.viewEvaluCommitStatus(paramMap);
-        	
-        	System.out.println("viewCommitStatus : " + viewCommitStatus);
-        	
-        	if(viewCommitStatus.get("AGREE_YN") != null && viewCommitStatus.get("AGREE_YN").equals("Y")) {
-        		//model.addAttribute("viewCommitStatus",  viewCommitStatus);
-        		paramMap.put("agreeYn", viewCommitStatus.get("AGREE_YN"));
-        		paramMap.put("reviewYn", viewCommitStatus.get("REVIEW_YN"));
-        		paramMap.put("opinionYn", viewCommitStatus.get("OPINION_YN"));
-        		paramMap.put("agreeDate", viewCommitStatus.get("AGREE_DATE"));
-        		paramMap.put("reviewApvYn", viewCommitStatus.get("REVIEW_APV_YN"));
-        		paramMap.put("opinionApvYn", viewCommitStatus.get("OPINION_APV_YN"));
-        		paramMap.put("reviewApvDate", viewCommitStatus.get("REVIEW_APV_DATE"));
-        		paramMap.put("opinionApvDate", viewCommitStatus.get("OPINION_APV_DATE"));
-        		
-        		
-        		//----------------------
-                // 파일 리스트 조회
-                //----------------------
-                Map fpMap = new HashMap();
-                fpMap.put("rootNo", paramMap.get("evaluBusiNo"));
-                
-                // [사업대상지 정보] 부분 첨부파일 리스트 조회.
-                fpMap.put("docuType", evaluBusiMgmtService.FL_DOCU_TYPE_AREA);
-                areaFileList = evaluBusiMgmtService.listTodeFile(fpMap);
-                
-                System.out.println("areaFileList : " + areaFileList);
-                
-                // 사업 대상지 정보 form을 구성하는 list
-                areaFormList = new ArrayList();
-                Map a01Map = new HashMap();
-                Map a02Map = new HashMap();
-                Map a03Map = new HashMap();
-                Map a04Map = new HashMap();
-                Map a05Map = new HashMap();
-                Map a06Map = new HashMap();
-                a01Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_01);
-                a02Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_02);
-                a03Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_03);
-                a04Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_04);
-                a05Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_05);
-                a06Map.put("atthType", evaluBusiMgmtService.FL_AREA_ATTH_TYPE_06);
-                a01Map.put("title"   , "조감도");
-                a02Map.put("title"   , "위치도(교통현황도)");
-                a03Map.put("title"   , "토지이용계획도");
-                a04Map.put("title"   , "시설배치도");
-                a05Map.put("title"   , "위성사진(개발현황도)");
-                a06Map.put("title"   , "현장사진");
-                areaFormList.add(a01Map);
-                areaFormList.add(a02Map);
-                areaFormList.add(a03Map);
-                areaFormList.add(a04Map);
-                areaFormList.add(a05Map);
-                areaFormList.add(a06Map);
-                
-                // 사업 정보
-                Map mastMap = evaluBusiMgmtService.viewTodeMgmtMast(paramMap);
-                
-                Map rtnMap = null;
-                
-                rtnMap = evaluBusiService.viewAllEvaluInfo(paramMap);
-                
-                model.addAttribute("model"   ,  evaluBusiDomain);
-                model.addAttribute("paramMap",  paramMap);
-                model.addAttribute("mastMap",  mastMap);
-                model.addAttribute("areaFileList" ,  areaFileList);
-                model.addAttribute("areaFormList" ,  areaFormList);
-                model.addAttribute("rtnMap", rtnMap);
-                model.addAttribute("commitMap01" ,  commitMap01);
-                model.addAttribute("commitMap02" ,  commitMap02);
-                model.addAttribute("commitMap03" ,  commitMap03);
-        		
-        		url = "busi/viewEvaluBusiInfo";
-        	} else {
-        		url = "busi/viewEvaluBefore";
-        	}
-        }
+        String url = "redirect:/busi/viewEvaluBusi.do";
+    	return url;
+    }
+    
+    /**
+     * [평가사업조회] 2018 평가사업 평가정보 서면검토 화면.
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/busi/viewEvaluInfoStep01.do")
+    public String viewEvaluInfoStep01(HttpServletRequest request, ModelMap model)
+            throws Exception {
+    	
+        //---------------------------------------------
+        // Default Value Setting
+        String method       = getMethodName(new Throwable());
+        Map paramMap = setMappingValues(request, method );
+        // default domain setting
+        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
+        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
+
+        // evaluStageHist, evaluHistNoHist, atthType
+        addBusinessDataToModel(model, request);
         
-        System.out.println("url : " + url);
+    	model.addAttribute("model"   ,  evaluBusiDomain);
+        model.addAttribute("paramMap",  paramMap);
         
-        // 평가정보 조회
-        Map evaluInfo = evaluBusiMgmtService.viewEvaluStageInfo(paramMap);
+        return "busi/viewEvaluInfoStep01";
+    }
+
+    /**
+     * [평가사업조회] 2018 평가사업 평가정보 평가의견 화면.
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/busi/viewEvaluInfoStep02.do")
+    public String viewEvaluInfoStep02(HttpServletRequest request, ModelMap model)
+            throws Exception {
+
+    	//---------------------------------------------
+        //Default Value Setting
+        String method       = getMethodName(new Throwable());
+        Map paramMap = setMappingValues(request, method );
+        // default domain setting
+        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
+        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
+        //---------------------------------------------
         
-        // 첨부파일 조회
-        List fileList = evaluBusiService.listEvaluBusiAtthFile(paramMap);
+        // evaluStageHist, evaluHistNoHist, atthType
+        addBusinessDataToModel(model, request);
         
         model.addAttribute("model"   ,  evaluBusiDomain);
         model.addAttribute("paramMap",  paramMap);
-        model.addAttribute("fileList", fileList);
-        model.addAttribute("evaluInfo", evaluInfo);
 
-        return url;
+        return "busi/viewEvaluInfoStep02";
     }
     
+    /**
+     * [평가사업조회] 2018 평가사업 평가정보 종합결과 화면.
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/busi/viewEvaluInfoStep03.do")
+    public String viewEvaluInfoStep03(HttpServletRequest request, ModelMap model)
+            throws Exception {
+
+    	//---------------------------------------------
+        //Default Value Setting
+        String method       = getMethodName(new Throwable());
+        Map paramMap = setMappingValues(request, method );
+        // default domain setting
+        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
+        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
+        //---------------------------------------------
+        
+        // evaluStageHist, evaluHistNoHist, atthType
+        addBusinessDataToModel(model, request);
+    	
+        model.addAttribute("model"   ,  evaluBusiDomain);
+        model.addAttribute("paramMap",  paramMap);
+
+        return "busi/viewEvaluInfoStep03";
+    }
+    
+    /**
+     * [평가사업조회] 2018 평가사업 평가정보 평가종료 화면.
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/busi/viewEvaluInfoStep04.do")
+    public String viewEvaluInfoStep04(HttpServletRequest request, ModelMap model)
+            throws Exception {
+
+    	//---------------------------------------------
+        //Default Value Setting
+        String method       = getMethodName(new Throwable());
+        Map paramMap = setMappingValues(request, method );
+        // default domain setting
+        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
+        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
+        //---------------------------------------------
+        
+        // evaluStageHist, evaluHistNoHist, atthType
+        addBusinessDataToModel(model, request);
+
+        model.addAttribute("model"   ,  evaluBusiDomain);
+        model.addAttribute("paramMap",  paramMap);
+
+        return "busi/viewEvaluInfoStep04";
+    }
+    
+    /**
+     * [평가사업조회] 집행평가 이행계획서 화면.
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/busi/viewEvaluInfoStep05.do")
+    public String viewEvaluInfoStep05(HttpServletRequest request, ModelMap model)
+            throws Exception {
+
+    	//---------------------------------------------
+        //Default Value Setting
+        String method       = getMethodName(new Throwable());
+        Map paramMap = setMappingValues(request, method );
+        // default domain setting
+        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
+        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
+        //---------------------------------------------
+        
+        // evaluStageHist, evaluHistNoHist, atthType
+        addBusinessDataToModel(model, request);
+
+        model.addAttribute("model"   ,  evaluBusiDomain);
+        model.addAttribute("paramMap",  paramMap);
+
+        return "busi/viewEvaluInfoStep05";
+    }
     
     /**
      * [평가사업조회] 평가위원 평가진행현황 ajax.
@@ -461,68 +477,6 @@ public class EvaluBusiController extends BaseController {
     	
     	return new ModelAndView(ajaxView, returnMap);
     }
-    
-    /**
-     * [평가사업조회] 2018 평가사업 평가정보 서면검토 화면.
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value="/busi/viewEvaluInfoStep01.do")
-    public String viewEvaluInfoStep01(HttpServletRequest request, ModelMap model)
-            throws Exception {
-    	
-        //---------------------------------------------
-        //Default Value Setting
-        String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
-        // default domain setting
-        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
-        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
-        //---------------------------------------------
-        
-        // --- 참조파일
-        // 평가지침서 샘플 조회
-        Map evaluDocA = evaluBusiMgmtService.viewEvaluAFile(paramMap);
-        // 서면검토서 샘플 조회
-        Map evaluDocB = evaluBusiMgmtService.viewEvaluBFile(paramMap);
-        
-        
-        // 평가정보 조회
-        Map evaluInfo = evaluBusiMgmtService.viewEvaluStageInfo(paramMap);
-        
-        if(String.valueOf(paramMap.get("gsRoleId")).equals("ROLE_AUTH_SYS")) {
-        	
-        	paramMap.put("atthType", "AT11");
-        	List commitList = evaluBusiService.listEvaluCommitList(paramMap);
-        	
-        	System.out.println("commitList : " + commitList);
-        	
-        	model.addAttribute("commitList",  commitList);
-        } else {
-        	// 서류 상태
-        	Map viewCommitStatus = evaluBusiService.viewEvaluCommitStatus(paramMap);
-        	
-        	// 첨부파일 정보
-        	paramMap.put("atthType", "AT11");
-        	Map fileInfo = evaluBusiService.getEvaluBusiAtthFile(paramMap);
-        	
-        	System.out.println("fileInfo : " + fileInfo);
-        	
-        	model.addAttribute("viewCommitStatus",  viewCommitStatus);
-        	model.addAttribute("fileInfo",  fileInfo);
-        }
-        	
-    	model.addAttribute("model"   ,  evaluBusiDomain);
-        model.addAttribute("paramMap",  paramMap);
-        model.addAttribute("evaluInfo",  evaluInfo);
-        model.addAttribute("evaluDocA",  evaluDocA);
-        model.addAttribute("evaluDocB",  evaluDocB);
-        
-        return "busi/viewEvaluInfoStep01";
-    }
-
     /**
      * [평가사업조회] 평가위원 서면검토서 승인 상태 변경 ajax.
      * @param request
@@ -545,6 +499,35 @@ public class EvaluBusiController extends BaseController {
         //---------------------------------------------
     	
     	int checkResult = evaluBusiService.updtEvaluCommitReviewApv(paramMap);
+    	
+    	Map returnMap   = new HashMap();
+        returnMap.put("checkResult", checkResult);
+    	
+    	return new ModelAndView(ajaxView, returnMap);
+    }
+    
+    /**
+     * [평가사업조회] 평가대상 종합결과서 상태 변경 ajax.
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/busi/updtEvaluTotalResult.do")
+    public ModelAndView updtEvaluTotalResult(HttpServletRequest request, ModelMap model)
+            throws Exception {
+    	
+    	//---------------------------------------------
+        //Default Value Setting
+    	String method       = getMethodName(new Throwable());
+        Map paramMap = setMappingValues(request, method );
+        // default domain setting
+       
+        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
+        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
+        //---------------------------------------------
+    	
+    	int checkResult = evaluBusiService.updtEvaluTotalResult(paramMap);
     	
     	Map returnMap   = new HashMap();
         returnMap.put("checkResult", checkResult);
@@ -581,207 +564,6 @@ public class EvaluBusiController extends BaseController {
     	return new ModelAndView(ajaxView, returnMap);
     }
 	    
-    /**
-     * [평가사업조회] 2018 평가사업 평가정보 평가의견 화면.
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value="/busi/viewEvaluInfoStep02.do")
-    public String viewEvaluInfoStep02(HttpServletRequest request, ModelMap model)
-            throws Exception {
-
-    	//---------------------------------------------
-        //Default Value Setting
-        String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
-        // default domain setting
-        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
-        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
-        //---------------------------------------------
-        
-        // --- 참조파일
-        // 평가지침서 샘플 조회
-        Map evaluDocA = evaluBusiMgmtService.viewEvaluAFile(paramMap);
-        // 평가의견서 조회
-        Map evaluDocC = evaluBusiMgmtService.viewEvaluCFile(paramMap);
-
-        // 평가정보 조회
-        Map evaluInfo = evaluBusiMgmtService.viewEvaluStageInfo(paramMap);
-        
-        if(String.valueOf(paramMap.get("gsRoleId")).equals("ROLE_AUTH_SYS")) {
-        	
-        	paramMap.put("atthType", "AT12");
-        	List commitList = evaluBusiService.listEvaluCommitList(paramMap);
-        	
-        	System.out.println("commitList : " + commitList);
-        	
-        	model.addAttribute("commitList",  commitList);
-        	
-        } else {
-        	
-        	// 서류 상태
-        	Map viewCommitStatus = evaluBusiService.viewEvaluCommitStatus(paramMap);
-        	
-        	// 첨부파일 정보
-        	paramMap.put("atthType", "AT12");
-        	Map fileInfo = evaluBusiService.getEvaluBusiAtthFile(paramMap);
-        	
-        	System.out.println("fileInfo : " + fileInfo);
-        	
-        	model.addAttribute("viewCommitStatus",  viewCommitStatus);
-        	model.addAttribute("fileInfo",  fileInfo);
-        }
-        
-        model.addAttribute("model"   ,  evaluBusiDomain);
-        model.addAttribute("paramMap",  paramMap);
-        model.addAttribute("evaluInfo",  evaluInfo);
-        model.addAttribute("evaluDocA",  evaluDocA);
-        model.addAttribute("evaluDocC",  evaluDocC);
-
-        return "busi/viewEvaluInfoStep02";
-    }
-    
-    /**
-     * [평가사업조회] 2018 평가사업 평가정보 종합결과 화면.
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value="/busi/viewEvaluInfoStep03.do")
-    public String viewEvaluInfoStep03(HttpServletRequest request, ModelMap model)
-            throws Exception {
-
-    	//---------------------------------------------
-        //Default Value Setting
-        String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
-        // default domain setting
-        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
-        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
-        //---------------------------------------------
-        
-        // 평가정보 조회
-        Map evaluInfo = evaluBusiMgmtService.viewEvaluStageInfo(paramMap);
-        
-        // 종합결과서 제출 여부 조회
-        Map totalResultMap = evaluBusiService.getEvaluTotalResult(paramMap);
-        
-    	// 서류 상태
-    	Map viewCommitStatus = evaluBusiService.viewEvaluCommitStatus(paramMap);
-    	
-    	// 첨부파일 정보
-    	paramMap.put("atthType", "AT13");
-    	paramMap.put("userId", "admin");
-    	Map fileInfo = evaluBusiService.getEvaluBusiAtthFile(paramMap);
-    	
-    	System.out.println("fileInfo : " + fileInfo);
-    	
-    	model.addAttribute("viewCommitStatus",  viewCommitStatus);
-    	model.addAttribute("fileInfo",  fileInfo);
-
-        model.addAttribute("model"   ,  evaluBusiDomain);
-        model.addAttribute("paramMap",  paramMap);
-        model.addAttribute("evaluInfo",  evaluInfo);
-        model.addAttribute("totalResultMap",  totalResultMap);
-
-        return "busi/viewEvaluInfoStep03";
-    }
-    
-    /**
-     * [평가사업조회] 평가대상 종합결과서 상태 변경 ajax.
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping("/busi/updtEvaluTotalResult.do")
-    public ModelAndView updtEvaluTotalResult(HttpServletRequest request, ModelMap model)
-            throws Exception {
-    	
-    	//---------------------------------------------
-        //Default Value Setting
-    	String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
-        // default domain setting
-       
-        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
-        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
-        //---------------------------------------------
-    	
-    	int checkResult = evaluBusiService.updtEvaluTotalResult(paramMap);
-    	
-    	Map returnMap   = new HashMap();
-        returnMap.put("checkResult", checkResult);
-    	
-    	return new ModelAndView(ajaxView, returnMap);
-    }
-    
-    /**
-     * [평가사업조회] 2018 평가사업 평가정보 평가종료 화면.
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value="/busi/viewEvaluInfoStep04.do")
-    public String viewEvaluInfoStep04(HttpServletRequest request, ModelMap model)
-            throws Exception {
-
-    	//---------------------------------------------
-        //Default Value Setting
-        String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
-        // default domain setting
-        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
-        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
-        //---------------------------------------------
-        
-        // 평가정보 조회
-        Map evaluInfo = evaluBusiMgmtService.viewEvaluStageInfo(paramMap);
-
-        model.addAttribute("model"   ,  evaluBusiDomain);
-        model.addAttribute("paramMap",  paramMap);
-        model.addAttribute("evaluInfo",  evaluInfo);
-
-        return "busi/viewEvaluInfoStep04";
-    }
-    
-    /**
-     * [평가사업조회] 집행평가 이행계획서 화면.
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value="/busi/viewEvaluInfoStep05.do")
-    public String viewEvaluInfoStep05(HttpServletRequest request, ModelMap model)
-            throws Exception {
-
-    	//---------------------------------------------
-        //Default Value Setting
-        String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
-        // default domain setting
-        EvaluBusiDomain evaluBusiDomain = new EvaluBusiDomain();
-        BeanUtils.copyProperties(evaluBusiDomain, paramMap);
-        //---------------------------------------------
-        
-        // 평가정보 조회
-        Map evaluInfo = evaluBusiMgmtService.viewEvaluStageInfo(paramMap);
-
-        model.addAttribute("model"   ,  evaluBusiDomain);
-        model.addAttribute("paramMap",  paramMap);
-        model.addAttribute("evaluInfo",  evaluInfo);
-        
-        System.out.println("modelmodel"+model);
-        System.out.println("paramMapparamMap"+paramMap);
-        System.out.println("evaluInfoevaluInfo"+evaluInfo);
-
-        return "busi/viewEvaluInfoStep05";
-    }
     
     /**
      * [평가사업조회] 평가위원 종합의견 등록/삭제 ajax.
@@ -962,11 +744,6 @@ public class EvaluBusiController extends BaseController {
     	return new ModelAndView(ajaxView, returnMap);
     }
     
-    
-    
-    
-    
-    
     /**
      * [평가사업조회] 평가사업 파일업로드 ajax.
      * @param request
@@ -974,78 +751,47 @@ public class EvaluBusiController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping("/busi/evaluFileUpload.do")
-    public ModelAndView evaluFileUpload(HttpServletRequest request, ModelMap model)
-            throws Exception {
+    @RequestMapping( "/busi/evaluFileUpload.do")
+    public String evaluFileUpload(HttpServletRequest request, ModelMap model) throws Exception {
     	
     	//---------------------------------------------
         //Default Value Setting
     	String method       = getMethodName(new Throwable());
         Map paramMap = setMappingValues(request, method );
         // default domain setting
-       
+        
         EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
         BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
         //---------------------------------------------
-        
-        String msg          = "";
-        String resultM		= "";
-    	
-    	//int checkResult = evaluBusiMgmtService.checkEvaluStage(paramMap);
-        
-        //------------------
-        // 파일 처리 부분
-        //------------------
-        
+	    
         String url = "";
         
-        System.out.println("paramMap ::" + paramMap);
+        paramMap.put("pageStep", request.getParameter("pageStep"));
         
-        if(paramMap.get("atthType").equals("AT11")) {
+        if(paramMap.get("pageStep").equals("info")) {
+        	url = "redirect:/busi/viewEvaluBusi.do";
+        } else if(paramMap.get("pageStep").equals("STEP1")) {
         	url = "redirect:/busi/viewEvaluInfoStep01.do";
-        } else if(paramMap.get("atthType").equals("AT12")) {
+        } else if(paramMap.get("pageStep").equals("STEP2")) {
         	url = "redirect:/busi/viewEvaluInfoStep02.do";
-        } else if(paramMap.get("atthType").equals("AT13")) {
+        } else if(paramMap.get("pageStep").equals("STEP3")) {
         	url = "redirect:/busi/viewEvaluInfoStep03.do";
+        } else if(paramMap.get("pageStep").equals("STEP4")) {
+        	url = "redirect:/busi/viewEvaluInfoStep04.do";
+        } else if(paramMap.get("pageStep").equals("STEP5")) {
+        	url = "redirect:/busi/viewEvaluInfoStep05.do";
         }
         
-
-        List<Map> upfileInfoList = fileManager.multiFileUploadEvalu02(request);
+        System.out.println("urlurlurl"+url);
+        
+        List<Map> upfileInfoList = fileManager.multiFileUploadContent(request , paramMap.get("atthType"));
         
         for(Map map : upfileInfoList) {
-        	paramMap.put("fileSize", map.get("fileSize"));
-        	paramMap.put("tempDir", map.get("tempDir"));
-        	paramMap.put("idx", map.get("idx"));
-        	paramMap.put("fileSvrNm", map.get("fileSvrNm"));
-        	paramMap.put("fileOrgNm", map.get("fileOrgNm"));
+        	map.put("gsUserId", paramMap.get("userId"));
+        	String resultFIle = evaluBusiMgmtService.regiEvaluFile(map);
         }
-        
-        System.out.println("paramMap :: " + paramMap);
-        
-        String resultFIle = evaluBusiMgmtService.regiEvaluFile(paramMap);
-        
-        //paramMap.put("fileSize", upfileInfoList.)
-        
-        //----------------------
-        // 저장 처리.
-        //----------------------
-        
-        // 메시지가 없으면 성공/있으면 실패.
-        //msg = evaluMgmtService.saveEvaluMgmt(paramMap, upfileInfoList);
-        
-        if( !CommUtils.empty(msg) ) {
-        	resultM = "false";
-        } else {
-        	resultM = "true";
-        }
-        
     	
-    	Map returnMap   = new HashMap();
-        //returnMap.put("checkResult", checkResult);
-    	returnMap.put("resultM", resultM);
-    	
-    	//return new ModelAndView(ajaxView, returnMap);
-    	return new ModelAndView(url,paramMap);
+    	return url;
     }
     
     
@@ -1057,7 +803,7 @@ public class EvaluBusiController extends BaseController {
      * @throws Exception
      */
     @RequestMapping("/busi/evaluFileDelete.do")
-    public ModelAndView evaluFileDelete(HttpServletRequest request, ModelMap model)
+    public String evaluFileDelete(HttpServletRequest request, ModelMap model)
             throws Exception {
     	
     	//---------------------------------------------
@@ -1079,8 +825,120 @@ public class EvaluBusiController extends BaseController {
 		FileUtil.deleteFile(path + "/" + serverFileName);
 		
 		evaluBusiService.deptEvaluAtthFile(paramMap);
-     
-        return new ModelAndView(ajaxView,paramMap);
+		
+		String url = "";
+		
+        paramMap.put("pageStep", request.getParameter("pageStep"));
+        
+        if(paramMap.get("pageStep").equals("info")) {
+        	url = "redirect:/busi/viewEvaluBusi.do";
+        } else if(paramMap.get("pageStep").equals("STEP1")) {
+        	url = "redirect:/busi/viewEvaluInfoStep01.do";
+        } else if(paramMap.get("pageStep").equals("STEP2")) {
+        	url = "redirect:/busi/viewEvaluInfoStep02.do";
+        } else if(paramMap.get("pageStep").equals("STEP3")) {
+        	url = "redirect:/busi/viewEvaluInfoStep03.do";
+        } else if(paramMap.get("pageStep").equals("STEP4")) {
+        	url = "redirect:/busi/viewEvaluInfoStep04.do";
+        } else if(paramMap.get("pageStep").equals("STEP5")) {
+        	url = "redirect:/busi/viewEvaluInfoStep05.do";
+        }
+        
+        return url;
+    }
+    
+    @RequestMapping("/busi/fileDownload.do")
+    public void fileDownloadSample(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map params = new HashMap();
+        params.put("rootNo"		, request.getParameter("rootNo"));
+        params.put("rootSeq"	, request.getParameter("rootSeq"));
+        params.put("atthType"		, request.getParameter("atthType"));
+        
+        String saveFileName  = "";
+        String serverDirPath = "";
+        String orgFileName   = "";
+        
+        Map fileInfo = fileService.viewEvaluBusiFile(params);
+        
+        String stepPage = request.getParameter("stepPage");
+        if (stepPage != null && stepPage.equals("PG10")) {
+            params.put("prgrGubun", "PG20");
+            evaluBusiService.updtPrgrGubun(params);
+        }
+        
+        fileSampleDownloadDetail(request, response, fileInfo);
+    }
+    
+    public void fileSampleDownloadDetail(HttpServletRequest request, HttpServletResponse response, Map fileInfo) throws Exception {
+
+        String saveFileName  = "";
+        String serverDirPath = "";
+        String orgFileName   = "";
+        
+        // 실제  디렉토리
+        Object realDir = fileInfo.get("filePath");
+
+        if (fileInfo != null) {
+            saveFileName  = (String)fileInfo.get("fileSvrNm");
+            serverDirPath = (String)realDir;
+            orgFileName   = (String)fileInfo.get("fileOrgNm");
+        } else {
+            System.out.println("$$$$$$$$$$$$$$$$$ SAMPLE FILE DOWNLOAD ERROR : Not Server File.");
+            throw new EgovBizException("첨부파일이 존재하지 않습니다. 관리자에게 문의바랍니다.");
+        }
+
+        //파일 풀경로 가져옴
+        String fullFileName = serverDirPath + "/" + saveFileName;
+
+        logger.info("fullFileName : " + fullFileName);
+        logger.info("orgFileName : " + orgFileName);
+
+        //파일을  orgFileName의 이름으로 다운로드 함
+        File f = new File(fullFileName);
+
+        if (f.exists()) {
+            logger.info("response charset : " + response.getCharacterEncoding());
+
+            String userAgent = request.getHeader("User-Agent");
+
+            // 파일명 인코딩 처리	(MSIE -> Trident)
+            String downFilename = "";
+            if (userAgent.toLowerCase().indexOf("msie") + userAgent.toLowerCase().indexOf("trident") > -1) {	// IE
+            	downFilename = URLEncoder.encode(orgFileName, "UTF-8").replaceAll("\\+", "%20");;
+            } else if (userAgent.toLowerCase().indexOf("chrome") > -1) {
+            	downFilename = new String(orgFileName.getBytes(), "8859_1");
+            } else if (userAgent.toLowerCase().indexOf("firefox") > -1) {
+            	downFilename = new String(orgFileName.getBytes(), "8859_1");
+            } else {
+            	downFilename = new String(orgFileName.getBytes(), "8859_1");
+            }
+            logger.info("disposition filename : " + downFilename);
+
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + downFilename + "\"");
+            response.setHeader("Content-Transfer-Encoding", "binary;");
+
+            byte[] buffer = new byte[1024];
+            BufferedInputStream ins = new BufferedInputStream(new FileInputStream(f));
+            BufferedOutputStream outs = new BufferedOutputStream(response.getOutputStream());
+
+            try {
+                int read = 0;
+                while ((read = ins.read(buffer)) != -1) {
+                    outs.write(buffer, 0, read);
+                }
+                outs.close();
+                ins.close();
+            } catch (IOException e) {
+                System.out.println("$$$$$$$$$$$$$$$$$ : SAMPLE FILE DOWNLOAD ERROR : $$$$$$$$$$$$$$$$$$");
+            } finally {
+                  if(outs!=null) outs.close();
+                  if(ins!=null) ins.close();
+            }
+        } else {
+            System.out.println("$$$$$$$$$$$$$$$$$ SAMPLE FILE DOWNLOAD ERROR : Not Server File.");
+            throw new EgovBizException("첨부파일이 존재하지 않습니다. 관리자에게 문의바랍니다..");
+        }
     }
     
 
@@ -1200,7 +1058,6 @@ public class EvaluBusiController extends BaseController {
         // Form 설정.
         //---------------------------------------------------
         // 폼 객체 옵션 데이터를 추가한다.
-        formObject(paramMap, method);
 
         return paramMap;
     }
@@ -1384,4 +1241,30 @@ public class EvaluBusiController extends BaseController {
 
     }
 
+    // 사업관련 모든 내용 조회
+    public void addBusinessDataToModel(ModelMap model, HttpServletRequest request) throws Exception {
+        Map paramMap = new HashMap();
+        paramMap.put("evaluStageHist", request.getParameter("evaluStageHist"));
+        paramMap.put("evaluHistSnHist", request.getParameter("evaluHistSnHist"));
+        
+        System.out.println("기본 셋팅 파라미터 paramMap"+paramMap);
+
+        Map mastMap 			= evaluBusiMgmtService.viewTodeMgmtMast(paramMap);
+        Map evaluInfo 			= evaluBusiMgmtService.viewEvaluStageInfo(paramMap);
+        List sysRrencFileList 	= evaluBusiMgmtService.getSysRrencFileProgList(paramMap);
+        List sysUldFileList 	= evaluBusiMgmtService.getsysUldFileProgList(paramMap);
+        List upFileList 		= evaluBusiMgmtService.getupFileProgList(paramMap);
+        
+        System.out.println("mastMap 의값은"+mastMap);
+        System.out.println("evaluInfo 의값은"+evaluInfo);
+        System.out.println("sysRrencFileList 의값은"+sysRrencFileList);
+        System.out.println("sysUldFileList 의값은"+sysUldFileList);
+        System.out.println("upFileList 의값은"+upFileList);
+
+        model.addAttribute("mastMap"			, mastMap);
+        model.addAttribute("evaluInfo"			, evaluInfo);
+        model.addAttribute("sysRrencFileList"	, sysRrencFileList);
+        model.addAttribute("sysUldFileList"		, sysUldFileList);
+        model.addAttribute("upFileList"			, upFileList);
+    }
 }

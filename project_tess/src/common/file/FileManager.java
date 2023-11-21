@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,13 @@ public class FileManager {
 	public List multiFileUploadEvalu02(HttpServletRequest request) throws IOException {
 	    // 빈 file정보는 포함하지 않고 리턴.
 	    return multiFileUploadDetail02(request, true);
+	}
+	
+	// [관리자] 평가환경관리 > 참조파일관리 > 파일 업로드
+	@RequestMapping
+	public List multiFileUploadEvaluSample(HttpServletRequest request) throws IOException {
+	    // 빈 file정보는 포함하지 않고 리턴.
+	    return multiFileUploadDetailSample(request, false);
 	}
 	
 	
@@ -203,6 +211,149 @@ public class FileManager {
 
         return listFile;
     }
+    
+    /**
+	 * 참조파일 업로드 
+	 * @param request
+	 * @param isInsertEmptyFileInfo    리스트 객체를 생성할 때 빈 file객체 정보를 포함할지 여부
+	 * @return
+	 * @throws IOException
+	 */
+    @RequestMapping
+    private List multiFileUploadDetailSample(HttpServletRequest request, boolean isInsertEmptyFileInfo) throws IOException {
+
+        List listFile = new ArrayList();
+        
+        if (request.getContentType().indexOf("multipart/form-data") <= -1) {
+            return null;
+        }
+
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        Map<String, MultipartFile> files = multipartRequest.getFileMap();
+
+        String dir = ApplicationProperty.get("formfile.dir");
+
+        String code = request.getParameter("code");
+        String gubun = code.substring(2, 3);
+        String polderNm = "";
+        if (gubun.equals("0")) {
+        	// 사전진단
+        	polderNm = "prev/";
+        } else if (gubun.equals("1")) {
+        	// 집행평가
+        	polderNm = "prog/";
+        } else if (gubun.equals("2")) {
+        	// 사후진단
+        	polderNm = "aftr/";
+        } else {
+        	return null;
+        }
+        dir += polderNm;
+        
+        FileUtil.makeDirectories(dir);
+        
+        String upfileName = "upload";
+        MultipartFile inFile = files.get(upfileName);
+
+        //String saveFileName = getFileName(tempDir, inFile.getOriginalFilename());
+        String saveFileName = CommUtils.nvlTrim(inFile.getOriginalFilename());
+
+        try {
+            if (!saveFileName.equals("")) {
+                FileUtil.copyFile(inFile.getInputStream(), new FileOutputStream(dir + saveFileName));
+
+                HashMap fmap = new HashMap();
+                fmap.put("fileSvrNm", saveFileName);
+                fmap.put("fileOrgNm", CommUtils.nvlTrim(inFile.getOriginalFilename()));
+                fmap.put("addCol05" , polderNm + CommUtils.nvlTrim(inFile.getOriginalFilename()));
+                fmap.put("tempDir"  , dir);
+                fmap.put("fileSize" , inFile.getSize());
+                fmap.put("code"     , code);
+                fmap.put("idx"      , String.valueOf(0));
+
+                listFile.add(fmap);
+            } else {
+                // isInsertEmptyFileInfo이 true이면 빈 파일정보를 empty hashmap으로 추가.
+                if(isInsertEmptyFileInfo) {
+                    listFile.add(new HashMap());
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        logger.debug("########## Sample File Upload End ##########");
+
+        return listFile;
+    }
+    
+    @RequestMapping
+	public List multiFileUploadContent(HttpServletRequest request, Object atthType) throws IOException {
+        if (-1 >= request.getContentType().indexOf("multipart/form-data")) {
+            return null;
+        }
+    	
+    	List listFile = new ArrayList();
+    	
+        // 파라미터 이름에 해당하는 값을 paramMap에 저장
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+
+        Enumeration<String> parameterNames = request.getParameterNames();
+        while (parameterNames.hasMoreElements()) {
+            String paramName = parameterNames.nextElement();
+            String[] paramValues = request.getParameterValues(paramName);
+            
+            // 파라미터가 여러 값을 가지는 경우 배열로 저장, 그렇지 않은 경우 단일 값으로 저장
+            if (paramValues.length > 1) {
+                paramMap.put(paramName, paramValues);
+            } else {
+                paramMap.put(paramName, paramValues[0]);
+            }
+        }
+        
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        Map<String, MultipartFile> files = multipartRequest.getFileMap();
+        
+        for (Map.Entry<String, MultipartFile> entry : files.entrySet()) {
+            String key = entry.getKey();
+            MultipartFile file = entry.getValue();
+
+            if (file != null && !file.isEmpty()) {
+            	// 저장파일 경로
+            	String realDir = ApplicationProperty.get("upload.real.dir");
+            	String saveDir = realDir + paramMap.get("evaluStageHist")+"/"+key+"/"+paramMap.get("evaluHistSnHist")+"/";
+            	FileUtil.makeDirectories(saveDir);
+            	// 저장이름
+            	String saveFileName = getFileName(saveDir, file.getOriginalFilename());
+            	
+            	// 파일 복사
+            	FileUtil.copyFile(files.get(key).getInputStream(), new FileOutputStream(saveDir + saveFileName));
+            	
+            	
+            	
+            	HashMap fmap = new HashMap();
+	                fmap.put("fileSvrNm"	, saveFileName);
+	                fmap.put("fileOrgNm"	, CommUtils.nvlTrim(file.getOriginalFilename()));
+	                fmap.put("realDir"  	, saveDir);
+	                fmap.put("fileSize" 	, file.getSize());
+	                fmap.put("rootNo"     	, paramMap.get("evaluHistSnHist"));
+	                fmap.put("rootSeq"      , key.replaceAll("[^0-9]", ""));
+	                fmap.put("evaluStage"   , paramMap.get("evaluStageHist"));
+	                fmap.put("evaluGubun"   , paramMap.get("evaluYearHist"));
+	                fmap.put("atthType"   	, key);
+	                fmap.put("docuType"   	, "ULD");
+	                fmap.put("idx"      , String.valueOf(0));
+                listFile.add(fmap);
+            } else {
+                System.out.println("No file uploaded for key: " + key);
+            }
+        }
+    	return listFile;
+    };    
 
 
 	/**
@@ -295,5 +446,6 @@ public class FileManager {
 			return false;
 		}
 	}
+	
 }
 

@@ -569,6 +569,57 @@
     
     <select id="viewEvaluStageInfo" parameterClass="map"  resultClass="hashmap">
     	SELECT
+   			A.EVALU_HIST_SN       										AS "evaluHistSnHist",
+		    A.EVALU_HIST_NO       										AS "evaluHistNoHist",
+		    A.EVALU_BUSI_SN       										AS "evaluBusiSnHist",
+		    A.EVALU_YEAR          										AS "evaluYearHist",
+		    A.EVALU_STAGE         										AS "evaluStageHist",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = A.EVALU_STAGE) 								AS "evaluStageNmHist",
+		    TO_CHAR(SUBSTR(A.BUSI_STT_DATE, 1, 4) || '-' || SUBSTR(A.BUSI_STT_DATE, 5, 2)) AS "busiSttDateHist",
+    		TO_CHAR(SUBSTR(A.BUSI_END_DATE, 1, 4) || '-' || SUBSTR(A.BUSI_END_DATE, 5, 2)) AS "busiEndDateHist",
+		    A.BUSI_ADDR1 												AS "busiAddr1Hist",
+			    CASE 
+			        WHEN A.BUSI_ADDR1 IS NOT NULL THEN
+			            (SELECT SD AS "codeNm"
+			             FROM TREDSUSER.TB_BJD_CODE
+			             WHERE BJD_CODE LIKE '__00000000'
+			             AND SUBSTR(BJD_CODE, 0, 2) = A.BUSI_ADDR1)
+			        ELSE NULL
+			    END 													AS "busiAddr1NmHist",
+			
+			    A.BUSI_ADDR2 											AS "busiAddr2Hist",
+			    CASE
+			        WHEN A.BUSI_ADDR2 IS NOT NULL THEN
+			            (SELECT SGG AS "codeNm"
+			             FROM TREDSUSER.TB_BJD_CODE
+			             WHERE SGG IS NOT NULL
+			             AND BJD_CODE LIKE '_____00000'
+			             AND BJD_CODE LIKE A.BUSI_ADDR1 || '%'
+			             AND SUBSTR(BJD_CODE, 3, 3) = A.BUSI_ADDR2)
+			        ELSE NULL
+			    END 													AS "busiAddr2NmHist",
+		    A.BUSI_ADDR1 ||' '|| A.BUSI_ADDR2   						AS "busiAddr12Hist",
+		    A.BUSI_ADDR3          										AS "busiAddr3Hist",
+		    A.MAIN_FCLT           										AS "mainFcltHist",
+		    A.BUSI_NOTE           										AS "busiNoteHist",
+		    A.TOT_BUSI_EXPS1      										AS "totBusiExps1Hist",
+		    A.TOT_BUSI_EXPS2      										AS "totBusiExps2Hist",
+		    A.TOT_BUSI_EXPS3      										AS "totBusiExps3Hist",
+		    (A.TOT_BUSI_EXPS1 + A.TOT_BUSI_EXPS2 + A.TOT_BUSI_EXPS3) 	AS "totalBusiExpsHist",
+		    A.PRGR_GUBUN          										AS "prgrGubunHist",
+		    (select CODE_NM 
+		       from SYS_CODE 
+		      where CODE = A.PRGR_GUBUN) 								AS "prgrGubunNmHist",
+		    A.REGI_ID             										AS "regiIdHist",
+		    A.REGI_DATE           										AS "regiDateHist",
+		    A.UPDT_ID             										AS "updtIdHist",
+		    A.UPDT_DATE           										AS "updtDateHist"
+		FROM 	TESSUSER.TB_EVALU_DESTI_BUSI_HIST A
+		WHERE	(1=1)
+		AND	 	A.EVALU_HIST_SN   = #evaluHistSnHist#
+<!--     	SELECT
     			B.PLANEVAL_BUSI_NAME,
 		        A.EVALU_BUSI_NO,
 		        A.EVALU_STAGE,
@@ -584,8 +635,64 @@
 		WHERE	A.EVALU_BUSI_NO = B.PLANEVAL_BUSI_NO
 		AND	 	A.EVALU_BUSI_NO = #evaluBusiNo# 
 		AND 	A.EVALU_STAGE = #evaluStage#
-		AND		A.EVALU_GUBUN = #evaluGubun#
+		AND		A.EVALU_GUBUN = #evaluGubun# -->
     </select>
+    
+    <!-- sys 참조파일 리스트 조회 -->
+    <select id="getSysRrencFileProgList" parameterClass="map"  resultClass="hashmap">
+    	   SELECT
+		        CODE,
+		        CODE_NM,
+		        (SELECT
+		            B.CODE_NM        
+		        FROM
+		            SYS_CODE B        
+		        WHERE
+		            B.CODE = A.ADD_COL2) AS "addColNm2"   
+			 FROM
+        SYS_CODE A   
+		 WHERE (0=0)
+		   AND A.PARENT_CODE 	= 'FILE_TYPE'
+		   AND A.ADD_COL2 		=  #evaluStageHist#
+    </select>
+    
+    <!-- sys 참조파일 리스트 조회 -->
+    <select id="getsysUldFileProgList" parameterClass="map"  resultClass="hashmap">
+    	   SELECT
+			        CODE,
+			        PARENT_CODE,
+			        CODE_NM
+			FROM   	SYS_CODE A   
+		 WHERE (0=0)
+		   AND A.PARENT_CODE 	= 'ATTH_TYPE'
+		order by CODE ASC
+    </select>
+    
+    <!-- 사업설명서 참조리스트 조회 -->
+    <select id="getupFileProgList" parameterClass="map"  resultClass="hashmap">
+    	   SELECT
+			A.EVALU_FILE_NO       			AS "evaluFileNo"
+			,A.ROOT_NO						AS "rootNo"
+			,A.ROOT_SEQ						AS "rootSeq"
+			,A.DOCU_TYPE					AS "docuType"
+			,A.ATTH_TYPE					AS "atthType"
+			,A.FILE_ORG_NM					AS "fileOrgNm"
+			,A.FILE_SVR_NM					AS "fileSvrNm"
+			,A.FILE_PATH					AS "filePath"
+			,A.FILE_SIZE					AS "fileSize"
+			,A.ATTH_RMK						AS "atthRmk"
+			,A.REGI_ID						AS "regiId"
+			,A.REGI_DATE					AS "regiDate"
+			,A.EVALU_STAGE					AS "evaluStage"
+			,A.EVALU_STAGE_YEAR				AS "evaluStageYear"
+			,(SELECT B.CODE_NM
+			    FROM SYS_CODE B
+			   WHERE A.ATTH_TYPE = B.CODE) 	AS "rootName"
+		FROM
+			TB_EVALU_DESTI_FILE A
+		WHERE   ROOT_NO 	= #evaluHistSnHist#
+    </select>
+    
     
     <!-- 평가완료 정보 조회 -->
     <!-- <select id="viewEvaluEndStageInfo" parameterClass="map"  resultClass="hashmap">
@@ -651,13 +758,13 @@
                SELECT NVL(MAX(EVALU_FILE_NO), 0) + 1
                FROM   TB_EVALU_DESTI_FILE
              )
-            ,#evaluBusiNo#
-            ,null
+            ,#rootNo#
+            ,#rootSeq#
             ,#docuType#
             ,#atthType#
             ,#fileOrgNm#
             ,#fileSvrNm#
-            ,#tempDir#
+            ,#realDir#
             ,#fileSize#
             ,null
             ,#gsUserId#

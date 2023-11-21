@@ -18,6 +18,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sun.org.apache.bcel.internal.util.InstructionFinder.CodeConstraint;
+
+import business.biz.CommConst;
 import business.biz.FileController;
 import business.biz.FileService;
 import business.biz.FormTagManager;
@@ -27,6 +30,7 @@ import business.biz.comm.CommService;
 import business.biz.evalu.EvaluCommService;
 import business.biz.evalu.domain.EvaluMgmtDomain;
 import business.biz.main.domain.MainDomain;
+import business.sys.code.CodeService;
 import commf.message.Message;
 import common.base.BaseController;
 import common.file.FileManager;
@@ -36,23 +40,20 @@ import common.util.properties.ApplicationProperty;
 import egovframework.rte.fdl.cmmn.exception.EgovBizException;
 
 /**
- *  Evalu Env Controller Class
- * @author lsz
- * @since 2018.11.26
- * @version 1.0
- * @see
+ * [관리자] - 평가환경설정 클래스
+ * 
+ * @class   : EvaluEnvController
+ * @author  : LHB
+ * @since   : 2023.11.17
+ * @version : 1.0
  *
- * <pre>
- * << Modification Information >>
- *    Date	         Name          	       Desc
- * ----------      --------    ---------------------------
- *  2018.11.26      lsz      	Init.
- *
- * </pre>
+ *   수정일       수정자             수정내용
+ *  --------   --------    ---------------------------
+ *  23.11.17     LHB        코드 수정 시작.
  */
 
 @Controller
-@SuppressWarnings({ "rawtypes", "unused"})
+@SuppressWarnings({ "all" })
 public class EvaluEnvController extends BaseController {
 
     @Autowired
@@ -75,128 +76,11 @@ public class EvaluEnvController extends BaseController {
   	//	평가환경설정
   	//################################################################	
 	
-    /**
-     * [관리자] 평가단계관리 리스트 화면.
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value="/mng/listEvaluEnvStep.do")
-    public String listEvaluEnvStep(HttpServletRequest request, ModelMap model)
-            throws Exception {
-    	
-    	//---------------------------------------------
-        //Default Value Setting
-    	String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
-        // default domain setting
-        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain();
-        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
-        //---------------------------------------------
-        
-        // 평가단계 목록 조회
-        List evaluEnvStepList = evaluEnvService.listEvaluEnvStep(paramMap);
-        
-        model.addAttribute("model"   ,  evaluMgmtDomain);
-        model.addAttribute("paramMap",  paramMap);
-        model.addAttribute("evaluEnvStepList",  evaluEnvStepList);
-        
-        // SESSEION 값 설정 : 만일 값이 존재할 때 해당 값을 이용해서 화면에서 처리 할 수 있음.
-        //setEvaluRtnSessionFg(request, model);
-        
-        return "mng/listEvaluEnvStep";
-    }
     
-    /**
-     *  [관리자] 평가단계 등록 ajax
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping("/mng/regiEvaluEnvStep.do")
-    public ModelAndView regiEvaluEnvStep(HttpServletRequest request, ModelMap model)
-            throws Exception {
-    	
-    	//---------------------------------------------
-        //Default Value Setting
-    	String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
-        // default domain setting
-       
-        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
-        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
-        //---------------------------------------------
-        
-        ///paramMap.put("startParentCode", evaluItem);
-        String resultParam = evaluEnvService.regiEvaluEnvStep(paramMap);
-        
-        Map returnMap   = new HashMap();
-        returnMap.put("resultParam", resultParam);
-
-        return new ModelAndView(ajaxView, returnMap);
-    }
     
-    /**
-     *  [관리자] 평가단계 수정 ajax
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping("/mng/updtEvaluEnvStep.do")
-    public ModelAndView updtManagerEnvStep(HttpServletRequest request, ModelMap model)
-            throws Exception {
-    	
-    	//---------------------------------------------
-        //Default Value Setting
-    	String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
-        // default domain setting
-       
-        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
-        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
-        //---------------------------------------------
-        
-        ///paramMap.put("startParentCode", evaluItem);
-        int resultParam = evaluEnvService.updtEvaluEnvStep(paramMap);
-        
-        Map returnMap   = new HashMap();
-        returnMap.put("resultParam", resultParam);
-
-        return new ModelAndView(ajaxView, returnMap);
-    }
     
-    /**
-     *  [관리자] 평가단계 삭제 ajax
-     * @param request
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping("/mng/deltEvaluEnvStep.do")
-    public ModelAndView deltManagerEnvStep(HttpServletRequest request, ModelMap model)
-            throws Exception {
-    	
-    	//---------------------------------------------
-        //Default Value Setting
-    	String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
-        // default domain setting
-       
-        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
-        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
-        //---------------------------------------------
-        
-        ///paramMap.put("startParentCode", evaluItem);
-        int resultParam = evaluEnvService.deltEvaluEnvStep(paramMap);
-        
-        Map returnMap   = new HashMap();
-        returnMap.put("resultParam", resultParam);
-
-        return new ModelAndView(ajaxView, returnMap);
-    }
+    
+    
     
     /**
      * [관리자] 평가지표관리 리스트 화면.
@@ -210,9 +94,9 @@ public class EvaluEnvController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
+        Map paramMap = setMappingValues(request, method);
         // default domain setting
         EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain();
         BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
@@ -241,9 +125,9 @@ public class EvaluEnvController extends BaseController {
     	System.out.println("request :: " + request);
         
         //---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
+        Map paramMap = setMappingValues(request, method);
         // default domain setting
        
         EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
@@ -273,9 +157,9 @@ public class EvaluEnvController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
+        Map paramMap = setMappingValues(request, method);
         // default domain setting
        
         EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
@@ -303,9 +187,9 @@ public class EvaluEnvController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
+        Map paramMap = setMappingValues(request, method);
         // default domain setting
        
         EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
@@ -333,9 +217,9 @@ public class EvaluEnvController extends BaseController {
             throws Exception {
     	
     	//---------------------------------------------
-        //Default Value Setting
+        // Default Value Setting
     	String method       = getMethodName(new Throwable());
-        Map paramMap = setMappingValues(request, method );
+        Map paramMap = setMappingValues(request, method);
         // default domain setting
        
         EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
@@ -422,6 +306,238 @@ public class EvaluEnvController extends BaseController {
             request.setAttribute("evaluStageComboList", evaluStageComboList);
         }
     }
+    
+    //################################################################
+    //SUNDOSOFT 평가사업관리 > 평가사업등록
+    //################################################################
 
+    /**
+     * [관리자] 평가환경설정 - 평가단계관리 화면
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/mng/listEvaluEnvStep.do")
+    public String listEvaluEnvStep(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        // Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
+        // default domain setting
+        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain();
+        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
+        //---------------------------------------------
+        
+        // 평가단계 목록 조회
+        paramMap.put("parentCode", CommConst.ES);
+        List evaluStageList = commService.listCode(paramMap);
+        
+        model.addAttribute("model"   ,			evaluMgmtDomain);
+        model.addAttribute("paramMap",			paramMap);
+        model.addAttribute("evaluStageList",	evaluStageList);
+        
+        return "mng/listEvaluEnvStep";
+    }
+    
+    /**
+     * [관리자] 평가환경설정 - 평가단계관리 등록
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/mng/regiEvaluEnvStage.do")
+    public ModelAndView regiEvaluEnvStage(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        // Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
+        // default domain setting
+       
+        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
+        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
+        //---------------------------------------------
+        
+        int resultParam = evaluEnvService.regiEvaluEnvStage(paramMap);
+        
+        Map returnMap   = new HashMap();
+        returnMap.put("code", resultParam);
+
+        return new ModelAndView(ajaxView, returnMap);
+    }
+    
+    /**
+     * [관리자] 평가환경설정 - 평가단계관리 수정
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/mng/updtEvaluEnvStage.do")
+    public ModelAndView updtEvaluEnvStage(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        // Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
+        // default domain setting
+        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
+        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
+        //---------------------------------------------
+        
+        int resultParam = evaluEnvService.updtEvaluEnvStage(paramMap);
+        
+        Map returnMap   = new HashMap();
+        returnMap.put("code", resultParam);
+
+        return new ModelAndView(ajaxView, returnMap);
+    }
+    
+    /**
+     * [관리자] 평가환경설정 - 평가단계관리 삭제
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/mng/deltEvaluEnvStage.do")
+    public ModelAndView deltEvaluEnvStage(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        // Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
+        // default domain setting
+        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
+        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
+        //---------------------------------------------
+        
+        int resultParam = evaluEnvService.deltEvaluEnvStage(paramMap);
+        
+        Map returnMap   = new HashMap();
+        returnMap.put("code", resultParam);
+
+        return new ModelAndView(ajaxView, returnMap);
+    }
+    
+    
+    
+    /* 평가지표관리 */
+    
+    
+    
+    /**
+     * [관리자] 평가환경설정 - 참조파일관리 화면
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value="/mng/listEvaluEnvFile.do")
+    public String listEvaluEnvFile(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        // Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
+        // default domain setting
+        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain();
+        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
+        //---------------------------------------------
+        
+        // 평가단계 목록 조회
+        paramMap.put("parentCode", CommConst.ES);
+        List evaluStageList = commService.listCode(paramMap);
+        
+        model.addAttribute("model"   ,			evaluMgmtDomain);
+        model.addAttribute("paramMap",			paramMap);
+        model.addAttribute("evaluStageList",	evaluStageList);
+        
+        return "mng/listEvaluEnvFile";
+    }
+    
+    /**
+     * [관리자] 평가환경설정 - 참조파일관리 화면
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/mng/listEvaluEnvSampleFile.do")
+    public ModelAndView listEvaluEnvSampleFile(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        // Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method);
+        // default domain setting
+        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
+        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
+        //---------------------------------------------
+        
+        if (paramMap.get("evaluStage") == null || CommUtils.isEmpty((String) paramMap.get("evaluStage"))) {
+        	paramMap.put("evaluStage", CommConst.ES_PREV);
+        }
+        
+        // 샘플 파일 조회
+        paramMap.put("parentCode",	CommConst.FT);
+        paramMap.put("addCol02",	paramMap.get("evaluStage"));
+        paramMap.put("useYn",	CommConst.YES);
+        List evaluStageList = commService.listCode(paramMap);
+        
+        Map returnMap   = new HashMap();
+        returnMap.put("code", (evaluStageList != null ? evaluStageList.size() : 0));
+        returnMap.put("data", evaluStageList);
+
+        return new ModelAndView(ajaxView, returnMap);
+    }
+    
+    /**
+     * [관리자] 평가지침 파일업로드 ajax.
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/mng/saveEvaluEnvSampleFile.do")
+    public String saveEvaluEnvSampleFile(HttpServletRequest request, ModelMap model) throws Exception {
+    	
+    	//---------------------------------------------
+        // Default Value Setting
+    	String method	= getMethodName(new Throwable());
+        Map paramMap	= setMappingValues(request, method );
+        // default domain setting
+       
+        EvaluMgmtDomain evaluMgmtDomain = new EvaluMgmtDomain(); 
+        BeanUtils.copyProperties(evaluMgmtDomain, paramMap);
+        //---------------------------------------------
+
+        //------------------
+        // 파일 처리 부분
+        //------------------
+        List<Map> upfileInfoList = fileManager.multiFileUploadEvaluSample(request);
+        
+        for(Map map : upfileInfoList) {
+        	paramMap.put("fileSize", map.get("fileSize"));
+        	paramMap.put("tempDir", map.get("tempDir"));
+        	paramMap.put("idx", map.get("idx"));
+        	paramMap.put("fileSvrNm", map.get("fileSvrNm"));
+        	paramMap.put("fileOrgNm", map.get("fileOrgNm"));
+        }
+        
+        if (upfileInfoList != null && upfileInfoList.size() > 0) {
+        	// TODO SYS_CODE 수정 필요함
+        	Map tempMap = upfileInfoList.get(0);
+        	tempMap.put("gsUserId", paramMap.get("gsUserId"));
+        	evaluEnvService.saveEvaluEnvSampleFile(tempMap);
+        	resultFlag("정상적으로 저장되었습니다.");
+        } else {
+        	resultFlag("저장에 실패했습니다.");
+        }
+        
+        return "redirect:/mng/listEvaluEnvFile.do";
+    }
 }
-

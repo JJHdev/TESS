@@ -3,6 +3,7 @@
 
 <html lang="en">
 <head>
+	<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 	<%@ include file ="../header.jsp" %>
 	<title><spring:message code="title.sysname"/></title>
 	<app:layout mode="stylescript" type="normal" /><!-- style & javascript layout -->
@@ -49,17 +50,26 @@
 
     <%-- 검색조건 --%>
     <div id="srchCondArea">
-        <input type="hidden" name="srchBusiAddr1"   id="srchBusiAddr1"   value='<c:out value="${paramMap.srchBusiAddr1}"/>'/>
-        <input type="hidden" name="srchBusiAddr2"   id="srchBusiAddr2"   value='<c:out value="${paramMap.srchBusiAddr2}"/>'/>
-        <input type="hidden" name="srchBusiAddrVal" id="srchBusiAddrVal" value='<c:out value="${paramMap.srchBusiAddrVal }"/>'/>
-        <input type="hidden" name="srchBusiType"    id="srchBusiType"    value='<c:out value="${paramMap.srchBusiType}"/>'/>
-        <input type="hidden" name="srchBusiCate"    id="srchBusiCate"    value='<c:out value="${paramMap.srchBusiCate}"/>'/>
-        <input type="hidden" name="srchEvaluBusiNm"  id="srchEvaluBusiNm"  value='<c:out value="${paramMap.srchEvaluBusiNm}"/>'/>
-        <input type="hidden" name="srchBusiStage"  id="srchBusiStage"  value='<c:out value="${paramMap.srchBusiStage}"/>'/>
-        <input type="hidden" name="srchEvaluDate"  id="srchEvaluDate"  value='<c:out value="${paramMap.srchEvaluDate}"/>'/>
+        <input type="hidden" name="srchBusiAddr1"   id="srchBusiAddr1"   	value='<c:out value="${paramMap.srchBusiAddr1}"/>'/>
+        <input type="hidden" name="srchBusiAddr2"   id="srchBusiAddr2"   	value='<c:out value="${paramMap.srchBusiAddr2}"/>'/>
+        <input type="hidden" name="srchBusiAddrVal" id="srchBusiAddrVal" 	value='<c:out value="${paramMap.srchBusiAddrVal }"/>'/>
+        <input type="hidden" name="srchBusiType"    id="srchBusiType"    	value='<c:out value="${paramMap.srchBusiType}"/>'/>
+        <input type="hidden" name="srchBusiCate"    id="srchBusiCate"    	value='<c:out value="${paramMap.srchBusiCate}"/>'/>
+        <input type="hidden" name="srchEvaluBusiNm"  id="srchEvaluBusiNm"   value='<c:out value="${paramMap.srchEvaluBusiNm}"/>'/>
+        <input type="hidden" name="srchBusiStage"  id="srchBusiStage"  		value='<c:out value="${paramMap.srchBusiStage}"/>'/>
+        <input type="hidden" name="srchEvaluDate"  id="srchEvaluDate"  		value='<c:out value="${paramMap.srchEvaluDate}"/>'/>
+    </div>
+    <div id="fileContentArea">
+    	<c:forEach var="entry1" items="${evaluInfo}">
+		    <input type="hidden" name="${entry1.key}" value="${entry1.value}" />
+		</c:forEach>
+		<c:forEach var="entry2" items="${mastMap}">
+		    <input type="hidden" name="${entry2.key}" value="${entry2.value}" />
+		</c:forEach>
     </div>
     
     <input type="hidden" name="regiEvaluCommId"     id="regiEvaluCommId"/>
+</form:form>
 
 	<div class="contents-wrap">
 	    <div class="wrapper sub"> <!-- 메인페이지 : 'main', 서브페이지 : 'sub' 클래스 추가 -->
@@ -68,21 +78,21 @@
 	                <ul>
 	                    <li>홈</li>
 	                    <li>평가사업조회</li>
-	                    <li>${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM}</li>
-	                    <li>${evaluInfo.PLANEVAL_BUSI_NAME}</li>
+	                    <li>${evaluInfo.prgrGubunNmHist} ${evaluInfo.evaluStageNmHist}</li>
+	                    <li>${mastMap.evaluBusiNmInfo}</li>
 	                </ul>
 	            </div>
 	            <div class="row">
 	                <div class="col-md-12">
-	                    <h3 class="page-title">${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM}</h3>
+	                    <h3 class="page-title">${evaluInfo.prgrGubunNmHist} ${evaluInfo.evaluStageNmHist}</h3>
 	                </div>
 	            </div>
 	
 	            <div class="project-header" style="background-image:url(/img/storage/project-theme.jpg)">
 	                <div class="shade"></div>
 	                <div class="project-title">
-	                    <h2>${evaluInfo.PLANEVAL_BUSI_NAME}</h2>
-	                    <p>${evaluInfo.busiAddress1} / ${evaluInfo.EVALU_GUBUN} ${evaluInfo.EVALU_STAGE_NM}</p>
+	                    <h2>${mastMap.evaluBusiNmInfo}</h2>
+	                    <p>${evaluInfo.busiAddr1NmHist} / ${evaluInfo.prgrGubunNmHist} ${evaluInfo.evaluStageNmHist}</p>
 	                </div>
 	                <div class="local-menu">
 	                    <ul>
@@ -105,147 +115,162 @@
 	                        <table class="evtdss-form-table">
 	                        	<tr>
 	                                <td class="labeler">코드명</td>
-	                                <td colspan="3"><input type="text" name="planEvalBusiNo"  id="planEvalBusiNo"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.planEvalBusiNo}"/>'/></td>
+	                                <td colspan="3"><input type="text" name="evaluHistNoHist"  id="evaluHistNoHist" readonly="readonly" style="width: -webkit-fill-available;"value='<c:out value="${evaluInfo.evaluHistNoHist}"/>'/></td>
 	                            </tr>
 	                            <tr>
 	                            	<td class="labeler">사업유형</td>
-	                                <td colspan="3"><input type="text" name="busiTypeNm"  id="busiTypeNm"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.busiTypeNm}"/>'/></td>
+	                                <td colspan="3"><input type="text" name="busiCateNmInfo"  id="busiCateNmInfo"  readonly="readonly"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.busiTypeLevel1NmInfo}"/> > <c:if test="${mastMap.busiTypeLevel2NmInfo ne null and mastMap.busiTypeLevel1NmInfo != ''}"> <c:out value="${mastMap.busiTypeLevel2NmInfo}" /> > </c:if> <c:out value="${mastMap.busiCateNmInfo}"/> '/></td>
 	                            </tr>
 	                            <tr>
 	                                <td class="labeler">사업명</td>
-	                                <td colspan="3"><input type="text" name="planEvalBusiName"  id="planEvalBusiName"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.planEvalBusiName}"/>'/></td>
+	                                <td colspan="3"><input type="text" name="evaluBusiNmInfo"  id="evaluBusiNmInfo"  readonly="readonly" style="width: -webkit-fill-available;"value='<c:out value="${mastMap.evaluBusiNmInfo}"/>'/></td>
 	                            </tr>
 	                            <tr>
 	                                <td class="labeler">사업목적</td>
-	                                <td colspan="3"><input type="text" name="busiCateNm"  id="busiCateNm"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.busiCateNm}"/>'/></td>
+	                                <td colspan="3"><input type="text" name="updtBusiNoteHist"  id="updtBusiNoteHist"  style="width: -webkit-fill-available;"value='<c:out value="${evaluInfo.busiNoteHist}"/>'/></td>
 	                            </tr>
 	                            <tr>
 	                                <td class="labeler">위치</td>
 	                                <td colspan="3">
-		                                <input type="text" name="busiAddr12"  id="busiAddr12"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.busiAddr12}"/>'/>
-	                                </td>
+                                    	<select id="updtBusiAddr1Hist"  name="updtBusiAddr1Hist"  class="input-sm wd-20p" data-value="<c:out value='${evaluInfo.busiAddr1Hist}'/>"><option value="">선택</option></select>
+                                    	<select id="updtBusiAddr2Hist"  name="updtBusiAddr1Hist"  class="input-sm wd-20p" data-value="<c:out value='${evaluInfo.busiAddr2Hist}'/>"><option value="000">본청</option></select>
+                                    	<input type="text" name="updtBusiAddr3Hist"  id="updtBusiAddr3Hist"  style="width: -webkit-fill-available;"value='<c:out value="${evaluInfo.busiAddr3Hist}"/>'/>
+                                    </td>
 	                            </tr>
 	                            <tr>
 	                                <td class="labeler">주요시설</td>
 	                                <td colspan="3">
-		                                <input type="text" name="busiAddr5"  id="busiAddr5"  style="width: -webkit-fill-available;"value='<c:out value="${mastMap.busiAddr5}"/>'/>
+		                                <input type="text" name="updtMainFcltHist"  id="updtMainFcltHist"  style="width: -webkit-fill-available;"value='<c:out value="${evaluInfo.mainFcltHist}"/>'/>
 	                                </td>
 	                            </tr>
 	                            <tr>
-	                                <td class="labeler">총 사업기간</td>
-	                                <td>
-	                                	<input type="text" name="convBusiSttDate"  id="convBusiSttDate"  value='<c:out value="${mastMap.convBusiSttDate}"/>'/> ~ 
-	                                	<input type="text" name="convBusiEndDate"  id="convBusiEndDate"  value='<c:out value="${mastMap.convBusiEndDate}"/>'/>
-                                	</td>
+	                                <td class="labeler">사업기간</td>
+	                                <td colspan="3">
+		                                <input type="month" name="updtBusiSttDateHist" id="updtBusiSttDateHist" style="width: auto;" value='<c:out value="${evaluInfo.busiSttDateHist}"/>'/>~
+										<input type="month" name="updtBusiEndDateHist" id="updtBusiEndDateHist" style="width: auto;" value='<c:out value="${evaluInfo.busiEndDateHist}"/>'/>
+                                 	</td>
+	                            </tr>
+	                            <tr>
                                 	<td class="labeler">사업비</td>
-	                                <td>
-	                                	<input type="text" name="planBusiExps"  id="planBusiExps"  value='<c:out value="${mastMap.planBusiExps}"/>'/>
+	                                <td colspan="3">
+	                                	<input type="text" name="totalBusiExpsHist"  	id="totalBusiExpsHist"  value='<c:out value="${evaluInfo.totalBusiExpsHist}"/>'/> 백만원 <br/>
+	                                	<input type="text" name="updtTotBusiExps1Hist"   id="updtTotBusiExps1Hist"   value='<c:out value="${evaluInfo.totBusiExps1Hist}"/>'/> (국비) 백만원 	<br/>
+	                                	<input type="text" name="updtTotBusiExps2Hist"   id="updtTotBusiExps2Hist"   value='<c:out value="${evaluInfo.totBusiExps2Hist}"/>'/> (지방비)백만원	<br/>
+	                                	<input type="text" name="updtTotBusiExps3Hist"   id="updtTotBusiExps3Hist"   value='<c:out value="${evaluInfo.totBusiExps3Hist}"/>'/> (민자) 백만원	<br/>
                                 	</td>
 	                            </tr>
 	                        </table>
-		                    
-	
-	                        <p class="section-title">첨부 파일<small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
-	                        <table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
-							<caption class="sr-only">첨부파일</caption>
-							<colgroup><col/><col/><col/></colgroup>
-	                        <thead>
-	                        	<tr>
-	                                <th scope="col">구분</th>
-	                                <th scope="col" class="fix-width file">첨부파일</th>
-	                            </tr>
-	                        </thead>
 	                        
-	                       <%--  DB 목록이 없어서 추후 작업 예정
-	                        <tbody>
-	                        	<c:forEach items="${fileList}" varStatus="status" var="flist">
-	                        		<tr>
-		                                <td><c:out value="${flist.CODE_NM}"/></td>
-		                                <td class="fix-width file">
-		                                    <a href="#" class="<c:out value="${flist.CODE_NM}"/>">
-		                                    	<c:out value="${flist.FILE_ORG_NM}"/>
-		                                    </a>
-		                                </td>
-		                                <td class="fix-width date"><c:out value="${flist.REGI_DATE}"/></td>
-		                            </tr>
-	                        	</c:forEach>
-	                        </tbody>
-	                         --%>
-                            <tr>
-                                <td>사업설명서 지침서</td>
-                                <td class="fix-width file"><a href="#" class="보조금 교부신청서"><img src="../../../images/icon_file_hwp.jpg"></a></td>
-                            </tr>
-                            <tr>
-                                <td>추가 첨부파일</td>
-                                <td class="fix-width file"><a href="#" class="기본계획 수립용역 보고서"><img src="../../../images/icon_file_zip.jpg"></a></td>
-                                <!-- <td class="fix-width date">2018-09-13 23:14:11</td> -->
-                            </tr>
-                            </table>
-                            
-                            <p class="section-title" style="display:flex; justify-content: space-between;">사업설명서 등록
-							    <small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small>
-							    <sapn class="submit-set" style="padding: 0px 0 0; margin-bottom:5px;">
-							    	<button type="button" id="addRowBtn" class="evtdss-submit"><a id="addRow" title="저장하기">추가</a></button>
-							    	<button type="button" id="removeRowBtn" class="evtdss-submit"><a id="removeRow" title="삭제">삭제</a></button>
-							    </sapn>
-							</p>
-							<table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
-							    <caption class="sr-only">사업설명서 등록</caption>
-							    <thead>
-							        <tr>
-							            <th>구분</th>
-							            <th class="fix-width file">파일 업로드</th>
-							            <th class="fix-width file">첨부파일</th>
-							        </tr>
-							    </thead>
-							    <tbody id="tableBody">
-							        <tr>
-							            <td><span class="special-dot">*</span>사업설명서(한글)</td>
-							            <td><input type="file" class="regi-file-input" id="upFile1"></td>
-							            <td class="fix-width file"><a href="#" class="사업설명서(한글)"><img src="../../../images/icon_file_hwp.jpg"></a></td>
-							        </tr>
-							        <tr>
-							            <td><span class="special-dot">*</span>사업설명서(PDF)</td>
-							            <td><input type="file" class="regi-file-input" id="upFile1"></td>
-							            <td class="fix-width file"><a href="#" class="사업설명서(PDF)"><img src="../../../images/icon_file_pdf.jpg"></a></td>
-							        </tr>
-							        <tr>
-		                                <td>기본계획서</td>
-		                                <td><input type="file" class="regi-file-input" id="upFile1"></td>
-		                                <td class="fix-width file"><a href="#" class="기본계획서"><img src="../../../images/icon_file_pdf.jpg"></a></td>
-		                            </tr>
-		                            <tr>
-		                                <td>기타</td>
-		                                <td><input type="file" class="regi-file-input" id="upFile1"></td>
-		                                <td class="fix-width file"><a href="#" class="기타"><img src="../../../images/icon_file_hwp.jpg"></a></td>
-		                            </tr>
-							    </tbody>
-							</table>
-							
 	                        <div class="submit-set">
 	                        	<c:if test="${viewCommitStatus.OPINION_YN != 'Y'}">
-	                        		<button type="button" class="evtdss-submit"><a id="prcBtnSave" title="저장하기">저장하기</a></button>
+	                        		<button type="button" class="evtdss-submit"><a id="prcBtnSave" title="개요등록">개요 등록</a></button>
 	                        	</c:if>
 	                        	<c:if test="${viewCommitStatus.OPINION_YN == 'Y' && viewCommitStatus.OPINION_APV_YN != 'Y'}">
 	                        		<button type="button" class="evtdss-submit-cancel"><a id="prcBtnCancle" title="제출취소">제출취소</a></button>
 	                        	</c:if>
 	                            <!-- 제출이력이 있을 경우 표시 -->
-	                            <div class="evtdss-submit-date">이 문서는 <span class="txt-heightlight">2018-08-21 14:24:36 에 제출</span> 되었습니다.</div>
-	                            <!-- /제출이력이 있을 경우 표시 -->
 	                        </div>
-                        <!-- /Contents -->
-	                    </div>
-	                </div>
-	            </div> <!-- /.container -->
-	
+							
+	                        <p class="section-title">첨부 파일<small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small></p>
+	                        <table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
+								<caption class="sr-only">첨부파일</caption>
+								<colgroup><col/><col/><col/></colgroup>
+		                        <thead>
+		                        	<tr>
+		                                <th scope="col" style="width:70%;">구분</th>
+		                                <th scope="col" style="width:30%;" class="fix-width file">첨부파일</th>
+		                            </tr>
+		                        </thead>
+		                        
+		                        <c:forEach items="${sysRrencFileList}" varStatus="status" var="flist">
+								    <c:if test="${fn:substring(flist.CODE, 3, 4) eq '0' or  fn:substring(flist.CODE, 3, 4) eq '1'}">
+								        <tr>
+								            <td><c:out value="${flist.addColNm2} ${flist.CODE_NM}"/></td>
+								            <td class="fix-width file">
+								                <a href="<c:out value='/comm/fileDownloadSample.do?fileNo=${flist.CODE}'/>">
+								                    <c:out value="${flist.CODE_NM}"/>
+								                </a>
+								            </td>
+								        </tr>
+								    </c:if>
+								</c:forEach>
+                           	</table>
+                           	
+                            <p class="section-title" style="display:flex; justify-content: space-between;">사업설명서 등록
+							    <small class="silent">최종 개정내용은 사업계획서를 참조하시기 바랍니다.</small>
+							    <!-- <sapn class="submit-set" style="padding: 0px 0 0; margin-bottom:5px;">
+							    	<button type="button" id="addRowBtn" class="evtdss-submit"><a id="addRow" title="파일추가">추가</a></button>
+							    	<button type="button" id="removeRowBtn" class="evtdss-submit"><a id="removeRow" title="파일삭제">삭제</a></button>
+							    </sapn> -->
+							</p>
+							<table class="evtdss-form-table" summary="지자체에서 등록한 사업정보 첨부파일 목록입니다.">
+						    	<caption class="sr-only">사업설명서 등록</caption>
+							    <thead>
+							        <tr>
+							            <th>구분</th>
+							            <th class="fix-width file">파일 업로드</th>
+							            <th class="fix-width file">첨부파일</th>
+							            <th class="fix-width file">첨부파일 삭제</th>
+							        </tr>
+							    </thead>
+							    <tbody id="tableBody">
+							        <c:forEach items="${sysUldFileList}" var="fileType">
+							            <c:if test="${fileType.CODE eq 'AT01' or fileType.CODE eq 'AT02' or fileType.CODE eq 'AT03' or fileType.CODE eq 'AT04' or fileType.CODE eq 'AT05'}">
+							                <tr>
+							                    <td>
+							                    	<c:if test="${fileType.CODE eq 'AT01' or fileType.CODE eq 'AT02'}" >
+									                    <span class="special-dot">*</span>
+							                    	</c:if>
+								                    ${fileType.CODE_NM}
+								                </td>
+							                    <td>
+							                        <c:set var="fileExists" value="false"/>
+							                        <c:forEach var="fileInfo" items="${upFileList}">
+							                            <c:if test="${fileInfo.atthType eq fileType.CODE}">
+							                                <c:set var="fileExists" value="true"/>
+							                            </c:if>
+							                        </c:forEach>
+							                        <c:if test="${!fileExists}">
+							                            <input type="file" class="regi-file-input" id="upfile${fileType.CODE}">
+							                        </c:if>
+							                    </td>
+							                    <td class="fix-width file">
+							                        <c:forEach var="fileInfo" items="${upFileList}">
+							                            <c:if test="${fileInfo.atthType eq fileType.CODE}">
+							                                <a href="/busi/fileDownload.do?rootNo=${evaluInfo.evaluHistSnHist}&atthType=${fileType.CODE}">
+							                                    <c:out value="${fileInfo.fileOrgNm}"/>
+							                                </a>
+							                            </c:if>
+							                        </c:forEach>
+							                    </td>
+							                    <td>
+							                        <c:if test="${fileExists}">
+							                            <div class="submit-set">
+							                                <button type="button" class="evtdss-submit" onclick="onClickButton('upfile${fileType.CODE}')" ><a title="파일삭제">삭제</a></button>
+							                            </div>
+							                        </c:if>
+							                    </td>
+							                </tr>
+							            </c:if>
+							        </c:forEach>
+							   	 </tbody>
+							</table>
+	                        <div class="submit-set">
+	                        	<c:if test="${viewCommitStatus.OPINION_YN != 'Y'}">
+	                        		<button type="button" class="evtdss-submit" onclick="onClickButton('prcBtnFileSave')" title="사업설명서등록"><a title="사업설명서 등록">사업설명서 등록</a></button>
+	                        	</c:if>
+	                        	<c:if test="${viewCommitStatus.OPINION_YN == 'Y' && viewCommitStatus.OPINION_APV_YN != 'Y'}">
+	                        		<button type="button" class="evtdss-submit-cancel" onclick="onClickButton('prcBtnCancle')" title="제출취소"><a title="제출취소 등록">제출취소</a></button>
+	                        	</c:if>
+	                            <!-- 제출이력이 있을 경우 표시 -->
+	                        </div>
+                       <!-- /Contents -->
+	                   </div>
+	               </div>
+	           </div> <!-- /.container -->
 	        </div>
 	    </div>
-	
 	</div> <!-- /contents-wrap -->
-	
-	
-</form:form>	
-			
 </div><!-- /contents -->
 
 

@@ -80,7 +80,7 @@
 	                    <li>홈</li>
 	                    <li>관리자</li>
 	                    <li>평가사업관리</li>
-	                    <li>${busiInfo.planEvalBusiName}</li>
+	                    <li><c:out value="${busiInfo.evaluBusiNm}"/></li>
 	                </ul>
 	            </div>
 	            <div class="row">
@@ -92,8 +92,8 @@
 	            <div class="project-header" style="background-image:url(/img/storage/project-theme.jpg)">
 	                <div class="shade"></div>
 	                <div class="project-title">
-	                    <h2>${busiInfo.evaluBusiNm}</h2>
-	                    <p>${busiInfo.busiAddr} <%-- / ${busiInfo.EVALU_GUBUN} ${busiInfo.EVALU_STAGE_NM} --%><!--  / 서면검토 단계 --></p>
+	                    <h2><c:out value="${busiInfo.evaluBusiNm}" /></h2>
+	                    <p><c:out value="${busiInfo.busiAddr}" /> <%-- / ${busiInfo.EVALU_GUBUN} ${busiInfo.EVALU_STAGE_NM} --%><!--  / 서면검토 단계 --></p>
 	                </div>
 	                <div class="local-menu th2">
 	                    <ul>

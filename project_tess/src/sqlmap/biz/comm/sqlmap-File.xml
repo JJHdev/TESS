@@ -51,6 +51,50 @@
 		WHERE
            FILE_NO = #fileNo#
     </select>
+    
+    <select id="getupFileAT02" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		SELECT
+			 EVALU_FILE_NO       	AS "evaluFileNo"
+			,ROOT_NO				AS "rootNo"
+			,ROOT_SEQ				AS "rootSeq"
+			,DOCU_TYPE				AS "docuType"
+			,ATTH_TYPE				AS "atthType"
+			,FILE_ORG_NM			AS "fileOrgNm"
+			,FILE_SVR_NM			AS "fileSvrNm"
+			,FILE_PATH				AS "filePath"
+			,FILE_SIZE				AS "fileSize"
+			,ATTH_RMK				AS "atthRmk"
+			,REGI_ID				AS "regiId"
+			,REGI_DATE				AS "regiDate"
+			,EVALU_STAGE			AS "evaluStage"
+			,EVALU_STAGE_YEAR		AS "evaluStageYear"
+		FROM
+			TB_EVALU_DESTI_FILE
+		WHERE
+           	EVALU_FILE_NO = #fileNo#
+    </select>
+    
+    <select id="viewEvaluBusiFile" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+		SELECT
+			EVALU_FILE_NO       	AS "evaluFileNo"
+			,ROOT_NO				AS "rootNo"
+			,ROOT_SEQ				AS "rootSeq"
+			,DOCU_TYPE				AS "docuType"
+			,ATTH_TYPE				AS "atthType"
+			,FILE_ORG_NM			AS "fileOrgNm"
+			,FILE_SVR_NM			AS "fileSvrNm"
+			,FILE_PATH				AS "filePath"
+			,FILE_SIZE				AS "fileSize"
+			,ATTH_RMK				AS "atthRmk"
+			,REGI_ID				AS "regiId"
+			,REGI_DATE				AS "regiDate"
+			,EVALU_STAGE			AS "evaluStage"
+			,EVALU_STAGE_YEAR		AS "evaluStageYear"
+		FROM
+			TB_EVALU_DESTI_FILE
+		WHERE   ROOT_NO 	= #rootNo#
+		  AND   ATTH_TYPE 	= #atthType# 
+    </select>
 
 	<!-- 삭제 파일 검색 -->
     <select id="listDelFile" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">

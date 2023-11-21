@@ -54,5 +54,31 @@ public class EvaluEndBusiService extends BaseService {
     public Map viewEvaluEndBusiInfo(Map paramMap) throws Exception {
     	return (Map)dao.view("Busi.viewEvaluEndBusiInfo", paramMap);
     }
+
     
+    // 사업 조회
+	public Map viewTodeEndMast(Map paramMap) {
+		return (Map)dao.view("Busi.viewTodeEndMast", paramMap);
+	}
+
+	// 평가사업 조회
+	public Map viewEvaluStageEndInfo(Map paramMap) {
+		return (Map)dao.view("Busi.viewEvaluStageEndInfo", paramMap);
+	}
+
+	// 시스템 파일 목록 조회
+	public List getSysRrencFileProgList(Map paramMap) {
+		return dao.list("Busi.getSysRrencFileProgList", paramMap);
+	}
+
+	// 시스템 파일 유저 업로드 관련 목록 조회
+	public List getSysUldFileProgEndList(Map paramMap) {
+		return dao.list("Busi.getsysUldFileProgList", paramMap);
+	}
+
+	// 유저 업로드 목록 조회
+	public List getupFileProgEndList(Map paramMap) {
+		return dao.list("Busi.getupFileProgList", paramMap);
+	}
+
 }

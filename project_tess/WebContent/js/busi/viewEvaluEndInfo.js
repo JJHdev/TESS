@@ -19,7 +19,21 @@ function loadInitPage(){
 	// 이벤트를 바인딩한다.
     bindEvent();
     
-    //
+	// 테스트 생성
+	comutils.makeEvlIxList({
+	    id: 'test',
+	    evaluYear: 2023,
+	    evaluStage: 'EVALU_PREV',
+		mode: 'REGI'
+	});
+
+	// 테스트 생성
+	comutils.makeEvlIxList({
+		id: 'test2',
+		evaluYear: 2023,
+		evaluStage: 'EVALU_PREV',
+		mode: 'REGI'
+	});
 }
 
 
@@ -36,8 +50,41 @@ $(document).ready(function(){
 		$("#commit_table_list table").css("display", "none");
 		$("#commit_table_list table").eq(index).css("display", "inline-table;");
 	});
+
 });
 
+function openTab(evt, tabName) {
+	// 기본 동작 방지 및 이벤트 버블링 중지
+	evt.preventDefault();
+	evt.stopPropagation();
+  
+	// 모든 탭 내용 숨기기
+	var i, tabcontent, tablinks;
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for (i = 0; i < tabcontent.length; i++) {
+	  tabcontent[i].style.display = "none";
+	}
+  
+	// 모든 탭 링크 비활성화
+	tablinks = document.getElementsByClassName("tablinks");
+	for (i = 0; i < tablinks.length; i++) {
+	  tablinks[i].className = tablinks[i].className.replace(" active", "");
+	}
+  
+	// 클릭된 탭의 내용을 보여주고 탭 링크를 활성화
+	document.getElementById(tabName).style.display = "block";
+	evt.currentTarget.className += " active";
+  }
+
+  window.onload = function() {
+    // 탭 A의 내용을 자동으로 표시
+    document.getElementById("TabA").style.display = "block";
+    // 탭 A 링크에 'active' 클래스 추가
+    var tabAButton = document.querySelector('.tablinks');
+    if (tabAButton) {
+        tabAButton.classList.add('active');
+    }
+};
 ////////////////////////////////////////////////////////////////////////////////
 //글로벌 변수
 ////////////////////////////////////////////////////////////////////////////////

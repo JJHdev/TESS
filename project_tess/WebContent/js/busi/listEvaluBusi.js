@@ -447,6 +447,14 @@ function bindEvent() {
 
     //사업의 구분 콤보 change 이벤트 연결.
     bindChangeBusiType();
+
+    // 테스트 생성
+	comutils.makeEvlIxList({
+	    id: 'test',
+	    evaluYear: 2023,
+	    evaluStage: 'EVALU_PREV',
+		mode: 'REGI'
+	});
 }
 
 
@@ -494,7 +502,7 @@ function grid() {
             align: "center",
             columnHeight: 28,
             onClick: function () {
-                goView(this.item.evalBusiNo, this.item.stageCode, this.item.evalYear);
+                goView(this.item.evaluHistSnHist, this.item.evaluStageHist, this.item.evaluYearHist);
             	//console.log(this);
             },
             onDBLClick: function () {
@@ -513,20 +521,19 @@ function grid() {
             }
         },
         columns: [
-            {key: "evalYear", label: "평가연도", align: "center", width: 80},
-            {key: "stageName", label: "평가단계", align: "left"},
-            {key: "busiType", label: "회계", align: "left", width: 100},
-            {key: "busiCate", label: "사업유형", align: "left", width: 125},
-            {key: "startYear", label: "시작연도", align: "center", width: 80},
-            {key: "endYear", label: "종료연도", align: "center", width: 80},
-            {key: "locale", label: "지역", align: "left", width: 125},
-            {key: "title", label: "사업명", align: "left", width: 220},
-            {key: "status", label: "평가진행 현황", align: "left", width: 100},
-            {key: "committee", label: "평가위원", align: "left", sortable: false, width: 168}
+            {key: "evaluYearHist", label: "평가연도", align: "center", width: 80},
+            {key: "evaluStageNmHist", label: "평가단계", align: "left"},
+            {key: "busiTypeLevel1NmInfo", label: "회계", align: "left", width: 170},
+            {key: "busiCateNmInfo", label: "사업유형", align: "left", width: 195},
+            {key: "busiSttDateHist", label: "시작연도", align: "center", width: 80},
+            {key: "busiEndDateHist", label: "종료연도", align: "center", width: 80},
+            {key: "busiAddr1Hist", label: "지역", align: "left", width: 125},
+            {key: "evaluBusiNmInfo", label: "사업명", align: "left", width: 220},
+            {key: "prgrGubunNmHist", label: "평가진행 현황", align: "left", width: 100}
         ]
     });
-
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -534,7 +541,8 @@ function grid() {
 ////////////////////////////////////////////////////////////////////////////////
 
 function grid_data(page, params) {
-
+    console.log('page'+page);
+    console.log('params'+params);
     if(params == null) {
     	params = {"page": page+1, "rows": 10, "srchEvaluCommitNm" : $("#srchEvaluCommitNm").val()};
     } else {
@@ -596,22 +604,26 @@ function grid_data(page, params) {
             	}
 
                 list.push({
-                	evalYear: result.rows[i].evaluGubun,
-                	stageCode: result.rows[i].evaluStage,
-                	stageName: result.rows[i].evaluStageNm,
-                	locale: result.rows[i].busiAddr12,
-                	title: result.rows[i].todeBusiNm,
-                	money: result.rows[i].planTotalExps,
-                	startYear: sttYear,
-                	endYear: endYear,
-                	committee: result.rows[i].commitList,
-                	evalBusiNo: result.rows[i].todeBusiNo,
-                	busiType: result.rows[i].busiTypeNm,
-                	busiCate: result.rows[i].busiCateNm,
-                	status: evaluFinalYn
+                	evaluYearHist: result.rows[i].evaluYearHist,
+                	evaluStageHist: result.rows[i].evaluStageHist,
+                    evaluStageNmHist: result.rows[i].evaluStageNmHist,
+                	busiTypeLevel1Info: result.rows[i].busiTypeLevel1Info,
+                    busiTypeLevel1NmInfo: result.rows[i].busiTypeLevel1NmInfo,
+                	busiCateInfo: result.rows[i].busiCateInfo,
+                    busiCateNmInfo: result.rows[i].busiCateNmInfo,
+                	busiSttDateHist: result.rows[i].busiSttDateHist,
+                	busiEndDateHist: result.rows[i].busiEndDateHist,
+                	busiAddr1Hist: result.rows[i].busiAddr1Hist,
+                    busiAddr2Hist: result.rows[i].busiAddr2Hist,
+                    busiAddr3Hist: result.rows[i].busiAddr3Hist,
+                    evaluBusiNmInfo: result.rows[i].evaluBusiNmInfo,
+                    prgrGubunHist: result.rows[i].prgrGubunHist,
+                    prgrGubunNmHist: result.rows[i].prgrGubunNmHist,
+                    evaluHistNoHist: result.rows[i].evaluHistNoHist,
+                    evaluHistSnHist: result.rows[i].evaluHistSnHist
                 });
             }
-
+           
             /* 그리드에 데이터 설정 */
             projectGrid.setData({
             	list: list,
@@ -627,7 +639,7 @@ function grid_data(page, params) {
             $('[data-grid-control]').click(function () {
                 switch (this.getAttribute("data-grid-control")) {
                     case "excel-export":
-                        projectGrid.exportExcel("2019년 평가사업 목록.xls");
+                        projectGrid.exportExcel("2023년 평가사업 목록.xls");
                         break;
                     case "excel-string":
                         console.log(projectGrid.exportExcel());
@@ -690,14 +702,13 @@ function search_btn(page) {
 ////////////////////////////////////////////////////////////////////////////////
 
 //상세페이지 화면으로 이동
-function goView(evaluBusiNo, evaluStage, evaluGubun) {
-	
+function goView(evaluHistSnHist, evaluStageHist, evaluYearHist) {
     BIZComm.submit({
         url: VIEW_URL,
         userParam: {
-            evaluBusiNo: evaluBusiNo,
-            evaluStage: evaluStage,
-            evaluGubun: evaluGubun
+            evaluHistSnHist: evaluHistSnHist,
+            evaluStageHist: evaluStageHist,
+            evaluYearHist: evaluYearHist
         }
     });
 }

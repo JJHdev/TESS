@@ -65,6 +65,7 @@ if (returnMap != null && returnMap.size() > 0) {
 	var PROC_FLAG = "<%=PROC_FLAG%>";
 	var ROOT_PATH = "${pageContext.request.contextPath}";
 	if (PROC_FLAG != "" && PROC_FLAG != null && PROC_FLAG != "null")  {
-		alert(PROC_FLAG);
+		console.log('header :: ' + PROC_FLAG);
+		//alert(PROC_FLAG);
 	}
 </script>
